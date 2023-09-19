@@ -112,4 +112,5 @@ Provides config options to assign value to various untradeable items using their
     - Abyssal pearls
     - Hallowed marks
 
-[Screenshot of fishing infernal eels]
+<img width="242" alt="untradeableconfig" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/22e299d4-6f27-4292-95d6-6ad1e3acca83">
+
