@@ -15,9 +15,11 @@ What makes this more accurate than any other profit tracker?
 
 See your gp/hr at glance, hover your mouse over the overlay to see more details about the current trip.
 
-[Screenshot of overlay]
+<img width="203" alt="overlay" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/7d0a27ca-fb38-4f9e-8f46-5496f801114c">
 
-[Screenshot of overly with ledger]
+
+<img width="368" alt="overlay_ledger" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/eb98a0fb-2683-4ea2-bc18-f16b57f658a9">
+
 
 ### Session Panel
 See how your gp/hr is looking across various trips, and save a group of trips to the session history.
