@@ -13,7 +13,7 @@ What makes this more accurate than any other profit tracker?
 
 ### Trip Overlay
 
-See your gp/hr at glance, hover your mouse over the overlay to see more details about the current trip.
+See your gp/hr at glance, and hover your mouse over the overlay to see more details about the current trip.
 
 <img width="203" alt="overlay" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/7d0a27ca-fb38-4f9e-8f46-5496f801114c">
 
@@ -32,7 +32,8 @@ See how your gp/hr is looking across various trips, and save a group of trips to
 - Configure the minimum amount needed to display a gold drop
 - Configure the color of profit/loss text
 
-[Screenshot of gold drop]
+<img width="341" alt="Screenshot 2023-09-18 at 7 43 16 PM 1" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/e7d6f834-07ed-4d24-9a78-810018532ffe">
+
 
 ## Tracking Features
 
@@ -75,7 +76,8 @@ Tracks components from common utility items, and tracks fractional components of
     - Blood essence
     - Bottomless compost bucket
 
-[Screenshot of active session during Zeah blood runes]
+<img width="447" alt="blood" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/5b0babf3-3c5a-49f3-bd94-8a82f8ab21b3">
+
 
 ### Container Support
 
