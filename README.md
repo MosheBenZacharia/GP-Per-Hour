@@ -41,7 +41,7 @@ See how your gp/hr is looking across various trips, and save a group of trips to
 
 Automatically tracks charges used by weapons and substracts charge components.
 
-List of supported weapons/armor:
+Supported items:
 - Warped Sceptre
 - Trident of the seas
 - Trident of the swamp
@@ -61,7 +61,8 @@ List of supported weapons/armor:
 - Serpentine helm
 - Tumeken's shadow
 - Toxic blowpipe
-List of unsupported weapons/armor:
+
+Unsupported items:
 - Barrows armor 
 - Iban’s staff (ambiguity on charge cost)
 - Blade of saeldor (needs testing)
@@ -90,6 +91,7 @@ Supported items:
 - Herb sack
 - Log basket
 - Seed box
+
 Unsupported items:
 - Forestry kit (Widget check)
 - Plank sack (Lack of game messages)
