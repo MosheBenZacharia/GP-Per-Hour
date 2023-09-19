@@ -2,7 +2,7 @@
 
 _Track your gp/hr across various trips and save your sessions for later viewing._
 
-GP Per Hour is a comprehensive money making tracker, that will accurately calculate your gp/hr by combining your profits and losses over time.
+GP Per Hour is a comprehensive money making tracker, that will accurately calculate your gp/hr by combining your profits and losses over time for any activity.
 
 What makes this more accurate than any other profit tracker? 
 - Tracks loss of charge components from weapons, armor, and utility items (Trident, blowpipe, crystal armor, blood essence etc.)
@@ -15,22 +15,19 @@ What makes this more accurate than any other profit tracker?
 
 See your gp/hr at glance, and hover your mouse over the overlay to see more details about the current trip.
 
-<img width="203" alt="overlay" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/7d0a27ca-fb38-4f9e-8f46-5496f801114c">
-
-
-<img width="368" alt="overlay_ledger" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/eb98a0fb-2683-4ea2-bc18-f16b57f658a9">
+![totalandledger](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/2292f000-cbd7-4514-bd42-e7ab3ee70f07)
 
 
 ### Session Panel
-See how your gp/hr is looking across various trips, and save a group of trips to the session history.
 
-[Screenshot of active session panel]
+View your gp/hr averaged across various trips, and save a group of trips to the session history.
 
-[Screenshot of session history]
+![sessionpanelguide](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/4d09b541-48d1-497f-8984-0e927e69af64)
+
 
 ### Gold drops
-- Configure the minimum amount needed to display a gold drop
-- Configure the color of profit/loss text
+
+View fake XP drops that are created whenever a profit or loss occurs.
 
 <img width="341" alt="Screenshot 2023-09-18 at 7 43 16 PM 1" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/e7d6f834-07ed-4d24-9a78-810018532ffe">
 
