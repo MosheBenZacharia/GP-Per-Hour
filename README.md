@@ -39,7 +39,7 @@ See how your gp/hr is looking across various trips, and save a group of trips to
 
 ### Weapons and Armor Tracking
 
-Automatically tracks charges used by weapons and substracts charge components.
+Automatically tracks charges used by weapons and subtracts charge components.
 
 Supported items:
 - Warped Sceptre
