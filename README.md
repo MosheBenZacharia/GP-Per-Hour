@@ -38,43 +38,45 @@ See how your gp/hr is looking across various trips, and save a group of trips to
 ## Tracking Features
 
 ### Weapons and Armor Tracking
-- Tracks charges used across the most popular weapons and automatically subtracts resources when you use your weapon.
-- List of supported weapons/armor:
-    - Warped Sceptre
-    - Trident of the seas
-    - Trident of the swamp
-    - Abyssal tentacle
-    - Crystal halberd
-    - Crystal bow
-    - Crystal helm, crystal body, and crystal legs
-    - Tome of fire
-    - Tome of water
-    - Scythe of vitur
-    - Sanguinesti staff
-    - Arclight
-    - Craw’s Bow / Webweaver Bow
-    - Viggora’s Chainmace / Ursine Chainmace
-    - Thammaron’s Sceptre / Accursed Sceptre
-    - Bow of faerdhinen
-    - Serpentine helm
-    - Tumeken's shadow
-    - Toxic blowpipe
-- List of unsupported weapons/armor:
-    - Barrows armor 
-    - Iban’s staff (ambiguity on charge cost)
-    - Blade of saeldor (needs testing)
+
+Automatically tracks charges used by weapons and substracts charge components.
+
+List of supported weapons/armor:
+- Warped Sceptre
+- Trident of the seas
+- Trident of the swamp
+- Abyssal tentacle
+- Crystal halberd
+- Crystal bow
+- Crystal helm, crystal body, and crystal legs
+- Tome of fire
+- Tome of water
+- Scythe of vitur
+- Sanguinesti staff
+- Arclight
+- Craw’s Bow / Webweaver Bow
+- Viggora’s Chainmace / Ursine Chainmace
+- Thammaron’s Sceptre / Accursed Sceptre
+- Bow of faerdhinen
+- Serpentine helm
+- Tumeken's shadow
+- Toxic blowpipe
+List of unsupported weapons/armor:
+- Barrows armor 
+- Iban’s staff (ambiguity on charge cost)
+- Blade of saeldor (needs testing)
 
 [Screenshot of active session panel with trident & blowpipe charges missing]
 
 ### Utility Charge Tracking
 
-Tracks components from common utility items, and tracks fractional components of items with charges.
+Automatically tracks components from common utility items.
 
-- List of support items
-    - Kharedst memoirs
-    - Ash sanctifier
-    - Blood essence
-    - Bottomless compost bucket
+Supported items:
+- Kharedst memoirs
+- Ash sanctifier
+- Blood essence
+- Bottomless compost bucket
 
 <img width="447" alt="blood" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/5b0babf3-3c5a-49f3-bd94-8a82f8ab21b3">
 
@@ -83,16 +85,16 @@ Tracks components from common utility items, and tracks fractional components of
 
 Automatically tracks items stored inside containers.
 
-- List of support items:
-    - Looting bag
-    - Fish barrel
-    - Gem bag
-    - Herb sack
-    - Log basket
-    - Seed box
-- Unsupported items:
-    - Forestry kit (Widget check)
-    - Plank sack (Lack of game messages)
+Supported items:
+- Looting bag
+- Fish barrel
+- Gem bag
+- Herb sack
+- Log basket
+- Seed box
+Unsupported items:
+- Forestry kit (Widget check)
+- Plank sack (Lack of game messages)
 
 [Screenshot of overlay + inventory with fish barrel in inventory but no other fish at karambwans]
 
