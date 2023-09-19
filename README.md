@@ -1,6 +1,6 @@
 # GP Per Hour
 
-## Track your gp/hr across various trips and save your sessions for later viewing.
+_Track your gp/hr across various trips and save your sessions for later viewing._
 
 GP Per Hour is a comprehensive money making tracker, that will accurately calculate your gp/hr by combining your profits and losses over time.
 
