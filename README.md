@@ -66,7 +66,8 @@ List of unsupported weapons/armor:
 - Iban’s staff (ambiguity on charge cost)
 - Blade of saeldor (needs testing)
 
-[Screenshot of active session panel with trident & blowpipe charges missing]
+<img width="308" alt="trident" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/e20be675-439d-4f5a-bd26-eedf05b4d794">
+
 
 ### Utility Charge Tracking
 
