@@ -26,7 +26,7 @@ See how your gp/hr is looking across various trips, and save a group of trips to
 
 [Screenshot of session history]
 
-Gold drops
+### Gold drops
 - Configure the minimum amount needed to display a gold drop
 - Configure the color of profit/loss text
 
