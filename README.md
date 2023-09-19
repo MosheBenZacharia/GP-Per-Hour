@@ -96,7 +96,7 @@ Unsupported items:
 - Forestry kit (Widget check)
 - Plank sack (Lack of game messages)
 
-<img width="730" alt="fishbarrel" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/213778c4-3e8c-4364-92b4-0ad18bc7a751">
+<img width="430" alt="fishbarrel" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/213778c4-3e8c-4364-92b4-0ad18bc7a751">
 
 
 ### Untradeable Item Support
