@@ -49,8 +49,7 @@ Supported items:
 - Crystal halberd
 - Crystal bow
 - Crystal helm, crystal body, and crystal legs
-- Tome of fire
-- Tome of water
+- Tome of fire and tome of water
 - Scythe of vitur
 - Sanguinesti staff
 - Arclight
