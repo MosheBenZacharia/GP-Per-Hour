@@ -713,23 +713,12 @@ public class GPPerHourPlugin extends Plugin
 
 		long totalGp = 0;
 		refreshQtyMap(inventoryQtyMap, inventoryItemContainer);
-
+		
 		for (Integer itemId: inventoryQtyMap.keySet())
 		{
-			long totalPrice;
 			float gePrice = getPrice(itemId);
 			float itemQty = inventoryQtyMap.get(itemId);
-
-			if (itemId == COINS)
-			{
-				totalPrice = (long) itemQty;
-			}
-			else
-			{
-				totalPrice = (long) (itemQty * gePrice);
-			}
-
-			totalGp += totalPrice;
+			totalGp += (itemQty * gePrice);;
 			updateRunData(isNewRun, itemId, itemQty, gePrice);
 		}
 
@@ -776,13 +765,7 @@ public class GPPerHourPlugin extends Plugin
 		{
 			float qty = equipmentQtyMap.get(itemId);
 			float gePrice = getPrice(itemId);
-			if (itemId == COINS)
-			{
-				gePrice = 1;
-			}
-			long totalPrice = (long) (qty * gePrice);
-
-			eTotal += totalPrice;
+			eTotal += (long) (qty * gePrice);
 			updateRunData(isNewRun, itemId, qty, gePrice);
 		}
 
@@ -1049,6 +1032,8 @@ public class GPPerHourPlugin extends Plugin
 
 	float getPrice(int itemId)
 	{
+		if (itemId == COINS)
+			return 1f;
 		if (itemPrices.containsKey(itemId))
 		{
 			return itemPrices.get(itemId);
