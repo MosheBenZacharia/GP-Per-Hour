@@ -183,7 +183,8 @@ public class GoldDropManager {
 			xpDropToGoldDrop(dropTextWidget, dropSpriteWidget, goldDropValue);
 		}
 		//don't need to do this if xp drop plugin is active since it will handle this and it doesn't overwrite prayer colors this way
-		else if(!((Boolean) configManager.getConfiguration("runelite", "xpdropplugin", Boolean.class)))
+		else if (config.goldDrops() && 
+			!((Boolean) configManager.getConfiguration("runelite", "xpdropplugin", Boolean.class)))
 		{
 			// reset text color for all regular xpdrops
 			resetXpDropTextColor(dropTextWidget);
