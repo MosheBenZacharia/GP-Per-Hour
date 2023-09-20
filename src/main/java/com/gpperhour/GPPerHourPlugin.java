@@ -765,7 +765,7 @@ public class GPPerHourPlugin extends Plugin
 		{
 			float qty = equipmentQtyMap.get(itemId);
 			float gePrice = getPrice(itemId);
-			eTotal += (long) (qty * gePrice);
+			eTotal += (qty * gePrice);
 			updateRunData(isNewRun, itemId, qty, gePrice);
 		}
 
