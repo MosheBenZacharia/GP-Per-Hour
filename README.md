@@ -13,7 +13,7 @@ What makes this more accurate than any other profit tracker?
 
 ### Trip Overlay
 
-See your gp/hr at glance, and hover your mouse over the overlay to see more details about the current trip.
+See your gp/hr at glance, and hover your mouse over the overlay to see more details about the current trip. A trip is automatically started/ended whenever you visit a bank.
 
 ![totalandledger](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/2292f000-cbd7-4514-bd42-e7ab3ee70f07)
 
