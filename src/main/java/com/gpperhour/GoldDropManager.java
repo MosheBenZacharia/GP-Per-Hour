@@ -249,9 +249,6 @@ public class GoldDropManager {
 		};
 
 		coin_image_raw.onLoaded(r);
-		//run now in case it loaded instantly.
-		//TODO: remove this if/when my PR ever merges
-		r.run();
 	}
 
 	public void requestGoldDrop(long amount)

@@ -414,8 +414,6 @@ public class SessionHistoryPanel extends JPanel
 				consumer.accept(stats.coinsImage);
 			};
 			asyncImage.onLoaded(resizeImage);
-			//TODO: remove this if/when my onLoaded PR merges
-			resizeImage.run();
 		} else
 		{
 			consumer.accept(stats.coinsImage);
