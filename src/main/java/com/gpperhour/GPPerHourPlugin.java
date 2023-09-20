@@ -623,7 +623,6 @@ public class GPPerHourPlugin extends Plugin
 		long inventoryTotal = getInventoryTotal(false);
 		long equipmentTotal = getEquipmentTotal(false);
 
-
 		long totalGp = inventoryTotal;
 		if (getState() == RunState.RUN && getMode() == TrackingMode.PROFIT_LOSS)
 		{
@@ -711,18 +710,18 @@ public class GPPerHourPlugin extends Plugin
 			return 0l;
 		}
 
-		long totalGp = 0;
+		double totalGp = 0;
 		refreshQtyMap(inventoryQtyMap, inventoryItemContainer);
 		
 		for (Integer itemId: inventoryQtyMap.keySet())
 		{
 			float gePrice = getPrice(itemId);
 			float itemQty = inventoryQtyMap.get(itemId);
-			totalGp += (itemQty * gePrice);;
+			totalGp += (itemQty * gePrice);
 			updateRunData(isNewRun, itemId, itemQty, gePrice);
 		}
 
-		return totalGp;
+		return (long) totalGp;
 	}
 	
     public void openConfiguration() {
@@ -760,7 +759,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		refreshQtyMap(equipmentQtyMap, equipmentItemContainer);
 
-		long eTotal = 0;
+		double eTotal = 0;
 		for (int itemId: equipmentQtyMap.keySet())
 		{
 			float qty = equipmentQtyMap.get(itemId);
@@ -769,7 +768,7 @@ public class GPPerHourPlugin extends Plugin
 			updateRunData(isNewRun, itemId, qty, gePrice);
 		}
 
-		return eTotal;
+		return (long) eTotal;
 	}
 
 	//avoid GC
@@ -828,7 +827,7 @@ public class GPPerHourPlugin extends Plugin
 			Float qty = inventoryQtyMap.get(itemId);
 
 			Float price = itemPrices.get(itemId);
-			if (itemId == COINS || price == null)
+			if (price == null)
 			{
 				price = 1f;
 			}
@@ -1127,12 +1126,12 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (runData == null)
 			return 0;
-		long value = 0;
+		double value = 0;
 		for (java.util.Map.Entry<Integer, Float> entry : runData.initialItemQtys.entrySet())
 		{
 			value += getPrice(entry.getKey()) * entry.getValue();
 		}
-		return value;
+		return (long) value;
 	}
 
 	void setState(RunState state)
