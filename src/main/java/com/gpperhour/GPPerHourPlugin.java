@@ -252,7 +252,11 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged gameStateChanged)
 	{
-		
+		String profileKey = configManager.getRSProfileKey();
+		if (profileKey != null)
+		{
+			writeSavedData(profileKey);
+		}
 	}
 
 	private void checkLoadingState(boolean isStartingUp)
@@ -1053,6 +1057,8 @@ public class GPPerHourPlugin extends Plugin
 
 	void writeSavedData(String profileKey)
 	{
+		if (runData == null || runData.isFirstRun)
+			return;
 		executor.execute(() ->
 		{
 			String json = gson.toJson(runData);
