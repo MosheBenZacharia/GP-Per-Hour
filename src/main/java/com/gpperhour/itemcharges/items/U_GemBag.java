@@ -54,6 +54,8 @@ public class U_GemBag extends ChargedItem
     private final int CAPACITY = 60;
     private static final String checkRegex = "Sapphires: (\\d+) \\/ Emeralds: (\\d+) \\/ Rubies: (\\d+) Diamonds: (\\d+) \\/ Dragonstones: (\\d+)";
     private static final Pattern checkPattern = Pattern.compile(checkRegex);
+    private static final String acquireRegex = "^(You just (found|mined) (a|an) (Sapphire|Ruby|Emerald|Diamond))";
+    private static final Pattern acquirePattern = Pattern.compile(acquireRegex);
 
     public U_GemBag(
             final Client client,
@@ -85,34 +87,69 @@ public class U_GemBag extends ChargedItem
             }
         });
         this.triggers_chat_messages = new TriggerChatMessage[]{
-                new TriggerChatMessage("The gem bag is now empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
-                new TriggerChatMessage("The gem bag is empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
-                new TriggerChatMessage(checkRegex).extraConsumer(message -> {
-
-                    super.emptyOrClear();
-                    final Matcher matcher = checkPattern.matcher(message);
-                    while (matcher.find())
+            new TriggerChatMessage("The gem bag is now empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
+            //Gem bags that are 'mined' (at gem rocks) vs 'found' (while mining other things) don't print the "you put it into your gem bag" message.
+            new TriggerChatMessage(acquireRegex).extraConsumer((message) -> { 
+                if (!hasChargeData())
+                    return;
+                if (this.item_id != ItemID.OPEN_GEM_BAG)
+                    return;
+                final Matcher matcher = acquirePattern.matcher(message);
+                while (matcher.find())
+                {
+                    try
                     {
-                        try
-                        {
-                            int sapphires = Integer.parseInt(matcher.group(1));
-                            int emeralds = Integer.parseInt(matcher.group(2));
-                            int rubies = Integer.parseInt(matcher.group(3));
-                            int diamonds = Integer.parseInt(matcher.group(4));
-                            int dragonstones = Integer.parseInt(matcher.group(5));
+                        String gemName = matcher.group(4);
+                        int gemID;
+                        if (gemName.equals("Sapphire"))
+                            gemID = ItemID.UNCUT_SAPPHIRE;
+                        else if (gemName.equals("Emerald"))
+                            gemID = ItemID.UNCUT_EMERALD;
+                        else if (gemName.equals("Ruby"))
+                            gemID = ItemID.UNCUT_RUBY;
+                        else if (gemName.equals("Diamond"))
+                            gemID = ItemID.UNCUT_DIAMOND;
+                        else
+                            throw new Exception("Gem name not matched.");
 
-                            super.addItems(ItemID.UNCUT_SAPPHIRE, (float) sapphires);
-                            super.addItems(ItemID.UNCUT_EMERALD, (float) emeralds);
-                            super.addItems(ItemID.UNCUT_RUBY, (float) rubies);
-                            super.addItems(ItemID.UNCUT_DIAMOND, (float) diamonds);
-                            super.addItems(ItemID.UNCUT_DRAGONSTONE, (float) dragonstones);
-                        }
-                        catch (NumberFormatException e)
+                        if ((!super.itemQuantities.containsKey(gemID) || super.itemQuantities.get(gemID) < CAPACITY))
                         {
-                            log.error("couldn't parse gem bag check", e);
+                            super.addItems(gemID, 1f);
                         }
                     }
-                }),
+                    catch (Exception e)
+                    {
+                        log.error("couldn't find group match in gem bag acquire: " + message, e);
+                    }
+                }
+            }),
+            new TriggerChatMessage("The gem bag is empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
+            new TriggerChatMessage(checkRegex).extraConsumer(message -> {
+
+                super.emptyOrClear();
+                final Matcher matcher = checkPattern.matcher(message);
+                while (matcher.find())
+                {
+                    try
+                    {
+                        int sapphires = Integer.parseInt(matcher.group(1));
+                        int emeralds = Integer.parseInt(matcher.group(2));
+                        int rubies = Integer.parseInt(matcher.group(3));
+                        int diamonds = Integer.parseInt(matcher.group(4));
+                        int dragonstones = Integer.parseInt(matcher.group(5));
+
+                        super.addItems(ItemID.UNCUT_SAPPHIRE, (float) sapphires);
+                        super.addItems(ItemID.UNCUT_EMERALD, (float) emeralds);
+                        super.addItems(ItemID.UNCUT_RUBY, (float) rubies);
+                        super.addItems(ItemID.UNCUT_DIAMOND, (float) diamonds);
+                        super.addItems(ItemID.UNCUT_DRAGONSTONE, (float) dragonstones);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        log.error("couldn't parse gem bag check: " + message, e);
+                    }
+                }
+            }),
         };
         this.triggers_item_containers = new TriggerItemContainer[]{
             new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open gem bag").menuOption("Fill").addDifference(),
