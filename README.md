@@ -15,14 +15,16 @@ What makes this more accurate than any other profit tracker?
 
 See your gp/hr at glance, and hover your mouse over the overlay to see more details about the current trip. A trip is automatically started/ended whenever you visit a bank.
 
-![totalandledger](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/2292f000-cbd7-4514-bd42-e7ab3ee70f07)
+![totalandledger_2](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/9a26e8b2-7b39-4499-aac0-d405e1bb251e)
+
 
 
 ### Session Panel
 
 View your gp/hr averaged across various trips, and save a group of trips to the session history.
 
-![sessionpanelguide](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/4d09b541-48d1-497f-8984-0e927e69af64)
+
+![sessionpanelguide_2](https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/f078bfe0-3c05-4e12-994a-b4a87624f34b)
 
 
 ### Gold drops
