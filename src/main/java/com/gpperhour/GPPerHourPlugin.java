@@ -61,6 +61,7 @@ import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -198,6 +199,7 @@ public class GPPerHourPlugin extends Plugin
 	private ItemContainer equipmentItemContainer;
 	private boolean postNewRun = false;
 	private long newRunTick = 0;
+	private boolean expectingPutAnimation = false;
 
 	// from ClueScrollPlugin
 	private static final int[] RUNEPOUCH_AMOUNT_VARBITS = {
@@ -541,7 +543,31 @@ public class GPPerHourPlugin extends Plugin
 			|| event.getId() == ObjectID.DEPOSIT_POOL
 			|| event.getId() == ObjectID.DEPOSIT_POT)
 		{
-			updatePluginState(true);
+			//user clicked on one of these but they might get to it at some later tick.
+			expectingPutAnimation = true;
+		}
+	}
+	
+	@Subscribe
+	public void onAnimationChanged(final AnimationChanged event) {
+		
+		if (!expectingPutAnimation)
+		{
+			return;
+		}
+		if (event.getActor() == client.getLocalPlayer()) {
+			//put item
+			if (event.getActor().getAnimation() == 834)
+			{
+				updatePluginState(true);
+				expectingPutAnimation = false;
+			}
+			//deposit runes
+			if (event.getActor().getAnimation() == 9402)
+			{
+				updatePluginState(true);
+				expectingPutAnimation = false;
+			}
 		}
 	}
 
