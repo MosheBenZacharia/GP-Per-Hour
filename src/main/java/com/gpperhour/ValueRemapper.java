@@ -261,6 +261,10 @@ public class ValueRemapper {
             plugin.getPrice(RANARR_SEED)*1.5f*.2f+
             1f*20000f*.2f;//coins
         }
+        else if(itemId == GRANITE_CANNONBALL)
+        {
+            return plugin.getPrice(CANNONBALL);
+        }
 
         return null;
     }
