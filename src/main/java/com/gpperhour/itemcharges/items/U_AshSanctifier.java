@@ -67,7 +67,7 @@ public class U_AshSanctifier extends ChargedItem {
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 new TriggerChatMessage("Your ash sanctifier has (?<charges>.+) charges? left."),
-                new TriggerChatMessage("The ash sanctifier has (?<charges>.+) charges?. It is active and ready to scatter ashes.").onItemClick(),
+                new TriggerChatMessage("The ash sanctifier has (?<charges>.+) charges?.").onItemClick(),
         };
         this.triggers_xp_drops = new TriggerXPDrop[]{
                 new TriggerXPDrop(Skill.PRAYER, 1),
