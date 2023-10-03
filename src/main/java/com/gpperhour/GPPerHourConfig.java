@@ -172,7 +172,19 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 1,
+			position = 3,
+			keyName = "showSessionStatsInOverlay",
+			name = "Show Session Stats",
+			description = "Show session stats in overlay, instead of active trip stats.",
+			section =  tripOverlaySection
+	)
+	default boolean showSessionStatsInOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 5,
 			keyName = "enableProfitLoss",
 			name = "Show Profit",
 			description = "Show profit in the trip overlay, if disabled shows inventory total value.",
@@ -184,7 +196,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 2,
+			position = 10,
 			keyName = "showLapTime",
 			name = "Show Run Time",
 			description = "Configures whether or not the run time is visible.",
@@ -196,7 +208,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 3,
+			position = 15,
 			keyName = "showGpPerHourOnOverlay",
 			name = "Show GP/hr On Overlay",
 			description = "Configures whether or not gp/hr is shown instead of net total when in profit / loss mode.",
@@ -208,7 +220,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 4,
+			position = 20,
 			keyName = "showCoinStack",
 			name = "Show Coin Stack",
 			description = "Configures whether or not the coin stack image is visible.",
@@ -220,7 +232,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 5,
+			position = 25,
 			keyName = "showWhileBanking",
 			name = "Show While Banking",
 			description = "Configures whether or not the total is visible while banking.",
@@ -232,7 +244,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 6,
+			position = 30,
 			keyName = "showOnEmpty",
 			name = "Show On Empty",
 			description = "Configures whether or not to show the total when inventory is empty.",
@@ -244,7 +256,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 7,
+			position = 35,
 			keyName = "showTooltip",
 			name = "Show Ledger on Hover",
 			description = "Show the ledger when hovering over the trip overlay.",
@@ -256,7 +268,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 11,
+			position = 40,
 			keyName = "roundedCorners",
 			name = "Rounded Corners",
 			description = "Toggle rounded corners.",
@@ -268,7 +280,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 12,
+			position = 41,
 			keyName = "cornerRadius",
 			name = "Corner Radius",
 			description = "Configures the corner radius.",
@@ -280,7 +292,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 13,
+			position = 45,
 			keyName = "alignment",
 			name = "Alignment",
 			description = "Configures alignment.",
@@ -292,7 +304,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 14,
+			position = 50,
 			keyName = "inventoryOffsetX",
 			name = "Inventory Offset X",
 			description = "Configures x-axis offset.",
@@ -304,7 +316,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 15,
+			position = 51,
 			keyName = "inventoryOffsetXNegative",
 			name = "Inventory Offset X Negative",
 			description = "Configures whether or not the y-axis offset is a negative number.",
@@ -316,7 +328,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 16,
+			position = 52,
 			keyName = "inventoryOffsetY",
 			name = "Inventory Offset Y",
 			description = "Configures y-axis offset.",
@@ -328,7 +340,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 17,
+			position = 53,
 			keyName = "inventoryOffsetYNegative",
 			name = "Inventory Offset Y Negative",
 			description = "Configures whether or not the y-axis offset is a negative number.",
@@ -341,7 +353,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 50,
+			position = 60,
 			keyName = "totalBackgroundColor",
 			name = "Background Color",
 			description = "Configures the background color.",
@@ -353,7 +365,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 55,
+			position = 61,
 			keyName = "totalTextColor",
 			name = "Text Color",
 			description = "Configures the text color.",
@@ -366,7 +378,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 60,
+			position = 62,
 			keyName = "totalBorderColor",
 			name = "Border Color",
 			description = "Configures the border color.",
@@ -379,7 +391,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 65,
+			position = 63,
 			keyName = "profitBackgroundColor",
 			name = "Profit Color",
 			description = "Configures profit background color.",
@@ -391,7 +403,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 70,
+			position = 64,
 			keyName = "profitTextColor",
 			name = "Profit Text Color",
 			description = "Configures profit text color.",
@@ -404,7 +416,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 75,
+			position = 65,
 			keyName = "profitBorderColor",
 			name = "Profit Border Color",
 			description = "Configures profit border color.",
@@ -417,7 +429,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 80,
+			position = 66,
 			keyName = "lossBackgroundColor",
 			name = "Loss Color",
 			description = "Configures loss background color.",
@@ -429,7 +441,7 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
-			position = 85,
+			position = 67,
 			keyName = "lossTextColor",
 			name = "Loss Text Color",
 			description = "Configures loss text color.",
@@ -442,7 +454,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 90,
+			position = 68,
 			keyName = "lossBorderColor",
 			name = "Loss Border Color",
 			description = "Configures loss border color.",
