@@ -551,7 +551,23 @@ public enum ChargedWeapon
 
 		How to track? either xp drop + hitsplats if it's possible to always see all of your own hitsplats, or xp drop + animation.
 	 */
-//	BLOOD_FURY(),
+	BLOOD_FURY(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.AMULET_OF_BLOOD_FURY)
+		.name("Amulet of Blood Fury")
+		.rechargeAmount(10_000)
+		.configKeyName("amulet_of_blood_fury")
+		.checkChargesRegexes(
+			ChargesMessage.staticChargeMessage("You have successfully created an Amulet of blood fury.", 10_000),
+			ChargesMessage.matcherGroupChargeMessage("Your Amulet of blood fury will work for ([\\d,]+) more hits.", 1)
+		)
+		.updateChargeComponents((UpdateChargeComponentsParams params) ->
+		{
+			Integer charges = params.currentCharges;
+			Map<Integer, Float> chargeComponents = params.chargeComponents;
+			float shards = charges / 10_000f;
+			chargeComponents.put(ItemID.BLOOD_SHARD, shards);
+		})
+	),
 	/* sang staff
 		check (full, <full & >1, 1, 0/empty):
 			full: GAMEMESSAGE "Your Sanguinesti staff is already fully charged."

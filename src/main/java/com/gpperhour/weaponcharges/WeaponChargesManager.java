@@ -28,8 +28,10 @@ import com.gpperhour.GPPerHourConfig;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -42,6 +44,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
+import net.runelite.api.Hitsplat;
 import net.runelite.api.HitsplatID;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
@@ -50,6 +53,7 @@ import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
 import net.runelite.api.VarPlayer;
+import net.runelite.api.annotations.HitsplatType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -165,10 +169,14 @@ public class WeaponChargesManager
 
 	@Subscribe
 	public void onHitsplatApplied(HitsplatApplied e) {
-		int hitType = e.getHitsplat().getHitsplatType();
+
+		Actor target = e.getActor();
+		Hitsplat hitsplat = e.getHitsplat();
+
+		int hitType = hitsplat.getHitsplatType();
 		ChargedWeapon helm = getEquippedChargedWeapon(EquipmentInventorySlot.HEAD);
 		if (helm == ChargedWeapon.SERPENTINE_HELM) {
-			if (e.getHitsplat().isMine()) { // Caused by or dealt to the local player.
+			if (hitsplat.isMine()) { // Caused by or dealt to the local player.
 				if (client.getTickCount() - lastDegradedHitsplatTick > 90) {
 					addCharges(helm, -10, false);
 					lastDegradedHitsplatTick = client.getTickCount();
@@ -180,7 +188,7 @@ public class WeaponChargesManager
 		ChargedWeapon body = getEquippedChargedWeapon(EquipmentInventorySlot.BODY);
 		ChargedWeapon legs = getEquippedChargedWeapon(EquipmentInventorySlot.LEGS);
 		// >0 will filter out all unsuccessful hits and a small amount of successful hits
-		if (e.getActor() == client.getLocalPlayer() && hitType == HitsplatID.DAMAGE_ME && e.getHitsplat().getAmount() > 0) {
+		if (target == client.getLocalPlayer() && hitType == HitsplatID.DAMAGE_ME && e.getHitsplat().getAmount() > 0) {
 			if (helm == ChargedWeapon.CRYSTAL_HELM) {
 				addCharges(helm, -1, false);
 			}
@@ -191,6 +199,29 @@ public class WeaponChargesManager
 				addCharges(legs, -1, false);
 			}
 		}
+		checkMeleeHitsplat(target, hitsplat);
+	}
+
+	//taken from thrall damage counter plugin AnimationData class
+	private final Set<Integer> meleeAttackAnimations = Set.of(8056, 245,376,381,386,390,8288,8290,8289,9471,6118,393,0,395,400,401,406,407,414,419,422,423,428,429,440,1058,1060,1062,1378,1658,1665,1667,2066,2067,2078,2661,3297,3298,3852,4503,5865,7004,7045,7054,7055,7514,7515,7516,7638,7639,7640,7641,7642,7643,7644,7645,8145,9171,1203, 5439, 8640);
+	private Hitsplat lastMeleeHitsplatApplied = null;
+
+	private void checkMeleeHitsplat(Actor target, Hitsplat hitsplat)
+	{
+		//We inflicted damage to NPC (could be recoil, venge, thrall, or from a weapon)
+		if (!hitsplat.isMine() || target == client.getLocalPlayer())
+			return;
+		
+		//melee hitsplat always comes 1 tick after animation
+		if (client.getTickCount() != lastLocalPlayerAnimationChangedGameTick + 1)
+			return;
+
+		if (!meleeAttackAnimations.contains(lastLocalPlayerAnimationChanged))
+			return;
+
+		// The weapon hitsplat is always last, after other hitsplats which occur on the same tick such as from
+		// venge or thralls.
+		lastMeleeHitsplatApplied = hitsplat;
 	}
 
 	// There are two lists to keep a list of checked weapons not just in the last tick, but in the last 2. I do this because
@@ -686,12 +717,31 @@ public class WeaponChargesManager
 	@Subscribe
 	public void onGameTick(GameTick tick)
 	{
+		//doesn't properly account for successful hits that roll 0 damage
+		if (lastMeleeHitsplatApplied != null && lastMeleeHitsplatApplied.getAmount() > 0)
+		{
+			ChargedWeapon amulet = getEquippedChargedWeapon(EquipmentInventorySlot.AMULET);
+			if (amulet == ChargedWeapon.BLOOD_FURY)
+			{
+				// assume scythe does three hits and all are successful if one is
+				if (lastLocalPlayerAnimationChanged == 8056)
+				{
+					addCharges(amulet, -3, false);
+				}
+				else
+				{
+					addCharges(amulet, -1, false);
+				}
+			}
+		}
+		lastMeleeHitsplatApplied = null;
 		// This delay is necessary because equipped items are updated after onAnimationChanged, so with items that share
 		// a game message it will not be possible to tell which item the message is for.
 		// The order must be: check messages, animation, charge update messages.
 		// Runelite's order is: onChatMessage, onAnimationChanged, onGameTick.
 		// charge update messages must also be delayed due to equipment slot info not being current in onChatMessage.
-		if (lastLocalPlayerAnimationChangedGameTick == client.getTickCount()) checkAnimation();
+		if (lastLocalPlayerAnimationChangedGameTick == client.getTickCount()) 
+			checkAnimation();
 
 		if (lastLocalPlayerAnimationChanged == BLOWPIPE_ATTACK_ANIMATION)
 		{
