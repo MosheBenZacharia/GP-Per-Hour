@@ -179,7 +179,8 @@ public class WeaponChargesManager
 		}
 		ChargedWeapon body = getEquippedChargedWeapon(EquipmentInventorySlot.BODY);
 		ChargedWeapon legs = getEquippedChargedWeapon(EquipmentInventorySlot.LEGS);
-		if (e.getActor() == client.getLocalPlayer() && hitType == HitsplatID.DAMAGE_ME) {
+		// >0 will filter out all unsuccessful hits and a small amount of successful hits
+		if (e.getActor() == client.getLocalPlayer() && hitType == HitsplatID.DAMAGE_ME && e.getHitsplat().getAmount() > 0) {
 			if (helm == ChargedWeapon.CRYSTAL_HELM) {
 				addCharges(helm, -1, false);
 			}
