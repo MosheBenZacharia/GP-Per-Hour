@@ -554,7 +554,6 @@ public enum ChargedWeapon
 	BLOOD_FURY(new ChargedWeaponBuilder()
 		.chargedItemIds(ItemID.AMULET_OF_BLOOD_FURY)
 		.name("Amulet of Blood Fury")
-		.rechargeAmount(10_000)
 		.configKeyName("amulet_of_blood_fury")
 		.checkChargesRegexes(
 			ChargesMessage.staticChargeMessage("You have successfully created an Amulet of blood fury.", 10_000),
