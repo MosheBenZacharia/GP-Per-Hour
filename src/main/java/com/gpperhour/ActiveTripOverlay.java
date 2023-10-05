@@ -90,9 +90,9 @@ class ActiveTripOverlay extends Overlay
 	@Data
 	private class InventoryWidgetData
 	{
-		private final net.runelite.api.Point canvasLocation;
-		private final int width;
-		private final int height;
+		public net.runelite.api.Point canvasLocation;
+		public int width;
+		public int height;
 	}
 
 	@RequiredArgsConstructor
@@ -134,7 +134,14 @@ class ActiveTripOverlay extends Overlay
 			return null;
 		
 		if (!isInvHidden)
-			lastWidgetData = new InventoryWidgetData(inventoryWidget.getCanvasLocation(), inventoryWidget.getWidth(), inventoryWidget.getHeight());
+		{
+			if	(lastWidgetData == null)
+				lastWidgetData = new InventoryWidgetData();
+			
+			lastWidgetData.canvasLocation = inventoryWidget.getCanvasLocation();
+			lastWidgetData.width = inventoryWidget.getWidth();
+			lastWidgetData.height = inventoryWidget.getHeight();
+		}
 
 		if (config.showSessionStatsInOverlay())
 		{
