@@ -939,9 +939,9 @@ public class GPPerHourPlugin extends Plugin
 
 	static List<LedgerItem> getProfitLossLedger(Map<Integer, Float> initialQtys, Map<Integer, Float> qtys)
 	{
-		Map<Integer, Float> qtyDifferences = new HashMap<>();
+		Map<Integer, Float> qtyDifferences = new HashMap<>(initialQtys.size());
 
-		HashSet<Integer> combinedQtyKeys = new HashSet<>();
+		HashSet<Integer> combinedQtyKeys = new HashSet<>(initialQtys.size());
 		combinedQtyKeys.addAll(qtys.keySet());
 		combinedQtyKeys.addAll(initialQtys.keySet());
 
@@ -963,7 +963,7 @@ public class GPPerHourPlugin extends Plugin
 			qtyDifferences.put(itemId, qty - initialQty);
 		}
 
-		Map<String, LedgerItem> ledgerItems  = new HashMap<>();
+		Map<String, LedgerItem> ledgerItems  = new HashMap<>(qtyDifferences.size());
 
 		for (Integer itemId: qtyDifferences.keySet())
 		{
