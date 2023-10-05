@@ -59,6 +59,7 @@ Supported items:
 - Serpentine helm
 - Tumeken's shadow
 - Toxic blowpipe
+- Amulet of Blood Fury
 
 Unsupported items:
 - Barrows armor 
