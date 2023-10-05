@@ -172,6 +172,18 @@ public interface GPPerHourConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 1,
+			keyName = "alwaysShowTripOverlay",
+			name = "Always Show Overlay",
+			description = "Show overlay even when the inventory is hidden. Open inventory to refresh the widget position after resizing Runelite.",
+			section =  tripOverlaySection
+	)
+	default boolean alwaysShowTripOverlay()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 			position = 3,
 			keyName = "showSessionStatsInOverlay",
 			name = "Show Session Stats",

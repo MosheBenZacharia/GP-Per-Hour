@@ -42,6 +42,7 @@ import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -84,6 +85,15 @@ class ActiveTripOverlay extends Overlay
     private BufferedImage coinsImage250;
     private BufferedImage coinsImage1000;
     private BufferedImage coinsImage10000;
+	private InventoryWidgetData lastWidgetData;
+
+	@Data
+	private class InventoryWidgetData
+	{
+		private final net.runelite.api.Point canvasLocation;
+		private final int width;
+		private final int height;
+	}
 
 	@RequiredArgsConstructor
 	class LedgerEntry
@@ -120,18 +130,19 @@ class ActiveTripOverlay extends Overlay
 
 		Widget inventoryWidget = plugin.getInventoryWidget();
 		boolean isInvHidden = inventoryWidget == null || inventoryWidget.isHidden();
-		if (isInvHidden)
-		{
+		if (isInvHidden && (!config.alwaysShowTripOverlay() || lastWidgetData == null))
 			return null;
-		}
+		
+		if (!isInvHidden)
+			lastWidgetData = new InventoryWidgetData(inventoryWidget.getCanvasLocation(), inventoryWidget.getWidth(), inventoryWidget.getHeight());
 
 		if (config.showSessionStatsInOverlay())
 		{
-			renderActiveSessionTotal(graphics, inventoryWidget);
+			renderActiveSessionTotal(graphics);
 		}
 		else
 		{
-			renderActiveTripTotal(graphics, inventoryWidget);
+			renderActiveTripTotal(graphics);
 		}
 
 		return null;
@@ -139,7 +150,7 @@ class ActiveTripOverlay extends Overlay
 
 	final int totalOverlayHeight = 20;
 
-	private void renderActiveSessionTotal(Graphics2D graphics, Widget inventoryWidget)
+	private void renderActiveSessionTotal(Graphics2D graphics)
 	{
 		SessionStats sessionStats = plugin.getSessionManager().getActiveSessionStats();
 		if (sessionStats == null)
@@ -147,7 +158,7 @@ class ActiveTripOverlay extends Overlay
 			String totalText = "0";
 			if (config.showGpPerHourOnOverlay())
 				totalText += "/hr";
-			renderTotal(config, graphics, plugin, inventoryWidget,
+			renderTotal(config, graphics, plugin,
 					0, totalText, null, totalOverlayHeight);
 			return;
 		}
@@ -168,11 +179,11 @@ class ActiveTripOverlay extends Overlay
 			runTimeText = " (" + formattedRunTime + ")";
 		}
 
-		renderTotal(config, graphics, plugin, inventoryWidget,
+		renderTotal(config, graphics, plugin,
 				total, totalText, runTimeText, totalOverlayHeight);
 	}
 
-	private void renderActiveTripTotal(Graphics2D graphics, Widget inventoryWidget)
+	private void renderActiveTripTotal(Graphics2D graphics)
 	{
 		long total = plugin.getProfitGp();
 		String totalText = UI.formatGp(total, config.showExactGp());
@@ -210,7 +221,7 @@ class ActiveTripOverlay extends Overlay
 			}
 		}
 
-		renderTotal(config, graphics, plugin, inventoryWidget,
+		renderTotal(config, graphics, plugin,
 				total, totalText, runTimeText, totalOverlayHeight);
 	}
 
@@ -273,7 +284,7 @@ class ActiveTripOverlay extends Overlay
 	}
 
 	private void renderTotal(GPPerHourConfig config, Graphics2D graphics, GPPerHourPlugin plugin,
-							 Widget inventoryWidget, long total, String totalText,
+							 long total, String totalText,
 							 String runTimeText, int height) {
 		
 		boolean showCoinStack = config.showCoinStack();
@@ -324,18 +335,18 @@ class ActiveTripOverlay extends Overlay
 
 		int width = totalWidth + fixedRunTimeWidth + imageWidthWithPadding + HORIZONTAL_PADDING * 2;
 
-		int x = (inventoryWidget.getCanvasLocation().getX() + inventoryWidget.getWidth() / 2) - (width / 2);
+		int x = (lastWidgetData.getCanvasLocation().getX() + lastWidgetData.getWidth() / 2) - (width / 2);
 		switch (config.horizontalAlignment())
 		{
 			case CENTER:
 				break;
 
 			case LEFT:
-				x = inventoryWidget.getCanvasLocation().getX();
+				x = lastWidgetData.getCanvasLocation().getX();
 				break;
 
 			case RIGHT:
-				x = inventoryWidget.getCanvasLocation().getX() + inventoryWidget.getWidth() - width;
+				x = lastWidgetData.getCanvasLocation().getX() + lastWidgetData.getWidth() - width;
 				break;
 		}
 
@@ -351,7 +362,7 @@ class ActiveTripOverlay extends Overlay
 		{
 			yOffset *= -1;
 		}
-		int y = inventoryWidget.getCanvasLocation().getY() - height - yOffset;
+		int y = lastWidgetData.getCanvasLocation().getY() - height - yOffset;
 
 		Color backgroundColor;
 		Color borderColor;
