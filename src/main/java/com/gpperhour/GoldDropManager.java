@@ -362,7 +362,7 @@ public class GoldDropManager extends Overlay {
 
 		Widget inventoryWidget = plugin.getInventoryWidget();
 		boolean isInvHidden = inventoryWidget == null || inventoryWidget.isHidden();
-		if (isInvHidden && (!config.alwaysShowTripOverlay() || lastWidgetData == null))
+		if (isInvHidden && lastWidgetData == null)
 			return null;
 		
 		if (!isInvHidden)
