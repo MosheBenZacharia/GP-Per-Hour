@@ -41,6 +41,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 
+import com.gpperhour.GoldDropManager.GoldDropDisplayMode;
 import com.gpperhour.itemcharges.ChargedItemManager;
 import com.gpperhour.weaponcharges.WeaponChargesManager;
 import com.google.gson.Gson;
@@ -123,7 +124,7 @@ public class GPPerHourPlugin extends Plugin
 	private ScheduledExecutorService executor;
 
 	@Inject
-	private ActiveTripOverlay overlay;
+	private ActiveTripOverlay tripOverlay;
 
 	@Inject
 	private WeaponChargesManager weaponChargesManager;
@@ -171,7 +172,9 @@ public class GPPerHourPlugin extends Plugin
 
 	@Getter
 	private TripData runData;
-	private GoldDropManager goldDropsObject;
+
+	@Inject
+	private GoldDropManager goldDropManager;
 
 	@Getter
 	private TrackingMode mode = TrackingMode.TOTAL;
@@ -213,9 +216,10 @@ public class GPPerHourPlugin extends Plugin
 	protected void startUp() throws Exception
 	{
 		if (config.showTripOverlay())
-			overlayManager.add(overlay);
+			overlayManager.add(tripOverlay);
+		if (config.goldDropsDisplayMode() == GoldDropDisplayMode.STATIC)
+			overlayManager.add(goldDropManager);
 
-		goldDropsObject = new GoldDropManager(client, itemManager, config, configManager);
 		eventBus.register(lootingBagManager);
 		eventBus.register(weaponChargesManager);
 		eventBus.register(chargedItemManager);
@@ -226,12 +230,20 @@ public class GPPerHourPlugin extends Plugin
 		updatePanels();
 		refreshIgnoredItems();
 		checkLoadingState(true);
+
+		//Migrate old settings
+		if (config.goldDrops())
+		{
+			config.setGoldDropsDisplayMode(GoldDropDisplayMode.VANILLA);
+			config.setGoldDrops(false);
+		}
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		overlayManager.remove(overlay);
+		overlayManager.remove(tripOverlay);
+		overlayManager.remove(goldDropManager);
 		eventBus.unregister(lootingBagManager);
 		eventBus.unregister(weaponChargesManager);
 		eventBus.unregister(chargedItemManager);
@@ -367,7 +379,7 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe(priority = -1)//run after xpdrop plugin to overwrite their colors
 	public void onScriptPreFired(ScriptPreFired scriptPreFired)
 	{
-		goldDropsObject.onScriptPreFired(scriptPreFired);
+		goldDropManager.onScriptPreFired(scriptPreFired);
 	}
 	
     @Subscribe
@@ -413,9 +425,9 @@ public class GPPerHourPlugin extends Plugin
 		{
 			runData.isPaused = false;
 		}
-		if (config.goldDrops() && Math.abs(tickProfit) >= config.goldDropThreshold())
+		if (config.goldDropsDisplayMode() != GoldDropDisplayMode.DISABLED && Math.abs(tickProfit) >= config.goldDropThreshold())
 		{
-			goldDropsObject.requestGoldDrop(tickProfit);
+			goldDropManager.requestGoldDrop(tickProfit);
 		}
 	}
 
@@ -433,9 +445,16 @@ public class GPPerHourPlugin extends Plugin
 			if (event.getKey().equals(GPPerHourConfig.showTripOverlayKeyName))
 			{
 				if (config.showTripOverlay())
-					overlayManager.add(overlay);
+					overlayManager.add(tripOverlay);
 				else
-					overlayManager.remove(overlay);
+					overlayManager.remove(tripOverlay);
+			}
+			else if (event.getKey().equals(GPPerHourConfig.goldDropDisplayModeKey))
+			{
+				if (config.goldDropsDisplayMode() == GoldDropDisplayMode.STATIC)
+					overlayManager.add(goldDropManager);
+				else
+					overlayManager.remove(goldDropManager);
 			}
 			else if (event.getKey().equals(GPPerHourConfig.enableSessionPanelKeyName))
 			{
@@ -757,7 +776,7 @@ public class GPPerHourPlugin extends Plugin
 	
     public void openConfiguration() {
 		// We don't have access to the ConfigPlugin so let's just emulate an overlay click
-		this.eventBus.post(new OverlayMenuClicked(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, null, null), this.overlay));
+		this.eventBus.post(new OverlayMenuClicked(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, null, null), this.tripOverlay));
     }
 
 	public void refreshPrices()

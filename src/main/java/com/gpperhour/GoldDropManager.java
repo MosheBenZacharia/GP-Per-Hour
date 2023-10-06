@@ -24,17 +24,27 @@
  */
 package com.gpperhour;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.components.TextComponent;
 import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.QuantityFormatter;
 
 import java.awt.*;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.awt.image.BufferedImage;
+
+import com.google.inject.Inject;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.api.ScriptID.XPDROP_DISABLED;
@@ -60,7 +70,7 @@ import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
 	coin quantity, which will give us correct coin icon and correct text,
 	and simply drawing that image ourselfs somehow. Instead of using xp drop mechanism.
 	*/
-public class GoldDropManager {
+public class GoldDropManager extends Overlay {
 	/*
 	Free sprite ids for the gold icons.
 	 */
@@ -81,6 +91,13 @@ public class GoldDropManager {
 	private final Client client;
 	private final GPPerHourConfig config;
 	private final ConfigManager configManager;
+	private final GPPerHourPlugin plugin;
+
+	private boolean hasLoadedCoinsImages;
+    private BufferedImage coinsImage100;
+    private BufferedImage coinsImage250;
+    private BufferedImage coinsImage1000;
+    private BufferedImage coinsImage10000;
 
 	/* var currentGoldDropValue will have
 	the gold value of the current ongoing gold drop. 2 purposes:
@@ -89,9 +106,22 @@ public class GoldDropManager {
 	*/
 	private long currentGoldDropValue;
 
-	GoldDropManager(Client client, ItemManager itemManager, GPPerHourConfig config, ConfigManager configManager)
+    @AllArgsConstructor
+    public enum GoldDropDisplayMode {
+        DISABLED                        ("Disabled"),
+        VANILLA              			("Vanilla"),
+        STATIC              			("Static");
+    
+        private final String configName;
+        @Override
+        public String toString() { return configName; }
+    }
+
+	@Inject
+	GoldDropManager(Client client, GPPerHourPlugin plugin, ItemManager itemManager, GPPerHourConfig config, ConfigManager configManager)
 	{
 		this.client = client;
+		this.plugin = plugin;
 		this.itemManager = itemManager;
 		this.config = config;
 		this.configManager = configManager;
@@ -178,12 +208,10 @@ public class GoldDropManager {
 			}
 
 			dropSpriteWidget = xpDropWidgetChildren[1];
-
-
 			xpDropToGoldDrop(dropTextWidget, dropSpriteWidget, goldDropValue);
 		}
 		//don't need to do this if xp drop plugin is active since it will handle this and it doesn't overwrite prayer colors this way
-		else if (config.goldDrops() && 
+		else if (config.goldDropsDisplayMode() == GoldDropDisplayMode.VANILLA && 
 			!((Boolean) configManager.getConfiguration("runelite", "xpdropplugin", Boolean.class)))
 		{
 			// reset text color for all regular xpdrops
@@ -254,6 +282,12 @@ public class GoldDropManager {
 
 	public void requestGoldDrop(long amount)
 	{
+		// Alternate way to display gold drops for people who use the customizable xp drops plugin
+		if (this.config.goldDropsDisplayMode() == GoldDropDisplayMode.STATIC)
+		{
+			showStaticDrop(amount);
+			return;
+		}
 		// save the value and mark an ongoing gold drop
 		currentGoldDropValue = amount;
 
@@ -288,8 +322,147 @@ public class GoldDropManager {
 		xpDropTextWidget.setOpacity(0);
 	}
 
+	boolean showingStaticGoldDrop = false;
+	long currentStaticAmountToShow;
+	long staticGoldDropDisplayTime;
+	private static final int staticImageDimension = 18;
+
+	private void showStaticDrop(long amount)
+	{
+		if (showingStaticGoldDrop)
+		{
+			currentStaticAmountToShow += amount;
+		}
+		else
+		{
+			currentStaticAmountToShow = amount;
+		}
+
+		showingStaticGoldDrop = true;
+		staticGoldDropDisplayTime = Instant.now().toEpochMilli();
+	}
+
+	private InventoryWidgetData lastWidgetData;
+	
+	@Data
+	private class InventoryWidgetData
+	{
+		public net.runelite.api.Point canvasLocation;
+		public int width;
+		public int height;
+	}
+
+	@Override
+	public Dimension render(Graphics2D graphics) {
+		
+		if (config.goldDropsDisplayMode() != GoldDropDisplayMode.STATIC || !showingStaticGoldDrop || currentStaticAmountToShow == 0)
+		{
+			return null;
+		}
+
+		Widget inventoryWidget = plugin.getInventoryWidget();
+		boolean isInvHidden = inventoryWidget == null || inventoryWidget.isHidden();
+		if (isInvHidden && (!config.alwaysShowTripOverlay() || lastWidgetData == null))
+			return null;
+		
+		if (!isInvHidden)
+		{
+			if	(lastWidgetData == null)
+				lastWidgetData = new InventoryWidgetData();
+			
+			lastWidgetData.canvasLocation = inventoryWidget.getCanvasLocation();
+			lastWidgetData.width = inventoryWidget.getWidth();
+			lastWidgetData.height = inventoryWidget.getHeight();
+		}
+
+		long fadeOutTimeMillis = 3000;
+		long timePassed = Instant.now().toEpochMilli() - staticGoldDropDisplayTime;
+		float percentDone = ((float)timePassed) / ((float)fadeOutTimeMillis);
+		if (percentDone > 1f)
+		{
+			showingStaticGoldDrop = false;
+			return null;
+		}
+
+		int x = lastWidgetData.getCanvasLocation().getX() - lastWidgetData.width/2;
+		int y = lastWidgetData.getCanvasLocation().getY() - 20 - config.inventoryYOffset();
+		String text = QuantityFormatter.quantityToStackSize(currentStaticAmountToShow);
+
+		BufferedImage image = getCoinsImage((int) currentStaticAmountToShow);
+
+		float alpha = clamp(2f-percentDone*2f, 0, 1f);
+		Composite composite = graphics.getComposite();
+		graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+		graphics.drawImage(image, x - staticImageDimension, y - staticImageDimension/2, null);
+		graphics.setComposite(composite);
+
+		Color textColor;
+		if (currentStaticAmountToShow > 0)
+			textColor = config.goldDropsPositiveColor();
+		else
+			textColor = config.goldDropsNegativeColor();
+		graphics.setColor(new Color(textColor.getRed()/255f, textColor.getGreen()/255f, textColor.getBlue()/255f, (textColor.getAlpha()/255f) * alpha));
+		graphics.drawString(text, x+1, y + graphics.getFontMetrics().getHeight()/2);
+
+		return null;
+	}
+
+
+
+	private BufferedImage getCoinsImage(int quantity)
+	{
+		if(!hasLoadedCoinsImages)
+			loadCoinsImages();
+
+		long absValue = Math.abs(quantity);
+		if (absValue >= 10000)
+		{
+			return coinsImage10000;
+		}
+		else if (absValue >= 1000)
+		{
+			return coinsImage1000;
+		}
+		else if (absValue >= 250)
+		{
+			return coinsImage250;
+		}
+		else
+		{
+			return coinsImage100;
+		}
+	}
+
+    private void loadCoinsImages()
+    {
+        coinsImage100 = loadCoinsImage(100);
+        coinsImage250 = loadCoinsImage(250);
+        coinsImage1000 = loadCoinsImage(1000);
+        coinsImage10000 = loadCoinsImage(10000);
+		hasLoadedCoinsImages = true;
+    }
+
+    private BufferedImage loadCoinsImage(int quantity)
+    {
+		BufferedImage image = itemManager.getImage(ItemID.COINS_995, quantity, false);
+		image = ImageUtil.resizeImage(image, staticImageDimension, staticImageDimension);
+		return image;
+    }
+
+
+
 	private String formatGoldDropText(long goldDropValue)
 	{
 		return NumberFormat.getInstance().format(goldDropValue);
 	}
+
+    private static float clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
 }

@@ -77,9 +77,11 @@ public interface GPPerHourConfig extends Config
 		return false;
 	}
 
+	public static final String showGoldDropsKey = "goldDrops";
     @ConfigItem(
 			position = 20,
-            keyName = "goldDrops",
+            keyName = showGoldDropsKey,
+			hidden = true,
             name = "Show Gold Drops",
             description = "Show each profit increase or decrease as an XP drop (only works in profit/loss mode).",
 			section =  sharedSettingSection
@@ -88,6 +90,31 @@ public interface GPPerHourConfig extends Config
     {
         return false;
     }
+	@ConfigItem(
+		keyName = showGoldDropsKey,
+		name = "",
+		description = ""
+	)
+	void setGoldDrops(boolean value);
+
+	public static final String goldDropDisplayModeKey = "goldDropsDisplayMode";
+    @ConfigItem(
+			position = 20,
+            keyName = goldDropDisplayModeKey,
+            name = "Gold Drop Display Mode",
+            description = "Show each profit increase or decrease as an XP drop (only works in profit/loss mode). Vanilla uses normal XP drops. Static provides alternative for those using customizable xp drops.",
+			section =  sharedSettingSection
+    )
+    default GoldDropManager.GoldDropDisplayMode goldDropsDisplayMode()
+    {
+        return GoldDropManager.GoldDropDisplayMode.DISABLED;
+    }
+	@ConfigItem(
+		keyName = goldDropDisplayModeKey,
+		name = "",
+		description = ""
+	)
+	void setGoldDropsDisplayMode(GoldDropManager.GoldDropDisplayMode value);
 
     @ConfigItem(
 			position = 21,
