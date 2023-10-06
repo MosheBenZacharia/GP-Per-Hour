@@ -77,8 +77,6 @@ public class FractionalRemapper
         //Sourced from https://github.com/runelite/runelite/blob/master/runelite-client/src/main/java/net/runelite/client/plugins/itemcharges/ItemWithCharge.java
         remapData = new HashMap<>();
 
-        remapData.put(MINNOW, new RemapData(RAW_SHARK, 1f/40f));
-
         /////////////////////// Rechargeable Jewelery ///////////////////////
         //These shouldn't really lose value as the charges deplete since the uncharged
         //version is only worth slightly less than the charged version.

@@ -265,6 +265,10 @@ public class ValueRemapper {
         {
             return plugin.getPrice(CANNONBALL);
         }
+        else if (itemId == MINNOW)
+        {
+            return plugin.getPrice(RAW_SHARK)/40f;
+        }
 
         return null;
     }
