@@ -647,13 +647,13 @@ public class GPPerHourPlugin extends Plugin
 		inventoryItemContainer = client.getItemContainer(InventoryID.INVENTORY);
 		equipmentItemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
 
-		if (config.enableProfitLoss())
+		if (config.inventoryOverlayDisplayMode() == ActiveTripOverlay.InventoryOverlayDisplayMode.INVENTORY_TOTAL)
 		{
-			setMode(TrackingMode.PROFIT_LOSS);
+			setMode(TrackingMode.TOTAL);
 		}
 		else
 		{
-			setMode(TrackingMode.TOTAL);
+			setMode(TrackingMode.PROFIT_LOSS);
 		}
 
 		boolean isBank = runData.isFirstRun || forceBanking || isBanking();

@@ -178,7 +178,7 @@ public interface GPPerHourConfig extends Config
 
 
 	@ConfigSection(
-		name = "Trip Overlay Settings",
+		name = "Inventory Overlay Settings",
 		description = "The options that control the inventory overlay, used to display stats on your active trip.",
 		position = 100,
 		closedByDefault = true
@@ -189,8 +189,8 @@ public interface GPPerHourConfig extends Config
 	@ConfigItem(
 			position = 0,
 			keyName = showTripOverlayKeyName,
-			name = "Show Trip Overlay",
-			description = "Enables/disables the active trip overlay.",
+			name = "Show Inventory Overlay",
+			description = "Enables/disables the inventory overlay.",
 			section =  tripOverlaySection
 	)
 	default boolean showTripOverlay()
@@ -210,35 +210,23 @@ public interface GPPerHourConfig extends Config
 		return false;
 	}
 
-	@ConfigItem(
-			position = 3,
-			keyName = "showSessionStatsInOverlay",
-			name = "Show Session Stats",
-			description = "Show session stats in overlay, instead of active trip stats.",
-			section =  tripOverlaySection
+    @ConfigItem(
+		position = 5,
+		keyName = "inventoryOverlayDisplayMode",
+		name = "Overlay Display",
+		description = "What data to show on the inventory overlay.",
+		section =  tripOverlaySection
 	)
-	default boolean showSessionStatsInOverlay()
+	default ActiveTripOverlay.InventoryOverlayDisplayMode inventoryOverlayDisplayMode()
 	{
-		return false;
-	}
-
-	@ConfigItem(
-			position = 5,
-			keyName = "enableProfitLoss",
-			name = "Show Profit",
-			description = "Show profit in the trip overlay, if disabled shows inventory total value.",
-			section =  tripOverlaySection
-	)
-	default boolean enableProfitLoss()
-	{
-		return true;
+		return ActiveTripOverlay.InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR;
 	}
 
 	@ConfigItem(
 			position = 10,
 			keyName = "showLapTime",
 			name = "Show Run Time",
-			description = "Configures whether or not the run time is visible.",
+			description = "Configures whether the runtime of the current trip or session is visible.",
 			section =  tripOverlaySection
 	)
 	default boolean showRunTime()
@@ -246,17 +234,6 @@ public interface GPPerHourConfig extends Config
 		return false;
 	}
 
-	@ConfigItem(
-			position = 15,
-			keyName = "showGpPerHourOnOverlay",
-			name = "Show GP/hr On Overlay",
-			description = "Configures whether or not gp/hr is shown instead of net total when in profit / loss mode.",
-			section =  tripOverlaySection
-	)
-	default boolean showGpPerHourOnOverlay()
-	{
-		return true;
-	}
 
 	@ConfigItem(
 			position = 20,

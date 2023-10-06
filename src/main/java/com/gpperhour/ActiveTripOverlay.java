@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,6 +105,20 @@ class ActiveTripOverlay extends Overlay
 		boolean center;
 		boolean addGapAfter;
 	}
+	
+    @AllArgsConstructor
+    public enum InventoryOverlayDisplayMode {
+        TRIP_GP_PER_HOUR                    ("Trip GP/hr", false),
+        TRIP_PROFIT              			("Trip Profit", false),
+        SESSION_GP_PER_HOUR              	("Session GP/hr", true),
+        SESSION_PROFIT              		("Session Profit", true),
+        INVENTORY_TOTAL              		("Inventory Value", false);
+    
+        private final String configName;
+        private final boolean sessionData;
+        @Override
+        public String toString() { return configName; }
+    }
 
 	@Inject
 	private ActiveTripOverlay(Client client, GPPerHourPlugin plugin, GPPerHourConfig config, ItemManager itemManager, SpriteManager spriteManager)
@@ -141,7 +156,7 @@ class ActiveTripOverlay extends Overlay
 			lastWidgetData.height = inventoryWidget.getHeight();
 		}
 
-		if (config.showSessionStatsInOverlay())
+		if (config.inventoryOverlayDisplayMode().sessionData)
 		{
 			renderActiveSessionTotal(graphics);
 		}
@@ -161,7 +176,7 @@ class ActiveTripOverlay extends Overlay
 		if (sessionStats == null)
 		{
 			String totalText = "0";
-			if (config.showGpPerHourOnOverlay())
+			if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.SESSION_GP_PER_HOUR)
 				totalText += "/hr";
 			renderTotal(config, graphics, plugin,
 					0, totalText, null, totalOverlayHeight);
@@ -170,7 +185,7 @@ class ActiveTripOverlay extends Overlay
 		long total = sessionStats.getNetTotal();
 		String totalText = UI.formatGp(total, config.showExactGp());
 
-		if (config.showGpPerHourOnOverlay())
+		if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.SESSION_GP_PER_HOUR)
 		{
 			total = getGpPerHour(sessionStats.getSessionRuntime(), total);
 			totalText = UI.formatGp(total, config.showExactGp()) + "/hr";
@@ -193,8 +208,7 @@ class ActiveTripOverlay extends Overlay
 		long total = plugin.getProfitGp();
 		String totalText = UI.formatGp(total, config.showExactGp());
 
-		if (config.showGpPerHourOnOverlay() 
-			&& plugin.getMode() == TrackingMode.PROFIT_LOSS
+		if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR
 			 && plugin.getState() == RunState.RUN
 			 && !plugin.getRunData().isBankDelay)
 		{
@@ -213,17 +227,13 @@ class ActiveTripOverlay extends Overlay
 		if (plugin.getRunData().isBankDelay)
 		{
 			total = 0;
-
-			if (plugin.getMode() == TrackingMode.PROFIT_LOSS)
-			{
+			
+			if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR)
+				totalText = "0/hr";
+			else if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_PROFIT)
 				totalText = "0";
-				if (config.showGpPerHourOnOverlay())
-					totalText += "/hr";
-			}
 			else
-			{
 				totalText = UI.formatGp(plugin.getTotalGp(), config.showExactGp());
-			}
 		}
 
 		renderTotal(config, graphics, plugin,
@@ -373,7 +383,7 @@ class ActiveTripOverlay extends Overlay
 		Color borderColor;
 		Color textColor;
 
-		if (plugin.getState() == RunState.BANK || plugin.getMode() == TrackingMode.TOTAL) {
+		if (plugin.getState() == RunState.BANK || config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.INVENTORY_TOTAL) {
 			backgroundColor = config.totalColor();
 			borderColor = config.borderColor();
 			textColor = config.textColor();
@@ -445,19 +455,19 @@ class ActiveTripOverlay extends Overlay
 		int mouseX = mouse.getX();
 		int mouseY = mouse.getY();
 
-		boolean isTripRunning = !config.showSessionStatsInOverlay() && plugin.getState() != RunState.BANK && !plugin.getRunData().isBankDelay;
-		boolean isSessionRunning = config.showSessionStatsInOverlay() && plugin.getSessionManager().getActiveSessionStats() != null;
+		boolean isTripRunning = !config.inventoryOverlayDisplayMode().sessionData && plugin.getState() != RunState.BANK && !plugin.getRunData().isBankDelay;
+		boolean isSessionRunning = config.inventoryOverlayDisplayMode().sessionData && plugin.getSessionManager().getActiveSessionStats() != null;
 
 		RoundRectangle2D roundRectangle2D = new RoundRectangle2D.Double(x, y, width + 1, height + 1, cornerRadius, cornerRadius);
 		if (roundRectangle2D.contains(mouseX, mouseY) && (isTripRunning || isSessionRunning) && config.showLedgerOnHover())
 		{
-			if (plugin.getMode() == TrackingMode.PROFIT_LOSS || config.showSessionStatsInOverlay())
+			if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.INVENTORY_TOTAL)
 			{
-				renderProfitLossLedger(graphics);
+				renderLedger(graphics);
 			}
 			else
 			{
-				renderLedger(graphics);
+				renderProfitLossLedger(graphics);
 			}
 		}
 	}
@@ -574,7 +584,7 @@ class ActiveTripOverlay extends Overlay
 		FontMetrics fontMetrics = graphics.getFontMetrics();
 
 		List<LedgerItem> ledger = null;
-		if (config.showSessionStatsInOverlay())
+		if (config.inventoryOverlayDisplayMode().sessionData)
 		{
 			SessionStats stats = plugin.getSessionManager().getActiveSessionStats();
 			ledger = GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys());
@@ -598,7 +608,7 @@ class ActiveTripOverlay extends Overlay
 		ledger.addAll(loss);
 
 		LinkedList<LedgerEntry> ledgerEntries = new LinkedList<>();
-		ledgerEntries.add(createTitleEntry(config.showSessionStatsInOverlay()));
+		ledgerEntries.add(createTitleEntry(config.inventoryOverlayDisplayMode().sessionData));
 
 		if (ledger.isEmpty())
 		{
