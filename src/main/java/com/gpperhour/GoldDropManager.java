@@ -34,6 +34,8 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayLayer;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.TextComponent;
 import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ImageUtil;
@@ -125,6 +127,8 @@ public class GoldDropManager extends Overlay {
 		this.itemManager = itemManager;
 		this.config = config;
 		this.configManager = configManager;
+		setPosition(OverlayPosition.DYNAMIC);
+		setLayer(OverlayLayer.ABOVE_WIDGETS);
 
 		prepareCoinSprite(10000, COINS_10000_SPRITE_ID);
 		prepareCoinSprite(1000, COINS_1000_SPRITE_ID);
@@ -355,11 +359,6 @@ public class GoldDropManager extends Overlay {
 	@Override
 	public Dimension render(Graphics2D graphics) {
 		
-		if (config.goldDropsDisplayMode() != GoldDropDisplayMode.STATIC || !showingStaticGoldDrop || currentStaticAmountToShow == 0)
-		{
-			return null;
-		}
-
 		Widget inventoryWidget = plugin.getInventoryWidget();
 		boolean isInvHidden = inventoryWidget == null || inventoryWidget.isHidden();
 		if (isInvHidden && lastWidgetData == null)
@@ -374,6 +373,10 @@ public class GoldDropManager extends Overlay {
 			lastWidgetData.width = inventoryWidget.getWidth();
 			lastWidgetData.height = inventoryWidget.getHeight();
 		}
+		if (!showingStaticGoldDrop || currentStaticAmountToShow == 0)
+		{
+			return null;
+		}
 
 		long fadeOutTimeMillis = 3000;
 		long timePassed = Instant.now().toEpochMilli() - staticGoldDropDisplayTime;
@@ -384,7 +387,7 @@ public class GoldDropManager extends Overlay {
 			return null;
 		}
 
-		int x = lastWidgetData.getCanvasLocation().getX() - lastWidgetData.width/2;
+		int x = lastWidgetData.getCanvasLocation().getX() - lastWidgetData.width / 2;
 		int y = lastWidgetData.getCanvasLocation().getY() - 20 - config.inventoryYOffset();
 		String text = QuantityFormatter.quantityToStackSize(currentStaticAmountToShow);
 
