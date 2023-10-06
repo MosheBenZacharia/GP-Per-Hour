@@ -540,6 +540,7 @@ public class GPPerHourPlugin extends Plugin
     public void onMenuOptionClicked(MenuOptionClicked event)
 	{
 		if (event.getId() == ObjectID.BANK_DEPOSIT_BOX 
+			|| event.getId() == ObjectID.BANK_DEPOSIT_CHEST
 			|| event.getId() == ObjectID.DEPOSIT_POOL
 			|| event.getId() == ObjectID.DEPOSIT_POT)
 		{
