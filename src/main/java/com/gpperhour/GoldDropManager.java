@@ -329,7 +329,7 @@ public class GoldDropManager extends Overlay {
 	boolean showingStaticGoldDrop = false;
 	long currentStaticAmountToShow;
 	long staticGoldDropDisplayTime;
-	private static final int staticImageDimension = 18;
+	private static final int staticImageDimension = 24;
 
 	private void showStaticDrop(long amount)
 	{
@@ -387,8 +387,8 @@ public class GoldDropManager extends Overlay {
 			return null;
 		}
 
-		int x = lastWidgetData.getCanvasLocation().getX() - lastWidgetData.width / 2;
-		int y = lastWidgetData.getCanvasLocation().getY() - 20 - config.inventoryYOffset();
+		int x = lastWidgetData.getCanvasLocation().getX() + 20 - lastWidgetData.width / 2;
+		int y = lastWidgetData.getCanvasLocation().getY() + 20 - config.inventoryYOffset();
 		String text = QuantityFormatter.quantityToStackSize(currentStaticAmountToShow);
 
 		BufferedImage image = getCoinsImage((int) currentStaticAmountToShow);
