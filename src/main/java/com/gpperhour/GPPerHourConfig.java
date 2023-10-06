@@ -102,7 +102,7 @@ public interface GPPerHourConfig extends Config
 			position = 20,
             keyName = goldDropDisplayModeKey,
             name = "Gold Drop Display Mode",
-            description = "Show each profit increase or decrease as an XP drop (only works in profit/loss mode). Vanilla uses normal XP drops. Static provides alternative for those using customizable xp drops.",
+            description = "Show each profit increase or decrease as an XP drop. Vanilla uses normal XP drops. Static appears next to inventory for compat with custom xp drops plugin.",
 			section =  sharedSettingSection
     )
     default GoldDropManager.GoldDropDisplayMode goldDropsDisplayMode()
