@@ -616,6 +616,8 @@ public class GPPerHourPlugin extends Plugin
 				client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER),
 				//GE
 				client.getWidget(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER),
+				//Seed vault
+				client.getWidget(WidgetInfo.SEED_VAULT_INVENTORY_ITEMS_CONTAINER),
 				//Bank with equipment view open
 				client.getWidget(WidgetID.BANK_INVENTORY_GROUP_ID, 4),
 				//Bank with looting bag open
