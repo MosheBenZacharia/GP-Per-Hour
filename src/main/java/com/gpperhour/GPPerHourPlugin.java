@@ -47,6 +47,7 @@ import com.gpperhour.weaponcharges.WeaponChargesManager;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -215,6 +216,15 @@ public class GPPerHourPlugin extends Plugin
 	private static final int[] RUNEPOUCH_RUNE_VARBITS = {
 			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3, Varbits.RUNE_POUCH_RUNE4
 	};
+    @AllArgsConstructor
+    public enum ValueMode {
+        RUNELITE_VALUE        	("Runelite (Default)"),
+        LOW_ALCHEMY_VALUE    	("Low Alchemy"),
+        HIGH_ALCHEMY_VALUE     	("High Alchemy");
+        private final String configName;
+        @Override
+        public String toString() { return configName; }
+    }
 
 	@Override
 	protected void startUp() throws Exception
@@ -488,6 +498,10 @@ public class GPPerHourPlugin extends Plugin
 			else if (event.getKey().equals(GPPerHourConfig.ignoredItemsKey))
 			{
 				refreshIgnoredItems();
+			}
+			else if (event.getKey().equals(GPPerHourConfig.valueModeKey))
+			{
+				refreshPrices();
 			}
 			else if (event.getKey().startsWith("tokkul"))
 			{
@@ -1106,7 +1120,22 @@ public class GPPerHourPlugin extends Plugin
 			}
 			else
 			{
-				return itemManager.getItemPrice(itemId);
+				if (config.valueMode() == ValueMode.RUNELITE_VALUE)
+				{
+					return itemManager.getItemPrice(itemId);
+				}
+				else 
+				{
+					ItemComposition itemDef = itemManager.getItemComposition(itemId);
+					// Only check prices for things with store prices
+					int itemPrice = itemDef.getPrice();
+					if (itemPrice <= 0)
+					{
+						return 0;
+					}
+					//Low alch is always 0.4 of store price, high alch is always 0.6 of store price
+					return (config.valueMode() == ValueMode.LOW_ALCHEMY_VALUE) ? (itemPrice * .4f) : (itemPrice * .6f);
+				}
 			}
 		}
 	}

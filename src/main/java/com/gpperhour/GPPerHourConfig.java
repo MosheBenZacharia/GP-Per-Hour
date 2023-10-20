@@ -65,6 +65,19 @@ public interface GPPerHourConfig extends Config
 	)
 	String sharedSettingSection = "sharedSettingSection";
 
+	public static final String valueModeKey = "valueMode";
+	@ConfigItem(
+			position = 5,
+			keyName = valueModeKey,
+			name = "Price Mode",
+			description = "Use Runelite value (GE/Wiki or Store price), or low/high alch value.",
+			section =  sharedSettingSection
+	)
+	default GPPerHourPlugin.ValueMode valueMode()
+	{
+		return GPPerHourPlugin.ValueMode.RUNELITE_VALUE;
+	}
+
 	@ConfigItem(
 			position = 10,
 			keyName = "showExactGp",
