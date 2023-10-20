@@ -60,6 +60,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.AnimationChanged;
@@ -195,6 +196,9 @@ public class GPPerHourPlugin extends Plugin
 	private final Map<Integer, Float> inventoryQtyMap = new HashMap<>();
 	private final Map<Integer, Float> equipmentQtyMap = new HashMap<>();
 	private final HashSet<String> ignoredItems = new HashSet<>();
+	private int depositInteractionTick;
+	//if its been more than 30 ticks you probably cancelled your interaction
+	private static final int interactionTickThreshold = 30;
 
 	@Getter
 	private Widget inventoryWidget;
@@ -564,32 +568,28 @@ public class GPPerHourPlugin extends Plugin
     @Subscribe
     public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (event.getId() == ObjectID.BANK_DEPOSIT_BOX 
-			|| event.getId() == ObjectID.BANK_DEPOSIT_CHEST
+		if ((event.getId() == ObjectID.BANK_DEPOSIT_BOX && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
+			|| (event.getId() == ObjectID.BANK_DEPOSIT_CHEST && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
 			|| event.getId() == ObjectID.DEPOSIT_POOL
-			|| event.getId() == ObjectID.DEPOSIT_POT)
+			|| (event.getId() == ObjectID.DEPOSIT_POT && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT))
 		{
 			//user clicked on one of these but they might get to it at some later tick.
 			expectingPutAnimation = true;
+			depositInteractionTick = client.getTickCount();
 		}
 	}
 	
 	@Subscribe
 	public void onAnimationChanged(final AnimationChanged event) {
 		
-		if (!expectingPutAnimation)
+		if (!expectingPutAnimation || (client.getTickCount() - depositInteractionTick) > interactionTickThreshold)
 		{
 			return;
 		}
 		if (event.getActor() == client.getLocalPlayer()) {
-			//put item
-			if (event.getActor().getAnimation() == 834)
-			{
-				updatePluginState(true);
-				expectingPutAnimation = false;
-			}
-			//deposit runes
-			if (event.getActor().getAnimation() == 9402)
+			
+			if (event.getActor().getAnimation() == 834 //put item
+				|| event.getActor().getAnimation() == 9402)//deposit runes
 			{
 				updatePluginState(true);
 				expectingPutAnimation = false;
