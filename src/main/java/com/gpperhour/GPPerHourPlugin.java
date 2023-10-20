@@ -425,7 +425,9 @@ public class GPPerHourPlugin extends Plugin
 		{
 			runData.isPaused = false;
 		}
-		if (config.goldDropsDisplayMode() != GoldDropDisplayMode.DISABLED && Math.abs(tickProfit) >= config.goldDropThreshold())
+		if (config.goldDropsDisplayMode() != GoldDropDisplayMode.DISABLED && 
+			Math.abs(tickProfit) >= config.goldDropThreshold() &&
+			((tickProfit > 0) || !config.onlyShowPositiveGoldDrops()))
 		{
 			goldDropManager.requestGoldDrop(tickProfit);
 		}

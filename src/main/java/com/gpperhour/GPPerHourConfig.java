@@ -128,9 +128,21 @@ public interface GPPerHourConfig extends Config
         return 0;
     }
 
+    @ConfigItem(
+			position = 22,
+            keyName = "onlyShowPositiveGoldDrops",
+            name = "Only Positive Gold Drops",
+            description = "Only show positive gold drops for the good vibes.",
+			section =  sharedSettingSection
+    )
+    default boolean onlyShowPositiveGoldDrops()
+    {
+        return false;
+    }
+
 	@Alpha
 	@ConfigItem(
-			position = 22,
+			position = 23,
 			keyName = "goldDropsPositiveColor",
 			name = "Gold Drop Positive Color",
 			description = "Configures the color for a positive gold drop.",
@@ -143,7 +155,7 @@ public interface GPPerHourConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-			position = 23,
+			position = 24,
 			keyName = "goldDropsNegativeColor",
 			name = "Gold Drop Negative Color",
 			description = "Configures the color for a negative gold drop.",
