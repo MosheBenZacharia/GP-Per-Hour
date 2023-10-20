@@ -26,14 +26,72 @@ package com.gpperhour;
 
 import static net.runelite.api.ItemID.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 
 //Remaps the value of untradeable items to their commonly traded counterpart based on user config.
 //Also remaps value of certain containers (hallowed sack, brimstone key, etc.) to their average value.
 public class ValueRemapper {
 
+    //Used for when a value maps 1:1 with another value
+    private static final Map<Integer, Integer> directValueRemaps;
+
+    static
+    {
+        directValueRemaps = new HashMap<>();
+
+        //Seedling to sapling
+        directValueRemaps.put(OAK_SEEDLING, OAK_SAPLING);
+        directValueRemaps.put(WILLOW_SEEDLING, WILLOW_SAPLING);
+        directValueRemaps.put(MAPLE_SEEDLING, MAPLE_SAPLING);
+        directValueRemaps.put(YEW_SEEDLING, YEW_SAPLING);
+        directValueRemaps.put(MAGIC_SEEDLING, MAGIC_SAPLING);
+        directValueRemaps.put(REDWOOD_SEEDLING, REDWOOD_SAPLING);
+        directValueRemaps.put(SPIRIT_SEEDLING, SPIRIT_SAPLING);
+        directValueRemaps.put(CRYSTAL_SEEDLING, CRYSTAL_SAPLING);
+        directValueRemaps.put(APPLE_SEEDLING, APPLE_SAPLING);
+        directValueRemaps.put(BANANA_SEEDLING, BANANA_SAPLING);
+        directValueRemaps.put(ORANGE_SEEDLING, ORANGE_SAPLING);
+        directValueRemaps.put(CURRY_SEEDLING, CURRY_SAPLING);
+        directValueRemaps.put(PINEAPPLE_SEEDLING, PINEAPPLE_SAPLING);
+        directValueRemaps.put(PAPAYA_SEEDLING, PAPAYA_SAPLING);
+        directValueRemaps.put(PALM_SEEDLING, PALM_SAPLING);
+        directValueRemaps.put(DRAGONFRUIT_SEEDLING, DRAGONFRUIT_SAPLING);
+        directValueRemaps.put(TEAK_SEEDLING, TEAK_SAPLING);
+        directValueRemaps.put(MAHOGANY_SEEDLING, MAHOGANY_SAPLING);
+        directValueRemaps.put(CALQUAT_SEEDLING, CALQUAT_SAPLING);
+        directValueRemaps.put(CELASTRUS_SEEDLING, CELASTRUS_SAPLING);
+        //Watered seedling to sapling
+        directValueRemaps.put(OAK_SEEDLING_W, OAK_SAPLING);
+        directValueRemaps.put(WILLOW_SEEDLING_W, WILLOW_SAPLING);
+        directValueRemaps.put(MAPLE_SEEDLING_W, MAPLE_SAPLING);
+        directValueRemaps.put(YEW_SEEDLING_W, YEW_SAPLING);
+        directValueRemaps.put(MAGIC_SEEDLING_W, MAGIC_SAPLING);
+        directValueRemaps.put(REDWOOD_SEEDLING_W, REDWOOD_SAPLING);
+        directValueRemaps.put(SPIRIT_SEEDLING_W, SPIRIT_SAPLING);
+        directValueRemaps.put(CRYSTAL_SEEDLING_W, CRYSTAL_SAPLING);
+        directValueRemaps.put(APPLE_SEEDLING_W, APPLE_SAPLING);
+        directValueRemaps.put(BANANA_SEEDLING_W, BANANA_SAPLING);
+        directValueRemaps.put(ORANGE_SEEDLING_W, ORANGE_SAPLING);
+        directValueRemaps.put(CURRY_SEEDLING_W, CURRY_SAPLING);
+        directValueRemaps.put(PINEAPPLE_SEEDLING_W, PINEAPPLE_SAPLING);
+        directValueRemaps.put(PAPAYA_SEEDLING_W, PAPAYA_SAPLING);
+        directValueRemaps.put(PALM_SEEDLING_W, PALM_SAPLING);
+        directValueRemaps.put(DRAGONFRUIT_SEEDLING_W, DRAGONFRUIT_SAPLING);
+        directValueRemaps.put(TEAK_SEEDLING_W, TEAK_SAPLING);
+        directValueRemaps.put(MAHOGANY_SEEDLING_W, MAHOGANY_SAPLING);
+        directValueRemaps.put(CALQUAT_SEEDLING_W, CALQUAT_SAPLING);
+        directValueRemaps.put(CELASTRUS_SEEDLING_W, CELASTRUS_SAPLING);
+    }
+
     public static Float remapPrice(int itemId, GPPerHourPlugin plugin, GPPerHourConfig config)
     {
+        if (directValueRemaps.containsKey(itemId))
+        {
+            return plugin.getPrice(directValueRemaps.get(itemId));
+        }
         if (itemId == BRIMSTONE_KEY)
         {
             if (config.brimstoneKeyValue() == BrimstoneKeyOverride.NO_VALUE)
