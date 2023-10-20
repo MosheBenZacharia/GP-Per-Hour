@@ -51,6 +51,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.Constants;
 import net.runelite.api.EnumComposition;
@@ -74,6 +75,8 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
@@ -110,6 +113,14 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
+	private static final String plugin_version = "1.2";
+	private static final String plugin_message = "" +
+		"GP Per Hour " + plugin_version + ":<br>" +
+		"* Option to only show positive gold drops.<br>" +
+		"* Option to set the value of Brimstone Keys to zero.<br>" +
+		"* Option to use low or high alchemy values.<br>" +
+		"* Seedlings now remap to sapling prices.<br>" +
+		"* Seed vault now counts as a bank interface.";
 	static final int COINS = ItemID.COINS_995;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
@@ -164,6 +175,9 @@ public class GPPerHourPlugin extends Plugin
 	
     @Inject
     private ClientToolbar clientToolbar;
+	
+	@Inject
+	private ChatMessageManager chat_messages;
 
 	@Getter
 	private SessionManager sessionManager;
@@ -284,6 +298,24 @@ public class GPPerHourPlugin extends Plugin
 		if (profileKey != null)
 		{
 			writeSavedData(profileKey);
+		}
+
+		if (gameStateChanged.getGameState() == GameState.LOGGED_IN)
+		{
+			showChangelog();
+		}
+	}
+
+	private void showChangelog()
+	{
+		String currentVersion = configManager.getConfiguration(GPPerHourConfig.GROUP, GPPerHourConfig.version);
+		if (currentVersion == null || !currentVersion.equals(plugin_version)) {
+			configManager.setConfiguration(GPPerHourConfig.GROUP, GPPerHourConfig.version, plugin_version);
+			chat_messages.queue(QueuedMessage.builder()
+				.type(ChatMessageType.CONSOLE)
+				.runeLiteFormattedMessage(plugin_message)
+				.build()
+			);
 		}
 	}
 

@@ -31,6 +31,7 @@ import java.awt.*;
 @ConfigGroup(GPPerHourConfig.GROUP)
 public interface GPPerHourConfig extends Config
 {
+    String version = "version";
 	String GROUP = "gpperhour";
 	String logOutTimeKey = "log_out_time";
 	String fish_barrel = "fish_barrel";
