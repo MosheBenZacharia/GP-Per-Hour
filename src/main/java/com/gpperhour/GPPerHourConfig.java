@@ -694,4 +694,16 @@ public interface GPPerHourConfig extends Config
 	{
 		return ValueRemapper.AbyssalPearlsOverride.NO_VALUE;
 	}
+
+	@ConfigItem(
+			position = 50,
+			keyName = "brimstoneKeyValue",
+			name = "Brimstone Key",
+			description = "Brimstone Key: Option to set value of zero or average value.",
+			section =  untradeableValuesSection
+	)
+	default ValueRemapper.BrimstoneKeyOverride brimstoneKeyValue()
+	{
+		return ValueRemapper.BrimstoneKeyOverride.AVERAGE_VALUE;
+	}
 }

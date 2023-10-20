@@ -519,6 +519,10 @@ public class GPPerHourPlugin extends Plugin
 			{
 				refreshPrice(ItemID.ABYSSAL_PEARLS);
 			}
+			else if (event.getKey().startsWith("brimstoneKey"))
+			{
+				refreshPrice(ItemID.BRIMSTONE_KEY);
+			}
 		}
 	}
 

@@ -36,6 +36,10 @@ public class ValueRemapper {
     {
         if (itemId == BRIMSTONE_KEY)
         {
+            if (config.brimstoneKeyValue() == BrimstoneKeyOverride.NO_VALUE)
+            {
+                return 0f;
+            }
             //doesn't include fish because of how complex it is
             float value = 
                     (5f/60f)*100000f +// coins
@@ -380,6 +384,16 @@ public class ValueRemapper {
     public enum AbyssalPearlsOverride {
         NO_VALUE                        ("No Value (Default)"),
         SELL_RING_OF_THE_ELEMENTS       ("Ring of the Elements");
+    
+        private final String configName;
+        @Override
+        public String toString() { return configName; }
+    }
+
+    @AllArgsConstructor
+    public enum BrimstoneKeyOverride {
+        NO_VALUE                        ("No Value"),
+        AVERAGE_VALUE                   ("Avg Value (Default)");
     
         private final String configName;
         @Override
