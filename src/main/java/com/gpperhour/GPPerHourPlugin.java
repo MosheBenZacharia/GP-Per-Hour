@@ -1091,6 +1091,8 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (itemId == COINS)
 			return 1f;
+		if (itemId == ItemID.PLATINUM_TOKEN)
+			return 1000f;
 		if (itemPrices.containsKey(itemId))
 		{
 			return itemPrices.get(itemId);
