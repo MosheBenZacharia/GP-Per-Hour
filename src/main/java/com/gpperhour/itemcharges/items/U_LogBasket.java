@@ -54,7 +54,7 @@ public class U_LogBasket extends ChargedItem
 	private static final Pattern logPattern = Pattern.compile(logMessage);
 	private static final String checkRegex = "([0-9]+) x ([a-zA-Z ]+),? ?";
 	private static final Pattern checkPattern = Pattern.compile(checkRegex);
-	private Integer lastNatureOfferingTickCount = null;
+	private int lastNatureOfferingTickCount = 0;
 	
 	public U_LogBasket(
 		final Client client,
@@ -76,7 +76,7 @@ public class U_LogBasket extends ChargedItem
         };
 		this.triggers_chat_messages = new TriggerChatMessage[]{
             new TriggerChatMessage("(Your|The) basket is empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
-            new TriggerChatMessage("You bank all your logs.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
+            new TriggerChatMessage("You empty your basket into the bank.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
 			new TriggerChatMessage("(You get some.* logs)").extraConsumer(message -> {
 				if ((item_id == ItemID.OPEN_LOG_BASKET || item_id == ItemID.OPEN_FORESTRY_BASKET) && getItemCount() < CAPACITY && super.hasChargeData()) {
 					final Matcher matcher = logPattern.matcher(message);
