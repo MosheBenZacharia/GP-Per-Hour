@@ -52,6 +52,8 @@ import net.runelite.client.game.ItemManager;
 public class U_GemBag extends ChargedItem
 {
     private final int CAPACITY = 60;
+    private static final String pickpocketRegex = "The following stolen loot gets added to your gem bag: Uncut (.*) x (\\d+)";
+    private static final Pattern pickpocketPattern = Pattern.compile(pickpocketRegex);
     private static final String checkRegex = "Sapphires: (\\d+) \\/ Emeralds: (\\d+) \\/ Rubies: (\\d+) Diamonds: (\\d+) \\/ Dragonstones: (\\d+)";
     private static final Pattern checkPattern = Pattern.compile(checkRegex);
     private static final String acquireRegex = "^(You just (found|mined) (a|an) (Sapphire|Ruby|Emerald|Diamond))";
@@ -88,7 +90,7 @@ public class U_GemBag extends ChargedItem
         });
         this.triggers_chat_messages = new TriggerChatMessage[]{
             new TriggerChatMessage("The gem bag is now empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
-            //Gem bags that are 'mined' (at gem rocks) vs 'found' (while mining other things) don't print the "you put it into your gem bag" message.
+            //Gems that are 'mined' (at gem rocks) vs 'found' (while mining other things) don't print the "you put it into your gem bag" message, so use this instead for both cases.
             new TriggerChatMessage(acquireRegex).extraConsumer((message) -> { 
                 if (!hasChargeData())
                     return;
@@ -116,6 +118,37 @@ public class U_GemBag extends ChargedItem
                         {
                             super.addItems(gemID, 1f);
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("couldn't find group match in gem bag acquire: " + message, e);
+                    }
+                }
+            }),
+            //Pickpocketing vyres "The following stolen loot gets added to your gem bag: Uncut ruby × 2."
+            new TriggerChatMessage(pickpocketRegex).extraConsumer((message) -> { 
+                if (!hasChargeData())
+                    return;
+                final Matcher matcher = pickpocketPattern.matcher(message);
+                while (matcher.find())
+                {
+                    try
+                    {
+                        String gemName = matcher.group(1);
+                        int gemID;
+                        if (gemName.equals("sapphire"))
+                            gemID = ItemID.UNCUT_SAPPHIRE;
+                        else if (gemName.equals("emerald"))
+                            gemID = ItemID.UNCUT_EMERALD;
+                        else if (gemName.equals("ruby"))
+                            gemID = ItemID.UNCUT_RUBY;
+                        else if (gemName.equals("diamond"))
+                            gemID = ItemID.UNCUT_DIAMOND;
+                        else
+                            throw new Exception("Gem name not matched.");
+
+                        int amount = Integer.parseInt(matcher.group(2));
+                        super.addItems(gemID, (float) amount);
                     }
                     catch (Exception e)
                     {
