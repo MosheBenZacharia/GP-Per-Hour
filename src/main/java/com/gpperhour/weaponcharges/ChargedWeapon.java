@@ -555,6 +555,9 @@ public enum ChargedWeapon
 		.chargedItemIds(ItemID.AMULET_OF_BLOOD_FURY)
 		.name("Amulet of Blood Fury")
 		.configKeyName("amulet_of_blood_fury")
+		.updateMessageChargesRegexes(
+			ChargesMessage.matcherGroupChargeMessage("Your Amulet of blood fury can perform ([\\d,]+) more hits.", 1)
+		)
 		.checkChargesRegexes(
 			ChargesMessage.staticChargeMessage("You have successfully created an Amulet of blood fury.", 10_000),
 			ChargesMessage.matcherGroupChargeMessage("Your Amulet of blood fury will work for ([\\d,]+) more hits.", 1)
