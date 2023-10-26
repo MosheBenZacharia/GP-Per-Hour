@@ -31,8 +31,21 @@ public class TriggerXPDrop {
     public final Skill skill;
     public final int discharges;
 
+    private Integer lastXP = null;
+
     public TriggerXPDrop(final Skill skill, final int discharges) {
         this.skill = skill;
         this.discharges = discharges;
+    }
+
+    public boolean updateXP(int currentXP)
+    {
+        if (lastXP == null || lastXP == currentXP)
+        {
+            lastXP = currentXP;
+            return false;
+        }
+        lastXP = currentXP;
+        return true;
     }
 }

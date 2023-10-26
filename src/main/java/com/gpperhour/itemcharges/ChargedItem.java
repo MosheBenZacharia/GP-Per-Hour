@@ -220,7 +220,8 @@ public class ChargedItem {
 				if (trigger_xp_drop.skill != event.getSkill())
 					continue;
 
-				decreaseCharges(trigger_xp_drop.discharges);
+				if (trigger_xp_drop.updateXP(event.getXp()))
+					decreaseCharges(trigger_xp_drop.discharges);
 			}
 		}
 	}
