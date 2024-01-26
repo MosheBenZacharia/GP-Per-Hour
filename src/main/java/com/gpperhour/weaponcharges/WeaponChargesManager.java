@@ -66,8 +66,9 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
@@ -242,8 +243,8 @@ public class WeaponChargesManager
 			// TODO investigate shift-click.
 			if (verboseLogging) log.info("clicked \"check\" on " + event.getMenuTarget());
 
-			if (WidgetInfo.TO_GROUP(event.getParam1()) == WidgetID.EQUIPMENT_GROUP_ID) { // item is equipped.
-				int childId = WidgetInfo.TO_CHILD(event.getParam1());
+			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.EQUIPMENT) { // item is equipped.
+				int childId = WidgetUtil.componentToId(event.getParam1());
 				if (childId == 18) {
 					ChargedWeapon chargedWeapon = getEquippedChargedWeapon(EquipmentInventorySlot.WEAPON);
 					if (chargedWeapon != null) lastWeaponChecked.add(chargedWeapon);
@@ -275,7 +276,7 @@ public class WeaponChargesManager
 		} else if (event.getMenuOption().equalsIgnoreCase("unload") && event.getItemId() == ItemID.TOXIC_BLOWPIPE) {
 			checkBlowpipeUnload = client.getTickCount();
 		} else if (event.getMenuOption().equalsIgnoreCase("pages")) {
-			if (WidgetInfo.TO_GROUP(event.getParam1()) == WidgetID.EQUIPMENT_GROUP_ID) { // item is equipped.
+			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.EQUIPMENT) { // item is equipped.
 				lastUsedOnWeapon = getEquippedChargedWeapon(EquipmentInventorySlot.SHIELD);
 			} else {
 				lastUsedOnWeapon = ChargedWeapon.getChargedWeaponFromId(event.getItemId());

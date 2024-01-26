@@ -37,14 +37,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.VarClientInt;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.input.KeyListener;
@@ -62,9 +62,9 @@ import net.runelite.client.util.Text;
 @Slf4j
 public class DialogTracker implements KeyListener
 {
-	private static final int WIDGET_CHILD_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE = 5;
-	private static final int WIDGET_CHILD_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE = 5;
-	private static final int WIDGET_CHILD_ID_DIALOG_PLAYER_NAME = 4; // For some reason there is no WidgetInfo for this despite there being an (innaccessible to me) widgetid for this in WidgetID.
+	private static final int COMPONENT_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE = 5;
+	private static final int COMPONENT_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE = 5;
+	private static final int COMPONENT_ID_DIALOG_PLAYER_NAME = 4;
 
 	@Inject
 	private Client client;
@@ -86,16 +86,17 @@ public class DialogTracker implements KeyListener
 	}
 
 	/*
-	It's possible to miss a click but I've only seen then when I'm moving the mouse as fast as I possibly can.
-	 */
+    It's possible to miss a click but I've only seen then when I'm moving the mouse as fast as I possibly can.
+     */
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		int groupId = WidgetInfo.TO_GROUP(event.getWidgetId());
-		int childId = WidgetInfo.TO_CHILD(event.getWidgetId());
-		if (event.getWidgetId() == WidgetInfo.DIALOG_OPTION_OPTIONS.getId()) {
-			Widget widget = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTIONS);
-			int dynamicChildIndex = event.getActionParam();
+		int widgetId = event.getParam1();
+		int interfaceId = WidgetUtil.componentToInterface(widgetId);
+		int componentId = WidgetUtil.componentToId(widgetId);
+		if (widgetId == ComponentID.DIALOG_OPTION_OPTIONS) {
+			Widget widget = client.getWidget(ComponentID.DIALOG_OPTION_OPTIONS);
+			int dynamicChildIndex = event.getParam0();
 			Widget[] dynamicChildren = widget.getDynamicChildren();
 			Widget dynamicChild = dynamicChildren[dynamicChildIndex];
 			if (dynamicChild == null)
@@ -104,11 +105,11 @@ public class DialogTracker implements KeyListener
 				return; // not sure why this would happen.
 			}
 			optionSelected(lastDialogState, dynamicChild.getText());
-		} else if (groupId == WidgetID.DIALOG_NPC_GROUP_ID && childId == WIDGET_CHILD_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE) {
+		} else if (interfaceId == InterfaceID.DIALOG_NPC && componentId == COMPONENT_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE) {
 			optionSelected(lastDialogState, null);
-		} else if (groupId == WidgetID.DIALOG_PLAYER_GROUP_ID && childId == WIDGET_CHILD_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE) {
+		} else if (interfaceId == InterfaceID.DIALOG_PLAYER && componentId == COMPONENT_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE) {
 			optionSelected(lastDialogState, null);
-		} else if (groupId == WidgetID.DIALOG_SPRITE_GROUP_ID && childId == 0) {
+		} else if (interfaceId == InterfaceID.DIALOG_SPRITE && componentId == 0) {
 			optionSelected(lastDialogState, null);
 		}
 	}
@@ -120,8 +121,8 @@ public class DialogTracker implements KeyListener
 		switch (type) {
 			case NPC:
 			{
-				Widget nameWidget = client.getWidget(WidgetInfo.DIALOG_NPC_NAME);
-				Widget textWidget = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+				Widget nameWidget = client.getWidget(ComponentID.DIALOG_NPC_NAME);
+				Widget textWidget = client.getWidget(ComponentID.DIALOG_NPC_TEXT);
 
 				String name = (nameWidget != null) ? nameWidget.getText() : null;
 				String text = (textWidget != null) ? textWidget.getText() : null;
@@ -131,8 +132,8 @@ public class DialogTracker implements KeyListener
 			}
 			case PLAYER:
 			{
-				Widget nameWidget = client.getWidget(WidgetID.DIALOG_PLAYER_GROUP_ID, WIDGET_CHILD_ID_DIALOG_PLAYER_NAME);
-				Widget textWidget = client.getWidget(WidgetInfo.DIALOG_PLAYER_TEXT);
+				Widget nameWidget = client.getWidget(InterfaceID.DIALOG_PLAYER, COMPONENT_ID_DIALOG_PLAYER_NAME);
+				Widget textWidget = client.getWidget(ComponentID.DIALOG_PLAYER_TEXT);
 
 				String name = (nameWidget != null) ? nameWidget.getText() : null;
 				String text = (textWidget != null) ? textWidget.getText() : null;
@@ -144,7 +145,7 @@ public class DialogTracker implements KeyListener
 			{
 				String text = null;
 
-				Widget optionsWidget = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTIONS);
+				Widget optionsWidget = client.getWidget(ComponentID.DIALOG_OPTION_OPTIONS);
 				List<String> options = null;
 				if (optionsWidget != null) {
 					options = new ArrayList<>();
@@ -162,10 +163,10 @@ public class DialogTracker implements KeyListener
 			}
 			case SPRITE:
 			{
-				Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+				Widget textWidget = client.getWidget(ComponentID.DIALOG_SPRITE_TEXT);
 				String text = (textWidget != null) ? textWidget.getText() : null;
 
-				Widget itemWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_SPRITE);
+				Widget itemWidget = client.getWidget(ComponentID.DIALOG_SPRITE_SPRITE);
 				int itemId = (itemWidget != null) ? itemWidget.getItemId() : -1;
 
 				state = DialogState.sprite(text, itemId);
@@ -173,7 +174,7 @@ public class DialogTracker implements KeyListener
 			}
 			case INPUT:
 			{
-				Widget titleWidget = client.getWidget(WidgetInfo.CHATBOX_TITLE);
+				Widget titleWidget = client.getWidget(ComponentID.CHATBOX_TITLE);
 				String title = (titleWidget != null) ? titleWidget.getText() : null;
 				String input = client.getVarcStrValue(VarClientStr.INPUT_TEXT);
 
@@ -194,31 +195,31 @@ public class DialogTracker implements KeyListener
 
 	private DialogState.DialogType getDialogType()
 	{
-		Widget npcDialog = client.getWidget(WidgetID.DIALOG_NPC_GROUP_ID, 0);
+		Widget npcDialog = client.getWidget(InterfaceID.DIALOG_NPC, 0);
 		if (npcDialog != null && !npcDialog.isHidden())
 		{
 			return DialogState.DialogType.NPC;
 		}
 
-		Widget playerDialog = client.getWidget(WidgetInfo.DIALOG_PLAYER);
+		Widget playerDialog = client.getWidget(InterfaceID.DIALOG_PLAYER, 0);
 		if (playerDialog != null && !playerDialog.isHidden())
 		{
 			return DialogState.DialogType.PLAYER;
 		}
 
-		Widget optionsDialog = client.getWidget(WidgetInfo.DIALOG_OPTION);
+		Widget optionsDialog = client.getWidget(InterfaceID.DIALOG_OPTION, 0);
 		if (optionsDialog != null && !optionsDialog.isHidden())
 		{
 			return DialogState.DialogType.OPTIONS;
 		}
 
-		Widget spriteDialog = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+		Widget spriteDialog = client.getWidget(InterfaceID.DIALOG_SPRITE, 0);
 		if (spriteDialog != null && !spriteDialog.isHidden())
 		{
 			return DialogState.DialogType.SPRITE;
 		}
 
-		Widget inputDialog = client.getWidget(WidgetInfo.CHATBOX_FULL_INPUT);
+		Widget inputDialog = client.getWidget(ComponentID.CHATBOX_FULL_INPUT);
 		if (inputDialog != null && !inputDialog.isHidden())
 		{
 			return DialogState.DialogType.INPUT;
@@ -246,7 +247,7 @@ public class DialogTracker implements KeyListener
 	{
 		if (event.getScriptId() == 2153)
 		{
-			Widget w = client.getWidget(WidgetInfo.DIALOG_OPTION_OPTIONS);
+			Widget w = client.getWidget(ComponentID.DIALOG_OPTION_OPTIONS);
 			if (w != null && !w.isHidden())
 			{
 				for (int i = 0; i < w.getDynamicChildren().length; i++)
@@ -265,18 +266,18 @@ public class DialogTracker implements KeyListener
 					}
 				}
 			}
-			w = client.getWidget(WidgetID.DIALOG_NPC_GROUP_ID, WIDGET_CHILD_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE);
+			w = client.getWidget(InterfaceID.DIALOG_NPC, COMPONENT_ID_DIALOG_NPC_CLICK_HERE_TO_CONTINUE);
 			if (w != null && !w.isHidden() && "Please wait...".equals(Text.removeTags(w.getText())))
 			{
 				optionSelected(lastDialogState, null);
 			}
-			w = client.getWidget(WidgetID.DIALOG_PLAYER_GROUP_ID, WIDGET_CHILD_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE);
+			w = client.getWidget(InterfaceID.DIALOG_PLAYER, COMPONENT_ID_DIALOG_PLAYER_CLICK_HERE_TO_CONTINUE);
 			if (w != null && !w.isHidden() && "Please wait...".equals(Text.removeTags(w.getText())))
 			{
 				optionSelected(lastDialogState, null);
 			}
 		} else if (event.getScriptId() == 2869) {
-			Widget w = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+			Widget w = client.getWidget(InterfaceID.DIALOG_SPRITE, 0);
 			if (w != null && !w.isHidden())
 			{
 				Widget dynamicChild = w.getDynamicChildren()[2];
@@ -426,28 +427,28 @@ public class DialogTracker implements KeyListener
 			switch (type) {
 				case NO_DIALOG:
 					return "DialogState{" + type +
-						"}";
+							"}";
 				case PLAYER:
 				case NPC:
 					return "DialogState{" + type +
-						", name='" + name + "'" +
-						", text='" + text + "'" +
-						"}";
+							", name='" + name + "'" +
+							", text='" + text + "'" +
+							"}";
 				case SPRITE:
 					return "DialogState{" + type +
-						", text='" + text + "'" +
-						", itemId=" + spriteDialogItemId +
-						"}";
+							", text='" + text + "'" +
+							", itemId=" + spriteDialogItemId +
+							"}";
 				case OPTIONS:
 					return "DialogState{" + type +
-						", text='" + text + "'" +
-						", options=" + options +
-						"}";
+							", text='" + text + "'" +
+							", options=" + options +
+							"}";
 				case INPUT:
 					return "DialogState{" + type +
-						", title='" + name + "'" +
-						", input='" + text + "'" +
-						"}";
+							", title='" + name + "'" +
+							", input='" + text + "'" +
+							"}";
 				default:
 					throw new IllegalStateException();
 			}

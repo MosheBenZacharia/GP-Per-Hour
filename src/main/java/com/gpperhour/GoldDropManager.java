@@ -31,6 +31,7 @@ import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
@@ -50,8 +51,7 @@ import com.google.inject.Inject;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.api.ScriptID.XPDROP_DISABLED;
-import static net.runelite.api.widgets.WidgetInfo.TO_CHILD;
-import static net.runelite.api.widgets.WidgetInfo.TO_GROUP;
+import static net.runelite.api.widgets.WidgetUtil.componentToId;
 
 @Slf4j
 /*
@@ -181,7 +181,7 @@ public class GoldDropManager extends Overlay {
 		Widget[] xpDropWidgetChildren;
 
 		// get widget from ID
-		xpDropWidget = client.getWidget(TO_GROUP(xpDropWidgetId), TO_CHILD(xpDropWidgetId));
+		xpDropWidget = client.getWidget(WidgetUtil.componentToInterface(xpDropWidgetId), WidgetUtil.componentToId(xpDropWidgetId));
 
 		if (xpDropWidget == null)
 		{

@@ -72,8 +72,8 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -651,7 +651,7 @@ public class GPPerHourPlugin extends Plugin
 		if (collectOnBank != null && !collectOnBank.isHidden())
 			return true;
 		//Grand exchange can be open while inventory widget is closed, same functionality as above
-		Widget grandExchange = client.getWidget(WidgetInfo.GRAND_EXCHANGE_WINDOW_CONTAINER);
+		Widget grandExchange = client.getWidget(ComponentID.GRAND_EXCHANGE_WINDOW_CONTAINER);
 		if (grandExchange != null && !grandExchange.isHidden())
 			return true;
 		//tool leprechauns
@@ -665,19 +665,19 @@ public class GPPerHourPlugin extends Plugin
 			Widget [] altInventoryWidgets = new Widget[]
 			{
 				//Bank
-				client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER),
+				client.getWidget(ComponentID.BANK_INVENTORY_ITEM_CONTAINER),
 				//GE
-				client.getWidget(WidgetInfo.GRAND_EXCHANGE_INVENTORY_ITEMS_CONTAINER),
+				client.getWidget(ComponentID.GRAND_EXCHANGE_INVENTORY_INVENTORY_ITEM_CONTAINER),
 				//Seed vault
-				client.getWidget(WidgetInfo.SEED_VAULT_INVENTORY_ITEMS_CONTAINER),
+				client.getWidget(ComponentID.SEED_VAULT_INVENTORY_ITEM_CONTAINER),
 				//Bank with equipment view open
-				client.getWidget(WidgetID.BANK_INVENTORY_GROUP_ID, 4),
+				client.getWidget(InterfaceID.BANK_INVENTORY, 4),
 				//Bank with looting bag open
-				client.getWidget(WidgetID.BANK_INVENTORY_GROUP_ID, 5),
+				client.getWidget(InterfaceID.BANK_INVENTORY, 5),
 				//Deposit box open
 				client.getWidget(268, 0),
 				//COX storage open
-				client.getWidget(WidgetID.CHAMBERS_OF_XERIC_STORAGE_UNIT_INVENTORY_GROUP_ID, 1)
+				client.getWidget(InterfaceID.CHAMBERS_OF_XERIC_INVENTORY, 1)
 			};
 
 			for (Widget altInventoryWidget: altInventoryWidgets)
@@ -696,7 +696,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (runData == null)
 			return;
-		inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+		inventoryWidget = client.getWidget(ComponentID.INVENTORY_CONTAINER);
 
 		inventoryItemContainer = client.getItemContainer(InventoryID.INVENTORY);
 		equipmentItemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
