@@ -360,7 +360,7 @@ public class GPPerHourPlugin extends Plugin
 
 	void updatePanels()
 	{
-		if (navButton.isSelected() && gpPerHourPanel.isShowingActiveSession())
+		if (gpPerHourPanel.isActive() && gpPerHourPanel.isShowingActiveSession())
 		{
 			SessionStats sessionStats = sessionManager.getActiveSessionStats();
 			//ensure we load these after a restart
@@ -370,7 +370,7 @@ public class GPPerHourPlugin extends Plugin
 			}
 			SwingUtilities.invokeLater(() -> activeSessionPanel.updateTrips());
 		}
-		if (navButton.isSelected() && gpPerHourPanel.isShowingSessionHistory() && sessionManager.sessionHistoryDirty)
+		if (gpPerHourPanel.isActive() && gpPerHourPanel.isShowingSessionHistory() && sessionManager.sessionHistoryDirty)
 		{
 			//ensure we load these after a restart
 			for (SessionStats sessionStats : sessionManager.sessionHistory)

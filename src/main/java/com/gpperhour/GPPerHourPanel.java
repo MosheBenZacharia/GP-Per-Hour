@@ -55,6 +55,8 @@ class GPPerHourPanel extends PluginPanel
 	private final ActiveSessionPanel activeSessionPanel;
 	@Getter
 	private final SessionHistoryPanel sessionHistoryPanel;
+	@Getter
+	private boolean active;
 
 	GPPerHourPanel(ActiveSessionPanel activeSessionPanel, SessionHistoryPanel sessionHistoryPanel)
 	{
@@ -84,6 +86,18 @@ class GPPerHourPanel extends PluginPanel
 
 		add(titlePanel, BorderLayout.NORTH);
 		add(centerPanel, BorderLayout.CENTER);
+	}
+
+	@Override
+	public void onActivate()
+	{
+		active = true;
+	}
+
+	@Override
+	public void onDeactivate()
+	{
+		active = false;
 	}
 
 	private JPanel buildTitlePanel()
