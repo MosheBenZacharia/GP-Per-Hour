@@ -113,14 +113,10 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.2";
+	private static final String plugin_version = "1.4";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-		"* Option to only show positive gold drops.<br>" +
-		"* Option to set the value of Brimstone Keys to zero.<br>" +
-		"* Option to use low or high alchemy values.<br>" +
-		"* Seedlings now remap to sapling prices.<br>" +
-		"* Seed vault now counts as a bank interface.";
+		"* New rune pouch UI now counts as bank interface.";
 	static final int COINS = ItemID.COINS_995;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
@@ -674,6 +670,8 @@ public class GPPerHourPlugin extends Plugin
 				client.getWidget(InterfaceID.BANK_INVENTORY, 4),
 				//Bank with looting bag open
 				client.getWidget(InterfaceID.BANK_INVENTORY, 5),
+				//Bank with rune pouch open
+				client.getWidget(InterfaceID.BANK_INVENTORY, 19),
 				//Deposit box open
 				client.getWidget(268, 0),
 				//COX storage open
