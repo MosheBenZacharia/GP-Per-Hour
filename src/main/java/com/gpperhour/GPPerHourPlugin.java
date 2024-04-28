@@ -206,6 +206,7 @@ public class GPPerHourPlugin extends Plugin
     private NavigationButton navButton;
 	private final Map<Integer, Float> inventoryQtyMap = new HashMap<>();
 	private final Map<Integer, Float> equipmentQtyMap = new HashMap<>();
+	private final Map<Integer, Float> rewardsQtyMap = new HashMap<>();
 	private final HashSet<String> ignoredItems = new HashSet<>();
 	private int depositInteractionTick;
 	//if its been more than 30 ticks you probably cancelled your interaction
@@ -215,6 +216,7 @@ public class GPPerHourPlugin extends Plugin
 	private Widget inventoryWidget;
 	private ItemContainer inventoryItemContainer;
 	private ItemContainer equipmentItemContainer;
+	private ItemContainer rewardsItemContainer;
 	private boolean postNewRun = false;
 	private long newRunTick = 0;
 	private boolean expectingPutAnimation = false;
@@ -619,6 +621,20 @@ public class GPPerHourPlugin extends Plugin
 			expectingPutAnimation = true;
 			depositInteractionTick = client.getTickCount();
 		}
+
+		// Lunar Chest "Bank-all" button
+		// MenuOptionClicked(getParam0=-1, getParam1=56885268, getMenuOption=Bank-all, getMenuTarget=, getMenuAction=CC_OP, getId=1)
+		if (event.getParam1() == 56885268 && "Bank-all".equals(event.getMenuOption()) && event.getMenuAction() == MenuAction.CC_OP)
+		{
+			rewardsItemContainer = client.getItemContainer(InventoryID.LUNAR_CHEST);
+			if (rewardsItemContainer != null) {
+				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
+				for (int itemId: rewardsQtyMap.keySet()) {
+					runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+				}
+			}
+			updatePluginState(false);
+		}
 	}
 	
 	@Subscribe
@@ -724,11 +740,12 @@ public class GPPerHourPlugin extends Plugin
 		getRunData().itemQtys.clear();
 		long inventoryTotal = getInventoryTotal(false);
 		long equipmentTotal = getEquipmentTotal(false);
+		long rewardsTotal = getRewardsTotal();
 
 		long totalGp = inventoryTotal;
 		if (getState() == RunState.RUN && getMode() == TrackingMode.PROFIT_LOSS)
 		{
-			totalGp += equipmentTotal;
+			totalGp += equipmentTotal + rewardsTotal;
 		}
 
 		setTotalGp(totalGp);
@@ -774,6 +791,7 @@ public class GPPerHourPlugin extends Plugin
 	void postNewRun()
 	{
 		runData.initialItemQtys.clear();
+		runData.bankedItemQtys.clear();
 		runData.itemQtys.clear();
 
 		getInventoryTotal(true);
@@ -825,7 +843,22 @@ public class GPPerHourPlugin extends Plugin
 
 		return (long) totalGp;
 	}
-	
+
+	long getRewardsTotal()
+	{
+		double totalGp = 0;
+
+		for (Integer itemId: runData.bankedItemQtys.keySet())
+		{
+			float gePrice = getPrice(itemId);
+			float itemQty = runData.bankedItemQtys.get(itemId);
+			totalGp += (itemQty * gePrice);
+			updateRunData(false, itemId, itemQty, gePrice);
+		}
+
+		return (long) totalGp;
+	}
+
     public void openConfiguration() {
 		// We don't have access to the ConfigPlugin so let's just emulate an overlay click
 		this.eventBus.post(new OverlayMenuClicked(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, null, null), this.tripOverlay));
