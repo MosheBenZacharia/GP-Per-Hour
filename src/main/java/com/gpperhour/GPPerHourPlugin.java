@@ -606,6 +606,19 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
+		if (event.getGroupId() == InterfaceID.KINGDOM)
+		{
+			rewardsItemContainer = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
+			if (rewardsItemContainer != null)
+			{
+				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
+				for (int itemId: rewardsQtyMap.keySet())
+				{
+					runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+				}
+			}
+		}
+
 		updatePluginState(false);
 	}
 
