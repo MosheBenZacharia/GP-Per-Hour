@@ -72,6 +72,7 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.callback.ClientThread;
@@ -216,7 +217,6 @@ public class GPPerHourPlugin extends Plugin
 	private Widget inventoryWidget;
 	private ItemContainer inventoryItemContainer;
 	private ItemContainer equipmentItemContainer;
-	private ItemContainer rewardsItemContainer;
 	private boolean postNewRun = false;
 	private long newRunTick = 0;
 	private boolean expectingPutAnimation = false;
@@ -608,7 +608,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (event.getGroupId() == InterfaceID.KINGDOM)
 		{
-			rewardsItemContainer = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
+			ItemContainer rewardsItemContainer = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
 			if (rewardsItemContainer != null)
 			{
 				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
@@ -635,18 +635,49 @@ public class GPPerHourPlugin extends Plugin
 			depositInteractionTick = client.getTickCount();
 		}
 
-		// Lunar Chest "Bank-all" button
-		// MenuOptionClicked(getParam0=-1, getParam1=56885268, getMenuOption=Bank-all, getMenuTarget=, getMenuAction=CC_OP, getId=1)
-		if (event.getParam1() == 56885268 && "Bank-all".equals(event.getMenuOption()) && event.getMenuAction() == MenuAction.CC_OP)
+		if ("Bank-all".equals(event.getMenuOption()))
 		{
-			rewardsItemContainer = client.getItemContainer(InventoryID.LUNAR_CHEST);
-			if (rewardsItemContainer != null) {
-				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
-				for (int itemId: rewardsQtyMap.keySet()) {
-					runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+			InventoryID inventory = null;
+			switch (WidgetUtil.componentToInterface(event.getParam1()))
+			{
+				case InterfaceID.CHAMBERS_OF_XERIC_REWARD:
+					inventory = InventoryID.CHAMBERS_OF_XERIC_CHEST;
+					break;
+				case InterfaceID.DRIFT_NET_FISHING_REWARD:
+					inventory = InventoryID.DRIFT_NET_FISHING_REWARD;
+					break;
+				case InterfaceID.FORTIS_COLOSSEUM_REWARD:
+					inventory = InventoryID.FORTIS_COLOSSEUM_REWARD_CHEST;
+					break;
+				case InterfaceID.LUNAR_CHEST:
+					inventory = InventoryID.LUNAR_CHEST;
+					break;
+				case InterfaceID.TOA_REWARD:
+					inventory = InventoryID.TOA_REWARD_CHEST;
+					break;
+				case InterfaceID.TOB_REWARD:
+					inventory = InventoryID.THEATRE_OF_BLOOD_CHEST;
+					break;
+				case InterfaceID.TRAWLER_REWARD:
+					inventory = InventoryID.FISHING_TRAWLER_REWARD;
+					break;
+				case InterfaceID.WILDERNESS_LOOT_CHEST:
+					inventory = InventoryID.WILDERNESS_LOOT_CHEST;
+					break;
+			}
+			if (inventory != null)
+			{
+				ItemContainer rewardsItemContainer = client.getItemContainer(inventory);
+				if (rewardsItemContainer != null)
+				{
+					refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
+					for (int itemId: rewardsQtyMap.keySet())
+					{
+						runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+					}
+					updatePluginState(false);
 				}
 			}
-			updatePluginState(false);
 		}
 	}
 	
