@@ -98,6 +98,22 @@ Unsupported items:
 <img width="530" alt="fishbarrel" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/213778c4-3e8c-4364-92b4-0ad18bc7a751">
 
 
+### Reward Chest Support (NEW)
+
+Automatically tracks items banked via the reward interface
+
+Supported rewards:
+- Chambers of Xeric (COX)
+- Tombs of Amascut (TOA)
+- Theatre of Blood (TOB)
+- Drift Net Fishing
+- Fortis Colosseum
+- Lunar Chest
+- Fishing Trawler
+- Wilderness Loot Chest
+
+Thanks to https://github.com/BR- for adding this!
+
 ### Untradeable Item Support
 
 Provides config options to assign value to various untradeable items using their commonly traded counterparts.
