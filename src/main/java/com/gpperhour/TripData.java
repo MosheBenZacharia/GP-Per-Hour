@@ -40,6 +40,7 @@ public class TripData
     boolean isPaused = false;
 
     Map<Integer, Float> initialItemQtys = new HashMap<>();
+    Map<Integer, Float> bankedItemQtys = new HashMap<>();
     transient Map<Integer, Float> itemQtys = new HashMap<>();
 
     LinkedList<String> ignoredItems = new LinkedList<>();

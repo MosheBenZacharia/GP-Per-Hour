@@ -72,6 +72,7 @@ import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.callback.ClientThread;
@@ -206,6 +207,7 @@ public class GPPerHourPlugin extends Plugin
     private NavigationButton navButton;
 	private final Map<Integer, Float> inventoryQtyMap = new HashMap<>();
 	private final Map<Integer, Float> equipmentQtyMap = new HashMap<>();
+	private final Map<Integer, Float> rewardsQtyMap = new HashMap<>();
 	private final HashSet<String> ignoredItems = new HashSet<>();
 	private int depositInteractionTick;
 	//if its been more than 30 ticks you probably cancelled your interaction
@@ -604,6 +606,19 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
+		if (event.getGroupId() == InterfaceID.KINGDOM)
+		{
+			ItemContainer rewardsItemContainer = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
+			if (rewardsItemContainer != null)
+			{
+				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
+				for (int itemId: rewardsQtyMap.keySet())
+				{
+					runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+				}
+			}
+		}
+
 		updatePluginState(false);
 	}
 
@@ -618,6 +633,51 @@ public class GPPerHourPlugin extends Plugin
 			//user clicked on one of these but they might get to it at some later tick.
 			expectingPutAnimation = true;
 			depositInteractionTick = client.getTickCount();
+		}
+
+		if ("Bank-all".equals(event.getMenuOption()))
+		{
+			InventoryID inventory = null;
+			switch (WidgetUtil.componentToInterface(event.getParam1()))
+			{
+				case InterfaceID.CHAMBERS_OF_XERIC_REWARD:
+					inventory = InventoryID.CHAMBERS_OF_XERIC_CHEST;
+					break;
+				case InterfaceID.DRIFT_NET_FISHING_REWARD:
+					inventory = InventoryID.DRIFT_NET_FISHING_REWARD;
+					break;
+				case InterfaceID.FORTIS_COLOSSEUM_REWARD:
+					inventory = InventoryID.FORTIS_COLOSSEUM_REWARD_CHEST;
+					break;
+				case InterfaceID.LUNAR_CHEST:
+					inventory = InventoryID.LUNAR_CHEST;
+					break;
+				case InterfaceID.TOA_REWARD:
+					inventory = InventoryID.TOA_REWARD_CHEST;
+					break;
+				case InterfaceID.TOB_REWARD:
+					inventory = InventoryID.THEATRE_OF_BLOOD_CHEST;
+					break;
+				case InterfaceID.TRAWLER_REWARD:
+					inventory = InventoryID.FISHING_TRAWLER_REWARD;
+					break;
+				case InterfaceID.WILDERNESS_LOOT_CHEST:
+					inventory = InventoryID.WILDERNESS_LOOT_CHEST;
+					break;
+			}
+			if (inventory != null)
+			{
+				ItemContainer rewardsItemContainer = client.getItemContainer(inventory);
+				if (rewardsItemContainer != null)
+				{
+					refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
+					for (int itemId: rewardsQtyMap.keySet())
+					{
+						runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+					}
+					updatePluginState(false);
+				}
+			}
 		}
 	}
 	
@@ -724,11 +784,12 @@ public class GPPerHourPlugin extends Plugin
 		getRunData().itemQtys.clear();
 		long inventoryTotal = getInventoryTotal(false);
 		long equipmentTotal = getEquipmentTotal(false);
+		long rewardsTotal = getRewardsTotal();
 
 		long totalGp = inventoryTotal;
 		if (getState() == RunState.RUN && getMode() == TrackingMode.PROFIT_LOSS)
 		{
-			totalGp += equipmentTotal;
+			totalGp += equipmentTotal + rewardsTotal;
 		}
 
 		setTotalGp(totalGp);
@@ -774,6 +835,7 @@ public class GPPerHourPlugin extends Plugin
 	void postNewRun()
 	{
 		runData.initialItemQtys.clear();
+		runData.bankedItemQtys.clear();
 		runData.itemQtys.clear();
 
 		getInventoryTotal(true);
@@ -825,7 +887,22 @@ public class GPPerHourPlugin extends Plugin
 
 		return (long) totalGp;
 	}
-	
+
+	long getRewardsTotal()
+	{
+		double totalGp = 0;
+
+		for (Integer itemId: runData.bankedItemQtys.keySet())
+		{
+			float gePrice = getPrice(itemId);
+			float itemQty = runData.bankedItemQtys.get(itemId);
+			totalGp += (itemQty * gePrice);
+			updateRunData(false, itemId, itemQty, gePrice);
+		}
+
+		return (long) totalGp;
+	}
+
     public void openConfiguration() {
 		// We don't have access to the ConfigPlugin so let's just emulate an overlay click
 		this.eventBus.post(new OverlayMenuClicked(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, null, null), this.tripOverlay));
