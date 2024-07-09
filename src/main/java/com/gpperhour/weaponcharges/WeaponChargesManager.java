@@ -273,7 +273,7 @@ public class WeaponChargesManager
 					break;
 				}
 			}
-		} else if (event.getMenuOption().equalsIgnoreCase("unload") && event.getItemId() == ItemID.TOXIC_BLOWPIPE) {
+		} else if (event.getMenuOption().equalsIgnoreCase("unload") && isToxicBlowpipe(event.getItemId())) {
 			checkBlowpipeUnload = client.getTickCount();
 		} else if (event.getMenuOption().equalsIgnoreCase("pages")) {
 			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.EQUIPMENT) { // item is equipped.
@@ -344,7 +344,7 @@ public class WeaponChargesManager
 			Item[] inventoryItems = itemContainer.getItems();
 			for (Item item : inventoryItems)
 			{
-				if (item.getId() == ItemID.TOXIC_BLOWPIPE)
+				if (isToxicBlowpipe(item.getId()))
 				{
 					return true;
 				}
@@ -354,12 +354,17 @@ public class WeaponChargesManager
 		if (equipmentContainer != null)
 		{
 			Item weapon = equipmentContainer.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
-			if (weapon != null && weapon.getId() == ItemID.TOXIC_BLOWPIPE)
+			if (weapon != null && isToxicBlowpipe(weapon.getId()))
 			{
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private boolean isToxicBlowpipe(int itemId)
+	{
+		return itemId == ItemID.TOXIC_BLOWPIPE || itemId == ItemID.BLAZING_BLOWPIPE;
 	}
 
 	private boolean hasBlowpipeData()
@@ -1008,7 +1013,7 @@ public class WeaponChargesManager
 
 	public boolean hasChargeData(Integer itemId)
 	{
-		if (itemId == ItemID.TOXIC_BLOWPIPE)
+		if (isToxicBlowpipe(itemId))
 		{
 			return hasBlowpipeData();
 		}
