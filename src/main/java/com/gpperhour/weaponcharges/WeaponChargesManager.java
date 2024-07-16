@@ -92,6 +92,7 @@ public class WeaponChargesManager
 	
 	public static final String CONFIG_GROUP_NAME = GPPerHourConfig.GROUP;
 	private static final int BLOWPIPE_ATTACK_ANIMATION = 5061;
+	private static final int BLAZING_BLOWPIPE_ATTACK_ANIMATION = 10656;
 	private static final int AMMO_SAVING_SETTING_VARBIT = 5697;
 
 	// TODO rename. This is used for when an item is used on a weapon, when a weapon is used on an item, and when "pages" is clicked.
@@ -749,7 +750,7 @@ public class WeaponChargesManager
 		if (lastLocalPlayerAnimationChangedGameTick == client.getTickCount()) 
 			checkAnimation();
 
-		if (lastLocalPlayerAnimationChanged == BLOWPIPE_ATTACK_ANIMATION)
+		if (lastLocalPlayerAnimationChanged == BLOWPIPE_ATTACK_ANIMATION || lastLocalPlayerAnimationChanged == BLAZING_BLOWPIPE_ATTACK_ANIMATION)
 		{
 			blowpipeOnGameTick();
 		}
