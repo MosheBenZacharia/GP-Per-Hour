@@ -114,10 +114,10 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.6";
+	private static final String plugin_version = "1.7";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-		"* Added support for Blazing Blowpipe.";
+		"* Added support for Blazing Blowpipe (With animation fix).";
 	static final int COINS = ItemID.COINS_995;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
