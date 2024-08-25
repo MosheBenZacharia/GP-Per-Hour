@@ -32,9 +32,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import com.gpperhour.GPPerHourConfig;
+import com.gpperhour.GPPerHourPlugin;
 import lombok.Getter;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.util.Text;
 
 @Getter
@@ -405,12 +408,24 @@ public enum ChargedWeapon
 		.updateMessageChargesRegexes(
 			ChargesMessage.staticChargeMessage("Your Tome of Fire is now empty.", 0)
 		)
+		.checkChargesRegexes(
+			ChargesMessage.matcherGroupChargeMessage("You remove [\\S]+ pages? from the book. Your tome currently holds ([\\d,]+|one) charges?.", 1),
+			ChargesMessage.matcherGroupChargeMessage("Your tome has been charged with (Burnt|Searing) Pages. It currently holds ([\\d,]+|one) charges?.", 2, (matcher, chargeCount, configManager) -> {
+				configManager.setRSProfileConfiguration(GPPerHourConfig.GROUP, "tome_of_fire_page_type", matcher.group(1).contains("Searing") ? "searing" : "burnt");
+				return chargeCount;
+			})
+		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float pages = charges / 20f;
-			chargeComponents.put(ItemID.BURNT_PAGE, pages);
+			String tome_of_fire_page_type = params.configManager.getRSProfileConfiguration(GPPerHourConfig.GROUP, "tome_of_fire_page_type");
+			//Default to burnt if migrating from previous version
+			if (tome_of_fire_page_type == null)
+				tome_of_fire_page_type = "burnt";
+			boolean searing = tome_of_fire_page_type.equals("searing");
+			chargeComponents.put(searing ? ItemID.SEARING_PAGE : ItemID.BURNT_PAGE, pages);
 		})
 	),
 	/* Tome of water:
@@ -437,6 +452,10 @@ public enum ChargedWeapon
 		.configKeyName("tome_of_water")
 		.updateMessageChargesRegexes(
 			ChargesMessage.staticChargeMessage("Your Tome of Water is now empty.", 0)
+		)
+		.checkChargesRegexes(
+			ChargesMessage.matcherGroupChargeMessage("(You remove [\\S]+ pages? from the book. )?Your tome currently holds ([\\d,]+) charges.", 2),
+			ChargesMessage.staticChargeMessage("(You remove [\\S]+ pages? from the book. )?Your tome currently holds one charge.", 1)
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
@@ -1114,8 +1133,6 @@ public enum ChargedWeapon
 		ChargesMessage.staticChargeMessage("You use 1000 ether to activate the weapon.", 0),
 		ChargesMessage.matcherGroupChargeMessage("You add (a further )?([\\d,]+) revenant ether to your weapon, giving it a total of ([\\d,]+) charges?.", 3),
 		// elemental tomes
-		ChargesMessage.matcherGroupChargeMessage("(You remove [\\S]+ pages? from the book. )?Your tome currently holds ([\\d,]+) charges.", 2),
-		ChargesMessage.staticChargeMessage("(You remove [\\S]+ pages? from the book. )?Your tome currently holds one charge.", 1),
 		ChargesMessage.staticChargeMessage("You empty your book of pages.", 0)
 	);
 	@Getter
@@ -1169,6 +1186,7 @@ public enum ChargedWeapon
 	{
 		Integer currentCharges;
 		Map<Integer, Float> chargeComponents = new HashMap<>();
+		ConfigManager configManager;
 	}
 
 	private static class ChargedWeaponBuilder {
@@ -1274,10 +1292,11 @@ public enum ChargedWeapon
 		this.updateParams = new UpdateChargeComponentsParams();
 	}
 
-	public Map<Integer, Float> getChargeComponents(Integer charges)
+	public Map<Integer, Float> getChargeComponents(Integer charges, ConfigManager configManager)
 	{
 		this.updateParams.currentCharges = charges;
 		this.updateParams.chargeComponents.clear();
+		this.updateParams.configManager = configManager;
 		this.updateChargeComponents.accept(updateParams);
 		return this.updateParams.chargeComponents;
 	}

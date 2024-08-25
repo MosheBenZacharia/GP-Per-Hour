@@ -461,9 +461,9 @@ public class WeaponChargesManager
 				ChargedWeapon chargedWeapon = removeLastWeaponChecked();
 				// TODO possible to mess stuff up by checking a weapon immediately after the tome of water/fire dialog?
 				if (chargedWeapon != null) {
-					setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher));
+					setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher, configManager));
 				} else if (lastUsedOnWeapon != null) {
-					setCharges(lastUsedOnWeapon, checkMessage.getChargesLeft(matcher));
+					setCharges(lastUsedOnWeapon, checkMessage.getChargesLeft(matcher, configManager));
 					if (verboseLogging) log.info("applying charges to last used-on weapon: {}", lastUsedOnWeapon);
 				} else {
 					log.warn("saw check message without having seen a charged weapon checked or used: \"" + message + "\"" );
@@ -476,7 +476,7 @@ public class WeaponChargesManager
 		{
 			Matcher matcher = checkMessage.getPattern().matcher(message);
 			if (matcher.find()) {
-				int chargeCount = checkMessage.getChargesLeft(matcher);
+				int chargeCount = checkMessage.getChargesLeft(matcher, configManager);
 				delayChargeUpdateUntilAfterAnimations.add(() -> {
 					ChargedWeapon equippedWeapon = getEquippedChargedWeapon(EquipmentInventorySlot.WEAPON);
 					if (equippedWeapon != null) {
@@ -498,7 +498,7 @@ public class WeaponChargesManager
 			{
 				Matcher matcher = checkMessage.getPattern().matcher(message);
 				if (matcher.find()) {
-					setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher));
+					setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher, configManager));
 					break outer_loop;
 				}
 			}
@@ -507,7 +507,7 @@ public class WeaponChargesManager
 			{
 				Matcher matcher = checkMessage.getPattern().matcher(message);
 				if (matcher.find()) {
-					delayChargeUpdateUntilAfterAnimations.add(() -> setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher)));
+					delayChargeUpdateUntilAfterAnimations.add(() -> setCharges(chargedWeapon, checkMessage.getChargesLeft(matcher, configManager)));
 					break outer_loop;
 				}
 			}
@@ -1055,6 +1055,6 @@ public class WeaponChargesManager
 			blowpipeMap.put(ItemID.ZULRAHS_SCALES, scaleCount);
 			return blowpipeMap;
 		}
-		return weapon.getChargeComponents(getCharges(weapon));
+		return weapon.getChargeComponents(getCharges(weapon), configManager);
 	}
 }
