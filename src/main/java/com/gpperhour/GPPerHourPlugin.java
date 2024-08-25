@@ -117,7 +117,8 @@ public class GPPerHourPlugin extends Plugin
 	private static final String plugin_version = "1.8";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-		"* Add tracking of Group Ironman bank.";
+				"* Fix tracking of Tome of Fire.<br>" +
+				"* Add tracking of Group Ironman bank.";
 	static final int COINS = ItemID.COINS_995;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
