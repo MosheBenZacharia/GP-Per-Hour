@@ -114,9 +114,10 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.8";
+	private static final String plugin_version = "1.9";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
+				"* Fix new trips starting erroneously.<br>" +
 				"* Fix tracking of Tome of Fire.<br>" +
 				"* Add tracking of Group Ironman bank.";
 	static final int COINS = ItemID.COINS_995;
