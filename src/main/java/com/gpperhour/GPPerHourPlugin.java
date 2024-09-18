@@ -722,7 +722,7 @@ public class GPPerHourPlugin extends Plugin
 			Widget [] altInventoryWidgets = new Widget[]
 			{
 				//Group Ironman Bank
-				client.getWidget(10747975),
+				client.getWidget(725, 0),
 				//Bank
 				client.getWidget(ComponentID.BANK_INVENTORY_ITEM_CONTAINER),
 				//GE
