@@ -236,9 +236,11 @@ public interface GPPerHourConfig extends Config
 		return false;
 	}
 
+
+	public static final String inventoryOverlayDisplayModeKeyName = "inventoryOverlayDisplayMode";
     @ConfigItem(
 		position = 5,
-		keyName = "inventoryOverlayDisplayMode",
+		keyName = inventoryOverlayDisplayModeKeyName,
 		name = "Overlay Display",
 		description = "What data to show on the inventory overlay.",
 		section =  tripOverlaySection

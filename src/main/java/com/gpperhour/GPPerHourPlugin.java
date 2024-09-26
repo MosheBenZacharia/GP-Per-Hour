@@ -534,6 +534,10 @@ public class GPPerHourPlugin extends Plugin
 					activeSessionPanel.resetSessionLootGrid();
 				}
 			}
+			else if (event.getKey().equals(GPPerHourConfig.inventoryOverlayDisplayModeKeyName))
+			{
+				previousTotalGp = null;
+			}
 			else if (event.getKey().startsWith("tokkul"))
 			{
 				refreshPrice(ItemID.TOKKUL);
