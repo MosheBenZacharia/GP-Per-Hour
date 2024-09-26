@@ -218,6 +218,8 @@ public class GPPerHourPlugin extends Plugin
 	private ItemContainer inventoryItemContainer;
 	private ItemContainer equipmentItemContainer;
 	private boolean expectingPutAnimation = false;
+	//Should we ignore item/equipment delta for this tick? (Due to bank deposit, etc)
+	private  boolean ignoreDelta = false;
 
 	// from ClueScrollPlugin
 	private static final int[] RUNEPOUCH_AMOUNT_VARBITS = {
@@ -689,7 +691,7 @@ public class GPPerHourPlugin extends Plugin
 			if (event.getActor().getAnimation() == 834 //put item
 				|| event.getActor().getAnimation() == 9402)//deposit runes
 			{
-				updatePluginState(true);
+				ignoreDelta = true;
 				expectingPutAnimation = false;
 			}
 		}
@@ -787,11 +789,12 @@ public class GPPerHourPlugin extends Plugin
 		equipmentQtyMap.forEach((key, value) -> currentInventoryAndEquipment.merge(key, value, Float::sum));
 
 		//The change in inventory and equipment contents since the last time this was called
-		if (getPreviousState() == RunState.RUN && getState() == RunState.RUN)
+		if (getPreviousState() == RunState.RUN && getState() == RunState.RUN && !ignoreDelta)
 		{
 			Map<Integer,Float> tickDelta = getQuantityDifference(runData.lastTickInventoryAndEquipment, currentInventoryAndEquipment);
 			tickDelta.forEach((key, value) -> runData.deltaItemQtys.merge(key, value, Float::sum));
 		}
+		ignoreDelta = false;
 
 		runData.lastTickInventoryAndEquipment.clear();
 		runData.lastTickInventoryAndEquipment.putAll(currentInventoryAndEquipment);

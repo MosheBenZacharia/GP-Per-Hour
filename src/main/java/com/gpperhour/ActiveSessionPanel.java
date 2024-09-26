@@ -322,7 +322,8 @@ class ActiveSessionPanel extends PluginPanel
 			if (showSessionLootGrid)
 				UI.updateLootGrid(emptyLedger, sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
 			updateErrorPanel(false);
-		} else
+		}
+		else
 		{
 			sessionNameLabel.setText(sessionNameLabelPlaceholder);
 			gpPerHourLabel.setText(htmlLabel(gpPerHourLabelPrefix,
