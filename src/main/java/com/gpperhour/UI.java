@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +55,7 @@ import net.runelite.client.util.QuantityFormatter;
 public class UI {
     public static class LootPanelData {
         JPanel lootPanel = new JPanel();
-        JPanel containerPanel = new JPanel();
+        JComponent containerPanel;
         List<LedgerItem> previousLedger = new LinkedList<LedgerItem>();
     }
 
@@ -235,7 +236,7 @@ public class UI {
         }
     }
 
-    static void updateLootGrid(List<LedgerItem> ledger, LootPanelData lootPanelData, ItemManager itemManager, GPPerHourConfig config) {
+    static void updateLootGrid(List<LedgerItem> ledger, LootPanelData lootPanelData, ItemManager itemManager, GPPerHourConfig config, int heightLimit) {
         if (UI.ledgersMatch(ledger, lootPanelData.previousLedger)) {
             return;
         }
@@ -244,9 +245,8 @@ public class UI {
         int totalItems = ledger.size();
 
         // Calculates how many rows need to be display to fit all items
-        final int rowSize = ((totalItems % ITEMS_PER_ROW == 0) ? 0 : 1) + totalItems / ITEMS_PER_ROW;
-        lootPanelData.containerPanel.setLayout(new GridLayout(rowSize, ITEMS_PER_ROW, 1, 1));
-        containerCurrent.setLayout(new GridLayout(rowSize, ITEMS_PER_ROW, 1, 1));
+        final int rowCount = ((totalItems % ITEMS_PER_ROW == 0) ? 0 : 1) + totalItems / ITEMS_PER_ROW;
+        containerCurrent.setLayout(new GridLayout(rowCount, ITEMS_PER_ROW, 1, 1));
 
         // Create stacked items from the item list, calculates total price and then
         // displays all the items in the UI.
@@ -294,8 +294,24 @@ public class UI {
             }
         }
 
-        lootPanelData.lootPanel.remove(lootPanelData.containerPanel);
-        lootPanelData.containerPanel = containerCurrent;
+
+        if (lootPanelData.containerPanel != null)
+            lootPanelData.lootPanel.remove(lootPanelData.containerPanel);
+        if (heightLimit != 0)
+        {
+            // Wrap the panel in a JScrollPane
+            JScrollPane scrollPane = new JScrollPane(containerCurrent);
+            scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0));
+            scrollPane.getVerticalScrollBar().setBorder(new EmptyBorder(0, 5, 0, 0));
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setMaximumSize(new Dimension(ITEM_SIZE.width * ITEMS_PER_ROW, heightLimit));
+            scrollPane.setPreferredSize(new Dimension(ITEM_SIZE.width * ITEMS_PER_ROW, heightLimit));
+            lootPanelData.containerPanel = scrollPane;
+        }
+        else
+        {
+            lootPanelData.containerPanel = containerCurrent;
+        }
         lootPanelData.lootPanel.add(lootPanelData.containerPanel);
         lootPanelData.lootPanel.revalidate();
         lootPanelData.lootPanel.repaint();

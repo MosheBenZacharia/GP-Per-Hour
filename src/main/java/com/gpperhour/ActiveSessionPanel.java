@@ -312,7 +312,7 @@ class ActiveSessionPanel extends PluginPanel
 			tripCountLabel.setText(htmlLabel(tripCountLabelPrefix, "N/A"));
 			avgTripDurationLabel.setText(htmlLabel(avgTripDurationLabelPrefix, "N/A"));
 			if (showSessionLootGrid)
-				UI.updateLootGrid(emptyLedger, sessionLootPanelData, itemManager, config);
+				UI.updateLootGrid(emptyLedger, sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
 			updateErrorPanel(false);
 		} else
 		{
@@ -337,7 +337,7 @@ class ActiveSessionPanel extends PluginPanel
 			}
 			if (showSessionLootGrid)
 				UI.updateLootGrid(UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys())),
-					sessionLootPanelData, itemManager, config);
+					sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
 			updateErrorPanel(true);
 		}
 		sessionLootPanelData.lootPanel.setVisible(showSessionLootGrid);
@@ -452,7 +452,7 @@ class ActiveSessionPanel extends PluginPanel
 		updateButtonPause(tpData, runData);
 		updatePopupMenu(tpData, runData);
 
-		UI.updateLootGrid(ledger, tpData.lootPanelData, itemManager, config);
+		UI.updateLootGrid(ledger, tpData.lootPanelData, itemManager, config, 0);
 
 		consecutiveRepeatCount = 0;
 		previousLedger = ledger;

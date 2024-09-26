@@ -244,7 +244,7 @@ public class SessionHistoryPanel extends JPanel
 			UI.updateLootGrid(
 					UI.sortLedger(
 							GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys())),
-					panelData.sessionLootPanelData, itemManager, config);
+					panelData.sessionLootPanelData, itemManager, config, 0);
 		}
 
 		panelData.onDetailsPressed = () ->
