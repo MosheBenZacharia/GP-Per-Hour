@@ -107,7 +107,7 @@ public class U_BottomlessCompostBucket extends ChargedItem {
         {
             itemId = ItemID.COMPOST;
         }
-        quantities.put(itemId, (float) charges);
+        quantities.put(itemId, ((float) charges)/2f);
     }
 
     @Override
