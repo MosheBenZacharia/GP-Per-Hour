@@ -535,6 +535,13 @@ public class GPPerHourPlugin extends Plugin
 			{
 				refreshPrices();
 			}
+			else if (event.getKey().equals(GPPerHourConfig.sessionLootGridMaxHeightKeyName))
+			{
+				if (activeSessionPanel != null)
+				{
+					activeSessionPanel.resetSessionLootGrid();
+				}
+			}
 			else if (event.getKey().startsWith("tokkul"))
 			{
 				refreshPrice(ItemID.TOKKUL);

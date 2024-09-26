@@ -86,6 +86,14 @@ class ActiveSessionPanel extends PluginPanel
 		this.sessionInfoPanel = new JPanel();
 	}
 
+	public  void resetSessionLootGrid()
+	{
+		if (sessionLootPanelData != null)
+		{
+			sessionLootPanelData.previousLedger  = null;
+		}
+	}
+
 	void sidePanelInitializer()
 	{
 		this.setLayout(new BorderLayout());

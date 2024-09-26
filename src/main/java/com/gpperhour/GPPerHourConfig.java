@@ -586,9 +586,10 @@ public interface GPPerHourConfig extends Config
     )
     default int sidePanelPosition() { return 6; }
 
+	public static final String sessionLootGridMaxHeightKeyName = "sessionLootGridMaxHeight";
 	@ConfigItem(
 			position = 25,
-			keyName = "sessionLootGridMaxHeight",
+			keyName = sessionLootGridMaxHeightKeyName,
 			name = "Loot Grid Max Height",
 			description = "The max height of the session panel's loot grid. Prevents force expansion of client.",
 			section =  sessionPanelSection

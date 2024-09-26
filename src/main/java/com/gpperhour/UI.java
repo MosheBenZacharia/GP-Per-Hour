@@ -304,8 +304,9 @@ public class UI {
             scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(12, 0));
             scrollPane.getVerticalScrollBar().setBorder(new EmptyBorder(0, 5, 0, 0));
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.setMaximumSize(new Dimension(ITEM_SIZE.width * ITEMS_PER_ROW, heightLimit));
-            scrollPane.setPreferredSize(new Dimension(ITEM_SIZE.width * ITEMS_PER_ROW, heightLimit));
+            scrollPane.setMaximumSize(new Dimension(0, heightLimit));
+            if (scrollPane.getPreferredSize().height > heightLimit)
+                scrollPane.setPreferredSize(new Dimension(0, heightLimit));
             lootPanelData.containerPanel = scrollPane;
         }
         else
