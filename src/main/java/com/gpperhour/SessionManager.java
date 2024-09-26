@@ -290,6 +290,19 @@ public class SessionManager
 		}
 	}
 
+	//Deletes all trips that started before the specified time.
+	void deleteAllTripsBefore(long time)
+	{
+		List<TripData> allTrips = new LinkedList<>(activeTrips.values());
+		for(TripData trip : allTrips)
+		{
+			if (trip.runStartTime < time)
+			{
+				deleteTrip(trip.identifier);
+			}
+		}
+	}
+
 	void deleteTrip(String id)
 	{
 		activeTrips.remove(id);

@@ -450,6 +450,7 @@ class ActiveSessionPanel extends PluginPanel
 		updateButtonMiddle(tpData, runData);
 		updateButtonRight(tpData, runData);
 		updateButtonPause(tpData, runData);
+		updatePopupMenu(tpData, runData);
 
 		UI.updateLootGrid(ledger, tpData.lootPanelData, itemManager, config);
 
@@ -529,6 +530,16 @@ class ActiveSessionPanel extends PluginPanel
 		}
 	}
 
+	void updatePopupMenu(TripPanelData tpData, TripData runData)
+	{
+		UI.clearListeners(tpData.deleteTripsBeforeMenuItem);
+		tpData.deleteTripsBeforeMenuItem.addActionListener((event) ->
+		{
+			sessionManager.deleteAllTripsBefore(runData.runStartTime);
+			this.updateTrips();
+		});
+	}
+
 	TripPanelData getPanelData(int index)
 	{
 		ensureTripPanelCount(index + 1);
@@ -575,6 +586,7 @@ class ActiveSessionPanel extends PluginPanel
 		JLabel subtitleLabel = new JLabel("Started X ago");
 		JToggleButton pauseButton = new JToggleButton();
 		JPanel pauseButtonCardContainer = new JPanel(new CardLayout());
+		JMenuItem deleteTripsBeforeMenuItem = new JMenuItem("Delete Trips Below");
 
 		JToggleButton lootHeaderButtonPanel = new JToggleButton();
 		JLabel topLeftLabel = new JLabel(htmlLabel("Net Total: ", "N/A"));
@@ -644,6 +656,11 @@ class ActiveSessionPanel extends PluginPanel
 		headerPanel.setBorder(new EmptyBorder(10, 10, 3, 10));
 		headerPanel.add(titlePanel, BorderLayout.NORTH);
 		headerPanel.add(data.subtitleLabel, BorderLayout.CENTER);
+
+		final JPopupMenu popupMenu = new JPopupMenu();
+		popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
+		popupMenu.add(data.deleteTripsBeforeMenuItem);
+		headerPanel.setComponentPopupMenu(popupMenu);
 
 		masterPanel.setLayout(new BorderLayout());
 		masterPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
