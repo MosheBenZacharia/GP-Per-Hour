@@ -830,7 +830,6 @@ public class GPPerHourPlugin extends Plugin
 	{
 		runData.isBankDelay = true;
 		runData.runStartTime = Instant.now().toEpochMilli();
-		runData.ignoredItems = getIgnoredItems();
 
 		previousTotalGp = null;
 	}

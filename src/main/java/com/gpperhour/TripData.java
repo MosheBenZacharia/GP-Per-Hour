@@ -43,8 +43,6 @@ public class TripData
     Map<Integer, Float> bankedItemQtys = new HashMap<>();
     transient Map<Integer, Float> itemQtys = new HashMap<>();
 
-    LinkedList<String> ignoredItems = new LinkedList<>();
-
     boolean isInProgress()
     {
         return runEndTime == null;
