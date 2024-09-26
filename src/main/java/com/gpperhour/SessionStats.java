@@ -43,8 +43,23 @@ class SessionStats
 	private final long netTotal;
 	private final int tripCount;
 	private final long avgTripDuration;
-	private final Map<Integer, Float> initialQtys;
-	private final Map<Integer, Float> qtys;
+	private final Map<Integer, Float> deltaQtys;
+	//Backwards compatibility
+	private Map<Integer, Float> initialQtys;
+	private Map<Integer, Float> qtys;
+
+	public Map<Integer, Float> getDeltaQtys()
+	{
+		//Old deserialized version
+		if (deltaQtys == null)
+		{
+			return GPPerHourPlugin.getQuantityDifference(initialQtys, qtys);
+		}
+		else
+		{
+			return  deltaQtys;
+		}
+	}
 
 	//ui state (this could probably be done without having view and model code merged but it would be a lot of work)
 	transient boolean showDetails;

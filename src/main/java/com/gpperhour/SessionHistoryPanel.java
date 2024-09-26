@@ -243,7 +243,7 @@ public class SessionHistoryPanel extends JPanel
 			}
 			UI.updateLootGrid(
 					UI.sortLedger(
-							GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys())),
+							GPPerHourPlugin.getProfitLossLedger(stats.getDeltaQtys())),
 					panelData.sessionLootPanelData, itemManager, config, 0);
 		}
 

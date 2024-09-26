@@ -202,8 +202,6 @@ public class GPPerHourPlugin extends Plugin
 	@Getter @Setter
 	private long totalGp = 0;
 	private Long previousTotalGp = null;
-
-	private long initialGp = 0;
 	
     private BufferedImage icon;
     private NavigationButton navButton;
@@ -219,8 +217,6 @@ public class GPPerHourPlugin extends Plugin
 	private Widget inventoryWidget;
 	private ItemContainer inventoryItemContainer;
 	private ItemContainer equipmentItemContainer;
-	private boolean postNewRun = false;
-	private long newRunTick = 0;
 	private boolean expectingPutAnimation = false;
 
 	// from ClueScrollPlugin
@@ -384,11 +380,7 @@ public class GPPerHourPlugin extends Plugin
 
 	void ensureSessionNameAndPriceLoaded(SessionStats sessionStats)
 	{
-		for(Integer intialItemId : sessionStats.getInitialQtys().keySet())
-		{
-			ensureNameAndPriceLoaded(intialItemId);
-		}
-		for(Integer itemId : sessionStats.getQtys().keySet())
+		for(Integer itemId : sessionStats.getDeltaQtys().keySet())
 		{
 			ensureNameAndPriceLoaded(itemId);
 		}
@@ -451,8 +443,6 @@ public class GPPerHourPlugin extends Plugin
 		boolean isRun = this.state == RunState.RUN;
 
 		if (!isRun)
-			return;
-		if (runData.isBankDelay)
 			return;
 
 		if (previousTotalGp == null)
@@ -623,12 +613,10 @@ public class GPPerHourPlugin extends Plugin
 				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
 				for (int itemId: rewardsQtyMap.keySet())
 				{
-					runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+					runData.deltaItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
 				}
 			}
 		}
-
-		updatePluginState(false);
 	}
 
     @Subscribe
@@ -682,9 +670,8 @@ public class GPPerHourPlugin extends Plugin
 					refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
 					for (int itemId: rewardsQtyMap.keySet())
 					{
-						runData.bankedItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
+						runData.deltaItemQtys.merge(itemId, rewardsQtyMap.get(itemId), Float::sum);
 					}
-					updatePluginState(false);
 				}
 			}
 		}
@@ -760,6 +747,8 @@ public class GPPerHourPlugin extends Plugin
 		}
 		return false;
 	}
+	//Avoid GC
+	private Map<Integer,Float> currentInventoryAndEquipment = new HashMap<>();
 	
 	void updatePluginState(boolean forceBanking)
 	{
@@ -790,83 +779,58 @@ public class GPPerHourPlugin extends Plugin
 			setState(RunState.RUN);
 		}
 
-		boolean newRun = getPreviousState() == RunState.BANK && getState() == RunState.RUN;
-		
-		getRunData().itemQtys.clear();
-		long inventoryTotal = getInventoryTotal(false);
-		long equipmentTotal = getEquipmentTotal(false);
-		long rewardsTotal = getRewardsTotal();
+		refreshQtyMap(inventoryQtyMap, inventoryItemContainer);
+		refreshQtyMap(equipmentQtyMap, equipmentItemContainer);
+
+		currentInventoryAndEquipment.clear();
+		inventoryQtyMap.forEach((key, value) -> currentInventoryAndEquipment.merge(key, value, Float::sum));
+		equipmentQtyMap.forEach((key, value) -> currentInventoryAndEquipment.merge(key, value, Float::sum));
+
+		//The change in inventory and equipment contents since the last time this was called
+		if (getPreviousState() == RunState.RUN && getState() == RunState.RUN)
+		{
+			Map<Integer,Float> tickDelta = getQuantityDifference(runData.lastTickInventoryAndEquipment, currentInventoryAndEquipment);
+			tickDelta.forEach((key, value) -> runData.deltaItemQtys.merge(key, value, Float::sum));
+		}
+
+		runData.lastTickInventoryAndEquipment.clear();
+		runData.lastTickInventoryAndEquipment.putAll(currentInventoryAndEquipment);
+
+		long inventoryTotal = getTotal(inventoryQtyMap);
+		long deltaTotal = getTotal(runData.deltaItemQtys);
 
 		long totalGp = inventoryTotal;
 		if (getState() == RunState.RUN && getMode() == TrackingMode.PROFIT_LOSS)
 		{
-			totalGp += equipmentTotal + rewardsTotal;
+			totalGp = deltaTotal;
 		}
 
 		setTotalGp(totalGp);
 
-		if (newRun)
-		{
-			onNewRun();
 
-			postNewRun = true;
-			newRunTick = client.getTickCount();
+		//TODO: make it an option that runs auto start/end at the bank
+		if (getPreviousState() == RunState.BANK && getState() == RunState.RUN)
+		{
+			onTripStarted();
 		}
 		else if (getPreviousState() != RunState.BANK && getState() == RunState.BANK)
 		{
-			onBank();
-		}
-
-		// check post new run, need to wait one tick because if you withdraw something and close the bank right after it shows up one tick later
-		if (postNewRun && (client.getTickCount() - newRunTick) > 0)
-		{
-			//make sure user didn't open the bank back up in those two ticks
-			if (getState() == RunState.RUN)
-			{
-				postNewRun();
-			}
-			else
-			{
-				getRunData().isBankDelay = false;
-			}
-			postNewRun = false;
+			onTripEnded();
 		}
 	}
 
-	void onNewRun()
+	void onTripStarted()
 	{
-		runData.isBankDelay = true;
-		runData.runStartTime = Instant.now().toEpochMilli();
-
 		previousTotalGp = null;
-	}
+		runData.runStartTime = Instant.now().toEpochMilli();
+		runData.deltaItemQtys.clear();
 
-	// to handle same tick bank closing
-	void postNewRun()
-	{
-		runData.initialItemQtys.clear();
-		runData.bankedItemQtys.clear();
-		runData.itemQtys.clear();
-
-		getInventoryTotal(true);
-		getEquipmentTotal(true);
-
-		if (mode == TrackingMode.PROFIT_LOSS)
-		{
-			initialGp = getInitialGp();
-		}
-		else
-		{
-			initialGp = 0;
-		}
-
-		runData.isBankDelay = false;
 		writeSavedData(this.currentProfileKey);
 
 		sessionManager.onTripStarted(runData);
 	}
 
-	void onBank()
+	void onTripEnded()
 	{
 		runData.runEndTime = Instant.now().toEpochMilli();
 		if (!runData.isFirstRun)
@@ -874,40 +838,17 @@ public class GPPerHourPlugin extends Plugin
 			sessionManager.onTripCompleted(runData);
 		}
 		runData = createRunData();
-		initialGp = 0;
 	}
 
-	long getInventoryTotal(boolean isNewRun)
+	long getTotal(Map<Integer, Float> itemQtyMap)
 	{
-		if (inventoryItemContainer == null)
-		{
-			return 0l;
-		}
-
 		double totalGp = 0;
-		refreshQtyMap(inventoryQtyMap, inventoryItemContainer);
 		
-		for (Integer itemId: inventoryQtyMap.keySet())
+		for (Integer itemId: itemQtyMap.keySet())
 		{
 			float gePrice = getPrice(itemId);
-			float itemQty = inventoryQtyMap.get(itemId);
+			float itemQty = itemQtyMap.get(itemId);
 			totalGp += (itemQty * gePrice);
-			updateRunData(isNewRun, itemId, itemQty, gePrice);
-		}
-
-		return (long) totalGp;
-	}
-
-	long getRewardsTotal()
-	{
-		double totalGp = 0;
-
-		for (Integer itemId: runData.bankedItemQtys.keySet())
-		{
-			float gePrice = getPrice(itemId);
-			float itemQty = runData.bankedItemQtys.get(itemId);
-			totalGp += (itemQty * gePrice);
-			updateRunData(false, itemId, itemQty, gePrice);
 		}
 
 		return (long) totalGp;
@@ -944,9 +885,8 @@ public class GPPerHourPlugin extends Plugin
 		}
 	}
 
-	long getEquipmentTotal(boolean isNewRun)
+	long getEquipmentTotal()
 	{
-		refreshQtyMap(equipmentQtyMap, equipmentItemContainer);
 
 		double eTotal = 0;
 		for (int itemId: equipmentQtyMap.keySet())
@@ -954,7 +894,6 @@ public class GPPerHourPlugin extends Plugin
 			float qty = equipmentQtyMap.get(itemId);
 			float gePrice = getPrice(itemId);
 			eTotal += (qty * gePrice);
-			updateRunData(isNewRun, itemId, qty, gePrice);
 		}
 
 		return (long) eTotal;
@@ -1096,7 +1035,7 @@ public class GPPerHourPlugin extends Plugin
 		}
 	}
 
-	static List<LedgerItem> getProfitLossLedger(Map<Integer, Float> initialQtys, Map<Integer, Float> qtys)
+	static Map<Integer, Float> getQuantityDifference(Map<Integer, Float> initialQtys, Map<Integer, Float> qtys)
 	{
 		Map<Integer, Float> qtyDifferences = new HashMap<>(initialQtys.size());
 
@@ -1121,7 +1060,11 @@ public class GPPerHourPlugin extends Plugin
 
 			qtyDifferences.put(itemId, qty - initialQty);
 		}
+		return qtyDifferences;
+	}
 
+	static List<LedgerItem> getProfitLossLedger(Map<Integer, Float> qtyDifferences)
+	{
 		Map<String, LedgerItem> ledgerItems  = new HashMap<>(qtyDifferences.size());
 
 		for (Integer itemId: qtyDifferences.keySet())
@@ -1187,59 +1130,33 @@ public class GPPerHourPlugin extends Plugin
 		}
 	}
 
-	void updateRunData(boolean isNewRun, int itemId, float itemQty, float gePrice)
-	{
-		if (itemId != COINS && !itemPrices.containsKey(itemId))
-		{
-			itemPrices.put(itemId, gePrice);
-		}
-
-		itemNames.put(itemId, itemManager.getItemComposition(itemId).getName());
-
-		if (isNewRun)
-		{
-			if (runData.initialItemQtys.containsKey(itemId))
-			{
-				runData.initialItemQtys.put(itemId, runData.initialItemQtys.get(itemId) + itemQty);
-			}
-			else
-			{
-				runData.initialItemQtys.put(itemId, itemQty);
-			}
-		}
-
-		if (runData.itemQtys.containsKey(itemId))
-		{
-			runData.itemQtys.put(itemId, runData.itemQtys.get(itemId) + itemQty);
-		}
-		else
-		{
-			runData.itemQtys.put(itemId, itemQty);
-		}
-	}
-
 	float getPrice(int itemId)
 	{
-		if (itemId == COINS)
-			return 1f;
-		if (itemId == ItemID.PLATINUM_TOKEN)
-			return 1000f;
 		if (itemPrices.containsKey(itemId))
 		{
 			return itemPrices.get(itemId);
 		}
 		else
 		{
+			float newPrice;
 			Float remappedValue = ValueRemapper.remapPrice(itemId, this, config);
 			if (remappedValue != null)
 			{
-				return remappedValue;
+				newPrice = remappedValue;
+			}
+			else if (itemId == COINS)
+			{
+				newPrice = 1f;
+			}
+			else if (itemId == ItemID.PLATINUM_TOKEN)
+			{
+				newPrice = 1000f;
 			}
 			else
 			{
 				if (config.valueMode() == ValueMode.RUNELITE_VALUE)
 				{
-					return itemManager.getItemPrice(itemId);
+					newPrice = itemManager.getItemPrice(itemId);
 				}
 				else 
 				{
@@ -1248,12 +1165,17 @@ public class GPPerHourPlugin extends Plugin
 					int itemPrice = itemDef.getPrice();
 					if (itemPrice <= 0)
 					{
-						return 0;
+						newPrice = 0;
 					}
-					//Low alch is always 0.4 of store price, high alch is always 0.6 of store price
-					return (config.valueMode() == ValueMode.LOW_ALCHEMY_VALUE) ? (itemPrice * .4f) : (itemPrice * .6f);
+					else
+					{
+						//Low alch is always 0.4 of store price, high alch is always 0.6 of store price
+						newPrice = (config.valueMode() == ValueMode.LOW_ALCHEMY_VALUE) ? (itemPrice * .4f) : (itemPrice * .6f);
+					}
 				}
 			}
+			itemPrices.put(itemId, newPrice);
+			return newPrice;
 		}
 	}
 
@@ -1275,6 +1197,9 @@ public class GPPerHourPlugin extends Plugin
 		try 
 		{
 			savedData = gson.fromJson(json, TripData.class);
+			//User updated from 1.X to 2.X
+			if (savedData.deltaItemQtys == null)
+				savedData.deltaItemQtys = new HashMap<>();
 		}
 		catch(Exception e)
 		{
@@ -1318,28 +1243,6 @@ public class GPPerHourPlugin extends Plugin
 	void setMode(TrackingMode mode)
 	{
 		this.mode = mode;
-
-		switch(mode)
-		{
-			case TOTAL:
-				initialGp = 0;
-				break;
-			case PROFIT_LOSS:
-				initialGp = getInitialGp();
-				break;
-		}
-	}
-
-	long getInitialGp()
-	{
-		if (runData == null)
-			return 0;
-		double value = 0;
-		for (java.util.Map.Entry<Integer, Float> entry : runData.initialItemQtys.entrySet())
-		{
-			value += getPrice(entry.getKey()) * entry.getValue();
-		}
-		return (long) value;
 	}
 
 	void setState(RunState state)
@@ -1350,7 +1253,7 @@ public class GPPerHourPlugin extends Plugin
 
 	public long getProfitGp()
 	{
-		return totalGp - initialGp;
+		return totalGp ;
 	}
 
 	void saveData(String key, String data)

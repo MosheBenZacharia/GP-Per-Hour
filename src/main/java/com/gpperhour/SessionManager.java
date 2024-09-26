@@ -88,7 +88,7 @@ public class SessionManager
 			return;
 		}
 		TripData activeTrip = plugin.getRunData();
-		if (activeTrip != null && !activeTrip.isBankDelay && !activeTrip.isFirstRun && activeTrip.isInProgress())
+		if (activeTrip != null && !activeTrip.isFirstRun && activeTrip.isInProgress())
 		{
 			onTripStarted(activeTrip);
 		}
@@ -131,8 +131,7 @@ public class SessionManager
 		long totalPauseTime = 0;
 		boolean foundStart = false;
 		int tripCount = 0;
-		Map<Integer, Float> initialQtys = new HashMap<>();
-		Map<Integer, Float> qtys = new HashMap<>();
+		Map<Integer, Float> deltaQtys = new HashMap<>();
 		for (TripData runData : runDataSorted)
 		{
 			foundStart |= runData.identifier.equals(activeSessionStartId);
@@ -140,16 +139,9 @@ public class SessionManager
 			{
 				continue;
 			}
-			for (Integer initialId : runData.initialItemQtys.keySet())
-			{
-				initialQtys.merge(initialId, runData.initialItemQtys.get(initialId), Float::sum);
-			}
-			for (Integer itemId : runData.itemQtys.keySet())
-			{
-				qtys.merge(itemId, runData.itemQtys.get(itemId), Float::sum);
-			}
+			deltaQtys.putAll(runData.deltaItemQtys);
 
-			List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(runData.initialItemQtys, runData.itemQtys);
+			List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(deltaQtys);
 			for (LedgerItem item : ledger)
 			{
 				long value = item.getCombinedValue();
@@ -190,7 +182,7 @@ public class SessionManager
 		long netTotal = gains + losses;
 		long avgTripDuration = (long) (tripDurationSum / ((float) tripCount));
 
-		return new SessionStats(getSessionEndTime(), sessionRuntime, gains, losses, netTotal, tripCount, avgTripDuration, initialQtys, qtys);
+		return new SessionStats(getSessionEndTime(), sessionRuntime, gains, losses, netTotal, tripCount, avgTripDuration, deltaQtys);
 	}
 
 	long getSessionStartTime()
@@ -343,7 +335,7 @@ public class SessionManager
 			return;
 		}
 		// don't care about trips where nothing happened, can remove it from the history
-		if (!tripHadChange(runData.initialItemQtys, runData.itemQtys))
+		if (!tripHadChange(runData.deltaItemQtys))
 		{
 			log.debug("nothing changed, ignoring trip");
 			deleteTrip(runData.identifier);
@@ -351,9 +343,9 @@ public class SessionManager
 		}
 	}
 
-	boolean tripHadChange(Map<Integer, Float> tripStart, Map<Integer, Float> tripEnd)
+	boolean tripHadChange(Map<Integer, Float> deltaQtys)
 	{
-		List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(tripStart, tripEnd);
+		List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(deltaQtys);
 		return !ledger.isEmpty();
 	}
 

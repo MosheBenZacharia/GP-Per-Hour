@@ -209,8 +209,7 @@ class ActiveTripOverlay extends Overlay
 		String totalText = UI.formatGp(total, config.showExactGp());
 
 		if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR
-			 && plugin.getState() == RunState.RUN
-			 && !plugin.getRunData().isBankDelay)
+			 && plugin.getState() == RunState.RUN)
 		{
 			total = getGpPerHour(plugin.elapsedRunTime(), total);
 			totalText = UI.formatGp(total, config.showExactGp()) + "/hr";
@@ -224,17 +223,17 @@ class ActiveTripOverlay extends Overlay
 			runTimeText = " (" + formattedRunTime + ")";
 		}
 
-		if (plugin.getRunData().isBankDelay)
-		{
-			total = 0;
-			
-			if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR)
-				totalText = "0/hr";
-			else if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_PROFIT)
-				totalText = "0";
-			else
-				totalText = UI.formatGp(plugin.getTotalGp(), config.showExactGp());
-		}
+		//if (plugin.getRunData().isBankDelay)
+		//{
+		//	total = 0;
+		//
+		//	if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_GP_PER_HOUR)
+		//		totalText = "0/hr";
+		//	else if (config.inventoryOverlayDisplayMode() == InventoryOverlayDisplayMode.TRIP_PROFIT)
+		//		totalText = "0";
+		//	else
+		//		totalText = UI.formatGp(plugin.getTotalGp(), config.showExactGp());
+		//}
 
 		renderTotal(config, graphics, plugin,
 				total, totalText, runTimeText, totalOverlayHeight);
@@ -455,7 +454,7 @@ class ActiveTripOverlay extends Overlay
 		int mouseX = mouse.getX();
 		int mouseY = mouse.getY();
 
-		boolean isTripRunning = !config.inventoryOverlayDisplayMode().sessionData && plugin.getState() != RunState.BANK && !plugin.getRunData().isBankDelay;
+		boolean isTripRunning = !config.inventoryOverlayDisplayMode().sessionData && plugin.getState() != RunState.BANK;
 		boolean isSessionRunning = config.inventoryOverlayDisplayMode().sessionData && plugin.getSessionManager().getActiveSessionStats() != null;
 
 		RoundRectangle2D roundRectangle2D = new RoundRectangle2D.Double(x, y, width + 1, height + 1, cornerRadius, cornerRadius);
@@ -587,11 +586,11 @@ class ActiveTripOverlay extends Overlay
 		if (config.inventoryOverlayDisplayMode().sessionData)
 		{
 			SessionStats stats = plugin.getSessionManager().getActiveSessionStats();
-			ledger = GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys());
+			ledger = GPPerHourPlugin.getProfitLossLedger(stats.getDeltaQtys());
 		}
 		else
 		{
-			ledger = GPPerHourPlugin.getProfitLossLedger(plugin.getRunData().initialItemQtys, plugin.getRunData().itemQtys);
+			ledger = GPPerHourPlugin.getProfitLossLedger(plugin.getRunData().deltaItemQtys);
 		}
 
 		List<LedgerItem> gain = ledger.stream().filter(item -> item.getQty() > 0)

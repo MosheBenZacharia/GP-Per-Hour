@@ -344,7 +344,7 @@ class ActiveSessionPanel extends PluginPanel
 						.setText(htmlLabel(avgTripDurationLabelPrefix, UI.formatTime(stats.getAvgTripDuration())));
 			}
 			if (showSessionLootGrid)
-				UI.updateLootGrid(UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys())),
+				UI.updateLootGrid(UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(stats.getDeltaQtys())),
 					sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
 			updateErrorPanel(true);
 		}
@@ -388,8 +388,7 @@ class ActiveSessionPanel extends PluginPanel
 
 	boolean renderTrip(TripData runData, int tripIndex)
 	{
-		List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(runData.initialItemQtys,
-				runData.itemQtys);
+		List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(runData.deltaItemQtys);
 
 		ledger = UI.sortLedger(ledger);
 

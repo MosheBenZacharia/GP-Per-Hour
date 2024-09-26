@@ -39,9 +39,8 @@ public class TripData
     long runtime = 0;
     boolean isPaused = false;
 
-    Map<Integer, Float> initialItemQtys = new HashMap<>();
-    Map<Integer, Float> bankedItemQtys = new HashMap<>();
-    transient Map<Integer, Float> itemQtys = new HashMap<>();
+    Map<Integer, Float> deltaItemQtys = new HashMap<>();
+    transient Map<Integer, Float> lastTickInventoryAndEquipment = new HashMap<>();
 
     boolean isInProgress()
     {
@@ -58,10 +57,6 @@ public class TripData
         return (runEndTime == null ? Instant.now().toEpochMilli() : runEndTime);
     }
 
-    // its in the period between banking finished (onNewRun) and two ticks later
-    // when we call onPostNewRun. we have this delay because of how you can withdraw from the bank,
-    // close it immediately, and still get the items in your inventory a tick later.
-    transient boolean isBankDelay;
     //first run needs to be reinitialized on first game tick.
     transient boolean isFirstRun;
 }
