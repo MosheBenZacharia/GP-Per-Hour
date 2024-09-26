@@ -62,7 +62,6 @@ Supported items:
 - Amulet of Blood Fury
 
 Unsupported items:
-- Barrows armor 
 - Iban’s staff (ambiguity on charge cost)
 - Blade of saeldor (needs testing)
 
@@ -91,9 +90,10 @@ Supported items:
 - Log basket
 - Seed box
 
-Unsupported items:
+Unsupported containers:
 - Forestry kit (Widget check)
 - Plank sack (Lack of game messages)
+- Essence Pouches (Complexity)
 
 <img width="530" alt="fishbarrel" src="https://github.com/MosheBenZacharia/GP-Per-Hour/assets/12495920/213778c4-3e8c-4364-92b4-0ad18bc7a751">
 
