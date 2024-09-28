@@ -139,7 +139,7 @@ public class SessionManager
 			{
 				continue;
 			}
-			deltaQtys.putAll(runData.deltaItemQtys);
+			runData.deltaItemQtys.forEach((key, value) -> deltaQtys.merge(key, value, Float::sum));
 
 			List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(deltaQtys);
 			for (LedgerItem item : ledger)
