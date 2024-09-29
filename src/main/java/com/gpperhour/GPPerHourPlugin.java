@@ -397,7 +397,8 @@ public class GPPerHourPlugin extends Plugin
 		}
 		if (!GPPerHourPlugin.itemPrices.containsKey(itemId))
 		{
-			itemPrices.put(itemId, getPrice(itemId));
+			//Also updates
+			getPrice(itemId);
 		}
 	}
 
@@ -428,6 +429,21 @@ public class GPPerHourPlugin extends Plugin
 		if (runData == null)
 			return;
 		updatePluginState(false);
+		if (config.showTripOverlay())
+		{
+			if (config.inventoryOverlayDisplayMode().isSessionData())
+			{
+				SessionStats sessionStats = sessionManager.getActiveSessionStats();
+				if (sessionStats != null)
+				{
+					ensureSessionNameAndPriceLoaded(sessionStats);
+				}
+			}
+			else
+			{
+				runData.deltaItemQtys.forEach((key,value) -> ensureNameAndPriceLoaded(key));
+			}
+		}
 		updatePanels();
 		updateChargeableItemsNeedingCheck();
 		

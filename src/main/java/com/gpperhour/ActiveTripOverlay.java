@@ -42,6 +42,7 @@ import javax.inject.Inject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -115,6 +116,7 @@ class ActiveTripOverlay extends Overlay
         INVENTORY_TOTAL              		("Inventory Value", false);
     
         private final String configName;
+		@Getter
         private final boolean sessionData;
         @Override
         public String toString() { return configName; }
