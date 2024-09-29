@@ -657,7 +657,16 @@ class ActiveTripOverlay extends Overlay
 			ledgerEntries.add(new LedgerEntry("Total Loss", Color.YELLOW, formatNumber(totalLoss), priceToColor(totalLoss), false));
 			ledgerEntries.add(new LedgerEntry("Net Total", Color.ORANGE, formatNumber(netTotal), priceToColor(netTotal), false));
 	
-			long runTime = plugin.elapsedRunTime();
+			long runTime;
+			if (config.inventoryOverlayDisplayMode().sessionData)
+			{
+				SessionStats stats = plugin.getSessionManager().getActiveSessionStats();
+				runTime = stats.getSessionRuntime();
+			}
+			else
+			{
+				 runTime = plugin.elapsedRunTime();
+			}
 			if (runTime != GPPerHourPlugin.NO_PROFIT_LOSS_TIME)
 			{
 				long gpPerHour = getGpPerHour(runTime, netTotal);
