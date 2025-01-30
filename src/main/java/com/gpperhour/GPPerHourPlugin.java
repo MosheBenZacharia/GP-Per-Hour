@@ -114,12 +114,13 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.9";
+	private static final String plugin_version = "1.10";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-				"* Fix new trips starting erroneously.<br>" +
-				"* Fix tracking of Tome of Fire.<br>" +
-				"* Add tracking of Group Ironman bank.";
+				"* Support new bank deposit interface.<br>" +
+				"* Fix large loot grid expanding window.<br>" +
+				"* Add right click menu to delete trips below the clicked trip.<br>" +
+				"* Adjust compost bucket tracking.";
 	static final int COINS = ItemID.COINS_995;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
