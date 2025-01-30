@@ -744,7 +744,7 @@ public class GPPerHourPlugin extends Plugin
 				//Bank with rune pouch open
 				client.getWidget(InterfaceID.BANK_INVENTORY, 19),
 				//Deposit box open
-				client.getWidget(268, 0),
+				client.getWidget(907, 0),
 				//COX storage open
 				client.getWidget(InterfaceID.CHAMBERS_OF_XERIC_INVENTORY, 1)
 			};
