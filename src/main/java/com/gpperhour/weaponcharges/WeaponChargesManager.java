@@ -847,6 +847,14 @@ public class WeaponChargesManager
 			case ItemID.MASORI_ASSEMBLER_L:
 			case ItemID.MASORI_ASSEMBLER_MAX_CAPE:
 			case ItemID.MASORI_ASSEMBLER_MAX_CAPE_L:
+			case ItemID.DIZANAS_MAX_CAPE:
+			case ItemID.DIZANAS_MAX_CAPE_L:
+			case ItemID.DIZANAS_QUIVER_UNCHARGED:
+			case ItemID.DIZANAS_QUIVER_UNCHARGED_L:
+			case ItemID.DIZANAS_QUIVER:
+			case ItemID.DIZANAS_QUIVER_L:
+			case ItemID.BLESSED_DIZANAS_QUIVER:
+			case ItemID.BLESSED_DIZANAS_QUIVER_L:
 				return 0.2f;
 			default:
 				// no ammo-saving thing equipped.
