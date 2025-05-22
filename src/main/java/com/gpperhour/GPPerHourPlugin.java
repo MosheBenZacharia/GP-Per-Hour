@@ -60,6 +60,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
@@ -1032,6 +1033,31 @@ public class GPPerHourPlugin extends Plugin
 	void refreshQtyMap(Map<Integer,Float> qtyMap, ItemContainer container)
 	{
 		qtyMap.clear();
+
+		boolean dizanasCapeHandledAmmo = false;
+		if (container != null && container.getInventoryID() == InventoryID.EQUIPMENT) {
+			Item capeItem = container.getItem(EquipmentInventorySlot.CAPE.getSlotIdx());
+			// Check for Dizana's Max Cape (ItemID.DIZANAS_MAX_CAPE which is 29203)
+			// Or other assembler max capes that allow storing ammo.
+			// For now, specifically ItemID.DIZANAS_MAX_CAPE as per issue.
+			// Max cape (assembler) - 21898, Masori assembler max cape - 27229
+			// Infernal max cape (assembler) - 21900
+			// Mythical max cape (assembler) - 23057 etc.
+			// For simplicity, let's assume ItemID.DIZANAS_MAX_CAPE covers the reported issue.
+			// A more general solution might involve checking a list of such capes or a property.
+			if (capeItem != null && capeItem.getId() == ItemID.DIZANAS_MAX_CAPE) {
+				Item ammoItem = container.getItem(EquipmentInventorySlot.AMMO.getSlotIdx());
+				if (ammoItem != null && ammoItem.getId() != -1 && ammoItem.getQuantity() > 0) {
+					ItemComposition itemComposition = itemManager.getItemComposition(ammoItem.getId());
+					String itemName = itemComposition.getName();
+					if (!ignoredItems.contains(itemName.toLowerCase())) {
+						qtyMap.merge(ammoItem.getId(), (float) ammoItem.getQuantity(), Float::sum);
+						dizanasCapeHandledAmmo = true; // Mark that we've handled ammo for this cape
+					}
+				}
+			}
+		}
+
 		if (container==null)
 		{
 			return;
@@ -1040,6 +1066,11 @@ public class GPPerHourPlugin extends Plugin
 		final Item[] containerItems = container.getItems();
 		for (int i = 0; i < containerItems.length; ++i)
 		{
+			// If Dizana's Cape logic already handled the AMMO slot for the EQUIPMENT container, skip it in the general loop.
+			if (dizanasCapeHandledAmmo && i == EquipmentInventorySlot.AMMO.getSlotIdx() && container.getInventoryID() == InventoryID.EQUIPMENT) {
+				continue;
+			}
+
 			int itemId = containerItems[i].getId();
 			if (itemId == -1)
 				continue;
