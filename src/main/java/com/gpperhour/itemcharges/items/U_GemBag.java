@@ -188,8 +188,8 @@ public class U_GemBag extends ChargedItem
             new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open gem bag").menuOption("Fill").addDifference(),
             new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Gem bag").menuOption("Fill").addDifference(),
             //Empty into bank doesn't make a chat message (unless it's already empty)
-            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open gem bag").menuOption("Empty").extraConsumer(() -> super.emptyOrClear()),
-            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Gem bag").menuOption("Empty").extraConsumer(() -> super.emptyOrClear()),
+            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
+            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
         };
         this.supportsWidgetOnWidget = true;
     }

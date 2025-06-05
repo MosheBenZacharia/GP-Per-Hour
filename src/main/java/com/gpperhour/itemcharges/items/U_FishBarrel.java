@@ -184,10 +184,10 @@ public class U_FishBarrel extends ChargedItem
 			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Fish sack barrel").menuOption("Fill").addDifference(),
 		};
 		this.triggers_menu_options = new TriggerMenuOption[]{
-			new TriggerMenuOption("Open fish barrel", "Empty").extraConsumer((message) -> { super.emptyOrClear(); }),
-			new TriggerMenuOption("Fish barrel", "Empty").extraConsumer((message) -> { super.emptyOrClear(); }),
-			new TriggerMenuOption("Open fish sack barrel", "Empty").extraConsumer((message) -> { super.emptyOrClear(); }),
-			new TriggerMenuOption("Fish sack barrel", "Empty").extraConsumer((message) -> { super.emptyOrClear(); }),
+			new TriggerMenuOption("Open fish barrel", "Empty to bank").extraConsumer((message) -> { super.emptyOrClear(); }),
+			new TriggerMenuOption("Fish barrel", "Empty to bank").extraConsumer((message) -> { super.emptyOrClear(); }),
+			new TriggerMenuOption("Open fish sack barrel", "Empty to bank").extraConsumer((message) -> { super.emptyOrClear(); }),
+			new TriggerMenuOption("Fish sack barrel", "Empty to bank").extraConsumer((message) -> { super.emptyOrClear(); }),
 		};
 		this.supportsWidgetOnWidget = true;
 	}

@@ -111,8 +111,8 @@ public class U_HerbSack extends ChargedItem {
                 new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open herb sack").menuOption("Empty").addDifference(),
                 new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Herb sack").menuOption("Empty").addDifference(),
                 //Empty into bank doesn't make a chat message (unless it's already empty)
-                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open herb sack").menuOption("Empty").extraConsumer(super::emptyOrClear),
-                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Herb sack").menuOption("Empty").extraConsumer(super::emptyOrClear),
+                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
+                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
         };
         //for herb sack this only works for single herbs, if dialog pops up we don't capture it. too complicated...
         this.supportsWidgetOnWidget = true;
