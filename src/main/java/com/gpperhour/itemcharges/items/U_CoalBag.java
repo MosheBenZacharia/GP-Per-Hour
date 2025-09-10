@@ -76,8 +76,6 @@ public class U_CoalBag extends ChargedItem
 				super.emptyOrClear();
 			}),
 			new TriggerChatMessage("You manage to mine some coal.").extraConsumer(message -> {
-                log.info("current item count: "+ getItemCount());
-                log.info("filing consumer: inventory "+super.inventory.toString());
 				if ((item_id == ItemID.OPEN_COAL_BAG) && getItemCount() < COAL_BAG_SIZE && super.hasChargeData()) {
                     super.addItems(ItemID.COAL,1f);
 				}
