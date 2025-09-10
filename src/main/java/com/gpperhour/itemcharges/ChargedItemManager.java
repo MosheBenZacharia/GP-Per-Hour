@@ -37,6 +37,7 @@ import com.gpperhour.itemcharges.items.U_AshSanctifier;
 import com.gpperhour.itemcharges.items.U_BloodEssence;
 import com.gpperhour.itemcharges.items.U_BottomlessCompostBucket;
 import com.gpperhour.itemcharges.items.U_FishBarrel;
+import com.gpperhour.itemcharges.items.U_CoalBag;
 import com.gpperhour.itemcharges.items.U_GemBag;
 import com.gpperhour.itemcharges.items.U_HerbSack;
 import com.gpperhour.itemcharges.items.U_LogBasket;
@@ -108,7 +109,8 @@ public class ChargedItemManager {
 			new U_BottomlessCompostBucket(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
 			new U_AshSanctifier(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
 			new U_BloodEssence(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
-			new U_GemBag(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
+            new U_GemBag(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
+            new U_CoalBag(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
 			new U_HerbSack(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
 			new U_SeedBox(client, client_thread, configs, items, chat_messages, notifier, gson, executorService),
 		};

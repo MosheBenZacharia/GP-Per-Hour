@@ -44,7 +44,8 @@ public interface GPPerHourConfig extends Config
 	String blood_essence = "blood_essence";
 	String gem_bag = "gem_bag";
 	String herb_sack = "herb_sack";
-	String seed_box = "seed_box";
+    String seed_box = "seed_box";
+    String coal_bag = "coal_bag";
 	String sessionKey = "session_stats_";
 	String sessionIdentifiersKey = "session_ids";
 
