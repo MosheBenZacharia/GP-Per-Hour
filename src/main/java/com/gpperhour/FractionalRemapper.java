@@ -129,6 +129,23 @@ public class FractionalRemapper
 
         /////////////////////// Everything Else ///////////////////////
 
+
+        //////// Menaphite Remedy(4) /////////
+        remapData.put(27205, new RemapData(27202, 0.75f));
+        remapData.put(27208, new RemapData(27202, 0.5f));
+        remapData.put(27211, new RemapData(27202, 0.25f));
+        //////// Goading(4) /////////
+        remapData.put(30140, new RemapData(30137, 0.75f));
+        remapData.put(30143, new RemapData(30137, 0.5f));
+        remapData.put(30146, new RemapData(30137, 0.25f));
+        //////// Prayer Regeneration(4) /////////
+        remapData.put(30128, new RemapData(30125, 0.75f));
+        remapData.put(30131, new RemapData(30125, 0.5f));
+        remapData.put(30134, new RemapData(30125, 0.25f));
+        //////// Extended Anti-venom+(4) /////////
+        remapData.put(29827, new RemapData(29824, 0.75f));
+        remapData.put(29830, new RemapData(29824, 0.5f));
+        remapData.put(29833, new RemapData(29824, 0.25f));
         //////// Forgotten brew(4) /////////
         remapData.put(27632, new RemapData(27629, 0.75f));
         remapData.put(27635, new RemapData(27629, 0.5f));
