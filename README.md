@@ -89,6 +89,7 @@ Supported items:
 - Herb sack
 - Log basket
 - Seed box
+- Coal bag
 
 Unsupported containers:
 - Forestry kit (Widget check)
