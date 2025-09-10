@@ -33,6 +33,7 @@ public enum ChargesItem {
 	LOG_BASKET,
 	GEM_BAG,
 	HERB_SACK,
-	SEED_BOX
+	SEED_BOX,
+    COAL_BAG
 }
 
