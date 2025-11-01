@@ -1177,12 +1177,16 @@ public class GPPerHourPlugin extends Plugin
 			}
 
 			int runeId = client.getVarbitValue(RUNEPOUCH_RUNE_VARBITS[i]);
-			if (runeId == 0)
+			int itemId = runepouchEnum.getIntValue(runeId);
+			ItemComposition itemComposition = itemManager.getItemComposition(itemId);
+			String itemName = itemComposition.getName();
+			boolean ignore = ignoredItems.contains(itemName.toLowerCase());
+			if (runeId == 0 || ignore)
 			{
 				continue;
 			}
 
-			qtyMap.merge(runepouchEnum.getIntValue(runeId), (float) amount, Float::sum);
+			qtyMap.merge(itemId, (float) amount, Float::sum);
 		}
 	}
 
