@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'com.gpperhour'
-version = '1.12'
+version = '1.13'
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
