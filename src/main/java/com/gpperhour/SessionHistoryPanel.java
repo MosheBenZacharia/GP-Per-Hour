@@ -51,7 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.input.KeyListener;
@@ -407,7 +407,7 @@ public class SessionHistoryPanel extends JPanel
 	{
 		if (stats.coinsImage == null)
 		{
-			AsyncBufferedImage asyncImage = itemManager.getImage(ItemID.COINS_995, quantity, false);
+			AsyncBufferedImage asyncImage = itemManager.getImage(ItemID.COINS, quantity, false);
 			Runnable resizeImage = ()->
 			{
 				stats.coinsImage = ImageUtil.resizeImage(asyncImage, 24, 24);

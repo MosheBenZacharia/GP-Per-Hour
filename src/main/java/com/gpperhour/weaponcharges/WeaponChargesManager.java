@@ -28,7 +28,6 @@ import com.gpperhour.GPPerHourConfig;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,14 +45,10 @@ import net.runelite.api.Client;
 import net.runelite.api.EquipmentInventorySlot;
 import net.runelite.api.Hitsplat;
 import net.runelite.api.HitsplatID;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Player;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.annotations.HitsplatType;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.ChatMessage;
@@ -64,10 +59,12 @@ import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.InterfaceID;
-import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -75,7 +72,6 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.chatbox.ChatboxPanelManager;
-import net.runelite.client.input.KeyListener;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.util.Text;
 
@@ -244,7 +240,7 @@ public class WeaponChargesManager
 			// TODO investigate shift-click.
 			if (verboseLogging) log.info("clicked \"check\" on " + event.getMenuTarget());
 
-			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.EQUIPMENT) { // item is equipped.
+			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.WORNITEMS) { // item is equipped.
 				int childId = WidgetUtil.componentToId(event.getParam1());
 				if (childId == 18) {
 					ChargedWeapon chargedWeapon = getEquippedChargedWeapon(EquipmentInventorySlot.WEAPON);
@@ -277,7 +273,7 @@ public class WeaponChargesManager
 		} else if (event.getMenuOption().equalsIgnoreCase("unload") && isToxicBlowpipe(event.getItemId())) {
 			checkBlowpipeUnload = client.getTickCount();
 		} else if (event.getMenuOption().equalsIgnoreCase("pages")) {
-			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.EQUIPMENT) { // item is equipped.
+			if (WidgetUtil.componentToInterface(event.getParam1()) == InterfaceID.WORNITEMS) { // item is equipped.
 				lastUsedOnWeapon = getEquippedChargedWeapon(EquipmentInventorySlot.SHIELD);
 			} else {
 				lastUsedOnWeapon = ChargedWeapon.getChargedWeaponFromId(event.getItemId());
@@ -291,7 +287,7 @@ public class WeaponChargesManager
 	void checkWidgetOnWidget(MenuOptionClicked event)
 	{
 		if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_WIDGET) {
-			ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+			ItemContainer itemContainer = client.getItemContainer(InventoryID.INV);
 			if (itemContainer == null)
 			{
 				return;
@@ -332,14 +328,14 @@ public class WeaponChargesManager
 
 	private void checkSingleCrystalShardUse(Item itemUsed, int itemUsedId)
 	{
-		if (itemUsedId == ItemID.CRYSTAL_SHARD && itemUsed.getQuantity() == 1 && ChargedWeapon.CRYSTAL_SHARD_RECHARGABLE_ITEMS.contains(lastUsedOnWeapon)) {
+		if (itemUsedId == ItemID.PRIF_CRYSTAL_SHARD && itemUsed.getQuantity() == 1 && ChargedWeapon.CRYSTAL_SHARD_RECHARGABLE_ITEMS.contains(lastUsedOnWeapon)) {
 			checkSingleCrystalShardUse = client.getTickCount();
 		}
 	}
 
 	private boolean hasToxicBlowpipeEquippedOrInInventory()
 	{
-		final ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+		final ItemContainer itemContainer = client.getItemContainer(InventoryID.INV);
 		if (itemContainer != null)
 		{
 			Item[] inventoryItems = itemContainer.getItems();
@@ -351,7 +347,7 @@ public class WeaponChargesManager
 				}
 			}
 		}
-		final ItemContainer equipmentContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		final ItemContainer equipmentContainer = client.getItemContainer(InventoryID.WORN);
 		if (equipmentContainer != null)
 		{
 			Item weapon = equipmentContainer.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
@@ -365,7 +361,7 @@ public class WeaponChargesManager
 
 	private boolean isToxicBlowpipe(int itemId)
 	{
-		return itemId == ItemID.TOXIC_BLOWPIPE || itemId == ItemID.BLAZING_BLOWPIPE;
+		return itemId == ItemID.TOXIC_BLOWPIPE_LOADED || itemId == ItemID.TOXIC_BLOWPIPE_LOADED_ORNAMENT;
 	}
 
 	private boolean hasBlowpipeData()
@@ -428,7 +424,7 @@ public class WeaponChargesManager
 
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged itemContainerChanged) {
-		if (itemContainerChanged.getContainerId() != InventoryID.INVENTORY.getId()) {
+		if (itemContainerChanged.getContainerId() != InventoryID.INV) {
 			return;
 		}
 
@@ -525,7 +521,7 @@ public class WeaponChargesManager
 
 	private ChargedWeapon getEquippedChargedWeapon(EquipmentInventorySlot slot)
 	{
-		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		ItemContainer itemContainer = client.getItemContainer(InventoryID.WORN);
 		if (itemContainer == null) return null;
 
 		Item item = itemContainer.getItem(slot.getSlotIdx());
@@ -795,7 +791,7 @@ public class WeaponChargesManager
 
 	private void checkAnimation()
 	{
-		ItemContainer itemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		ItemContainer itemContainer = client.getItemContainer(InventoryID.WORN);
 		if (itemContainer == null) return;
 
 		Item weapon = itemContainer.getItem(EquipmentInventorySlot.WEAPON.getSlotIdx());
@@ -830,31 +826,31 @@ public class WeaponChargesManager
 	{
 		int attractorEquippedId = client.getLocalPlayer().getPlayerComposition().getEquipmentId(KitType.CAPE);
 		switch (attractorEquippedId) {
-			case ItemID.AVAS_ATTRACTOR:
+			case ItemID.ANMA_30_REWARD:
 				return 0.4f;
-			case ItemID.AVAS_ACCUMULATOR:
-			case ItemID.ACCUMULATOR_MAX_CAPE:
+			case ItemID.ANMA_50_REWARD:
+			case ItemID.SKILLCAPE_MAX_ANMA:
 				return 0.28f;
-			case ItemID.RANGING_CAPE:
-			case ItemID.RANGING_CAPET:
-			case ItemID.MAX_CAPE:
+			case ItemID.SKILLCAPE_RANGING:
+			case ItemID.SKILLCAPE_RANGING_TRIMMED:
+			case ItemID.SKILLCAPE_MAX:
 				return 0.28f;
 			case ItemID.AVAS_ASSEMBLER:
-			case ItemID.AVAS_ASSEMBLER_L:
-			case ItemID.ASSEMBLER_MAX_CAPE:
-			case ItemID.ASSEMBLER_MAX_CAPE_L:
-			case ItemID.MASORI_ASSEMBLER:
-			case ItemID.MASORI_ASSEMBLER_L:
-			case ItemID.MASORI_ASSEMBLER_MAX_CAPE:
-			case ItemID.MASORI_ASSEMBLER_MAX_CAPE_L:
-			case ItemID.DIZANAS_MAX_CAPE:
-			case ItemID.DIZANAS_MAX_CAPE_L:
+			case ItemID.AVAS_ASSEMBLER_TROUVER:
+			case ItemID.SKILLCAPE_MAX_ASSEMBLER:
+			case ItemID.SKILLCAPE_MAX_ASSEMBLER_TROUVER:
+			case ItemID.AVAS_ASSEMBLER_MASORI:
+			case ItemID.AVAS_ASSEMBLER_MASORI_TROUVER:
+			case ItemID.SKILLCAPE_MAX_ASSEMBLER_MASORI:
+			case ItemID.SKILLCAPE_MAX_ASSEMBLER_MASORI_TROUVER:
+			case ItemID.SKILLCAPE_MAX_DIZANAS:
+			case ItemID.SKILLCAPE_MAX_DIZANAS_TROUVER:
 			case ItemID.DIZANAS_QUIVER_UNCHARGED:
-			case ItemID.DIZANAS_QUIVER_UNCHARGED_L:
-			case ItemID.DIZANAS_QUIVER:
-			case ItemID.DIZANAS_QUIVER_L:
-			case ItemID.BLESSED_DIZANAS_QUIVER:
-			case ItemID.BLESSED_DIZANAS_QUIVER_L:
+			case ItemID.DIZANAS_QUIVER_UNCHARGED_TROUVER:
+			case ItemID.DIZANAS_QUIVER_CHARGED:
+			case ItemID.DIZANAS_QUIVER_CHARGED_TROUVER:
+			case ItemID.DIZANAS_QUIVER_INFINITE:
+			case ItemID.DIZANAS_QUIVER_INFINITE_TROUVER:
 				return 0.2f;
 			default:
 				// no ammo-saving thing equipped.
@@ -865,7 +861,7 @@ public class WeaponChargesManager
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event)
 	{
-		if (event.getVarpId() == VarPlayer.ATTACK_STYLE) {
+		if (event.getVarpId() == VarPlayerID.COM_MODE) {
 			ticksInAnimation = event.getValue() == 1 ? TICKS_RAPID_PVM : TICKS_NORMAL_PVM;
 		}
 	}
@@ -1060,7 +1056,7 @@ public class WeaponChargesManager
 			Float scaleCount = getScalesLeft();
 			DartType dartType = getDartType();
 			blowpipeMap.put(dartType.itemId, dartCount);
-			blowpipeMap.put(ItemID.ZULRAHS_SCALES, scaleCount);
+			blowpipeMap.put(ItemID.SNAKEBOSS_SCALE, scaleCount);
 			return blowpipeMap;
 		}
 		return weapon.getChargeComponents(getCharges(weapon), configManager);

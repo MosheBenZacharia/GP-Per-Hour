@@ -24,13 +24,13 @@
  */
 package com.gpperhour;
 
-import static net.runelite.api.ItemID.*;
 //import static net.runelite.api.gameval.ItemID.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
+        import net.runelite.api.gameval.ItemID;
 
 //Remaps the value of untradeable items to their commonly traded counterpart based on user config.
 //Also remaps value of certain containers (hallowed sack, brimstone key, etc.) to their average value.
@@ -44,47 +44,47 @@ public class ValueRemapper {
         directValueRemaps = new HashMap<>();
 
         //Seedling to sapling
-        directValueRemaps.put(OAK_SEEDLING, OAK_SAPLING);
-        directValueRemaps.put(WILLOW_SEEDLING, WILLOW_SAPLING);
-        directValueRemaps.put(MAPLE_SEEDLING, MAPLE_SAPLING);
-        directValueRemaps.put(YEW_SEEDLING, YEW_SAPLING);
-        directValueRemaps.put(MAGIC_SEEDLING, MAGIC_SAPLING);
-        directValueRemaps.put(REDWOOD_SEEDLING, REDWOOD_SAPLING);
-        directValueRemaps.put(SPIRIT_SEEDLING, SPIRIT_SAPLING);
-        directValueRemaps.put(CRYSTAL_SEEDLING, CRYSTAL_SAPLING);
-        directValueRemaps.put(APPLE_SEEDLING, APPLE_SAPLING);
-        directValueRemaps.put(BANANA_SEEDLING, BANANA_SAPLING);
-        directValueRemaps.put(ORANGE_SEEDLING, ORANGE_SAPLING);
-        directValueRemaps.put(CURRY_SEEDLING, CURRY_SAPLING);
-        directValueRemaps.put(PINEAPPLE_SEEDLING, PINEAPPLE_SAPLING);
-        directValueRemaps.put(PAPAYA_SEEDLING, PAPAYA_SAPLING);
-        directValueRemaps.put(PALM_SEEDLING, PALM_SAPLING);
-        directValueRemaps.put(DRAGONFRUIT_SEEDLING, DRAGONFRUIT_SAPLING);
-        directValueRemaps.put(TEAK_SEEDLING, TEAK_SAPLING);
-        directValueRemaps.put(MAHOGANY_SEEDLING, MAHOGANY_SAPLING);
-        directValueRemaps.put(CALQUAT_SEEDLING, CALQUAT_SAPLING);
-        directValueRemaps.put(CELASTRUS_SEEDLING, CELASTRUS_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ACORN, ItemID.PLANTPOT_OAK_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_WILLOW_SEED, ItemID.PLANTPOT_WILLOW_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAPLE_SEED, ItemID.PLANTPOT_MAPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_YEW_SEED, ItemID.PLANTPOT_YEW_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAGIC_TREE_SEED, ItemID.PLANTPOT_MAGIC_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_REDWOOD_TREE_SEED, ItemID.PLANTPOT_REDWOOD_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_SPIRIT_TREE_SEED, ItemID.PLANTPOT_SPIRIT_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CRYSTAL_TREE_SEED, ItemID.PLANTPOT_CRYSTAL_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_APPLE_SEED, ItemID.PLANTPOT_APPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_BANANA_SEED, ItemID.PLANTPOT_BANANA_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ORANGE_SEED, ItemID.PLANTPOT_ORANGE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CURRY_SEED, ItemID.PLANTPOT_CURRY_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PINEAPPLE_SEED, ItemID.PLANTPOT_PINEAPPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PAPAYA_SEED, ItemID.PLANTPOT_PAPAYA_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PALM_SEED, ItemID.PLANTPOT_PALM_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_DRAGONFRUIT_SEED, ItemID.PLANTPOT_DRAGONFRUIT_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_TEAK_SEED, ItemID.PLANTPOT_TEAK_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAHOGANY_SEED, ItemID.PLANTPOT_MAHOGANY_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CALQUAT_SEED, ItemID.PLANTPOT_CALQUAT_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CELASTRUS_TREE_SEED, ItemID.PLANTPOT_CELASTRUS_TREE_SAPLING);
         //Watered seedling to sapling
-        directValueRemaps.put(OAK_SEEDLING_W, OAK_SAPLING);
-        directValueRemaps.put(WILLOW_SEEDLING_W, WILLOW_SAPLING);
-        directValueRemaps.put(MAPLE_SEEDLING_W, MAPLE_SAPLING);
-        directValueRemaps.put(YEW_SEEDLING_W, YEW_SAPLING);
-        directValueRemaps.put(MAGIC_SEEDLING_W, MAGIC_SAPLING);
-        directValueRemaps.put(REDWOOD_SEEDLING_W, REDWOOD_SAPLING);
-        directValueRemaps.put(SPIRIT_SEEDLING_W, SPIRIT_SAPLING);
-        directValueRemaps.put(CRYSTAL_SEEDLING_W, CRYSTAL_SAPLING);
-        directValueRemaps.put(APPLE_SEEDLING_W, APPLE_SAPLING);
-        directValueRemaps.put(BANANA_SEEDLING_W, BANANA_SAPLING);
-        directValueRemaps.put(ORANGE_SEEDLING_W, ORANGE_SAPLING);
-        directValueRemaps.put(CURRY_SEEDLING_W, CURRY_SAPLING);
-        directValueRemaps.put(PINEAPPLE_SEEDLING_W, PINEAPPLE_SAPLING);
-        directValueRemaps.put(PAPAYA_SEEDLING_W, PAPAYA_SAPLING);
-        directValueRemaps.put(PALM_SEEDLING_W, PALM_SAPLING);
-        directValueRemaps.put(DRAGONFRUIT_SEEDLING_W, DRAGONFRUIT_SAPLING);
-        directValueRemaps.put(TEAK_SEEDLING_W, TEAK_SAPLING);
-        directValueRemaps.put(MAHOGANY_SEEDLING_W, MAHOGANY_SAPLING);
-        directValueRemaps.put(CALQUAT_SEEDLING_W, CALQUAT_SAPLING);
-        directValueRemaps.put(CELASTRUS_SEEDLING_W, CELASTRUS_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ACORN_WATERED, ItemID.PLANTPOT_OAK_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_WILLOW_SEED_WATERED, ItemID.PLANTPOT_WILLOW_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAPLE_SEED_WATERED, ItemID.PLANTPOT_MAPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_YEW_SEED_WATERED, ItemID.PLANTPOT_YEW_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAGIC_TREE_SEED_WATERED, ItemID.PLANTPOT_MAGIC_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_REDWOOD_TREE_SEED_WATERED, ItemID.PLANTPOT_REDWOOD_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_SPIRIT_TREE_SEED_WATERED, ItemID.PLANTPOT_SPIRIT_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CRYSTAL_TREE_SEED_WATERED, ItemID.PLANTPOT_CRYSTAL_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_APPLE_SEED_WATERED, ItemID.PLANTPOT_APPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_BANANA_SEED_WATERED, ItemID.PLANTPOT_BANANA_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ORANGE_SEED_WATERED, ItemID.PLANTPOT_ORANGE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CURRY_SEED_WATERED, ItemID.PLANTPOT_CURRY_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PINEAPPLE_SEED_WATERED, ItemID.PLANTPOT_PINEAPPLE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PAPAYA_SEED_WATERED, ItemID.PLANTPOT_PAPAYA_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_PALM_SEED_WATERED, ItemID.PLANTPOT_PALM_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_DRAGONFRUIT_SEED_WATERED, ItemID.PLANTPOT_DRAGONFRUIT_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_TEAK_SEED_WATERED, ItemID.PLANTPOT_TEAK_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_MAHOGANY_SEED_WATERED, ItemID.PLANTPOT_MAHOGANY_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CALQUAT_SEED_WATERED, ItemID.PLANTPOT_CALQUAT_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CELASTRUS_TREE_SEED_WATERED, ItemID.PLANTPOT_CELASTRUS_TREE_SAPLING);
     }
 
     public static Float remapPrice(int itemId, GPPerHourPlugin plugin, GPPerHourConfig config)
@@ -93,7 +93,7 @@ public class ValueRemapper {
         {
             return plugin.getPrice(directValueRemaps.get(itemId));
         }
-        if (itemId == BRIMSTONE_KEY)
+        if (itemId == ItemID.KONAR_KEY)
         {
             if (config.brimstoneKeyValue() == BrimstoneKeyOverride.NO_VALUE)
             {
@@ -102,37 +102,37 @@ public class ValueRemapper {
             //doesn't include fish because of how complex it is
             float value = 
                     (5f/60f)*100000f +// coins
-                    (5f/60f)*plugin.getPrice(UNCUT_DIAMOND)*30F +
-                    (5f/60f)*plugin.getPrice(UNCUT_RUBY)*30F +
-                    (5f/60f)*plugin.getPrice(COAL)*400F +
-                    (4f/60f)*plugin.getPrice(GOLD_ORE)*150F +
-                    (4f/60f)*plugin.getPrice(DRAGON_ARROWTIPS)*125F +
-                    (3f/60f)*plugin.getPrice(IRON_ORE)*425F +
-                    (3f/60f)*plugin.getPrice(RUNE_FULL_HELM)*3F +
-                    (3f/60f)*plugin.getPrice(RUNE_PLATELEGS)*1.5F +
-                    (3f/60f)*plugin.getPrice(RUNE_PLATEBODY)*1.5F +
-                    (2f/60f)*plugin.getPrice(RUNITE_ORE)*12.5F +
-                    (2f/60f)*plugin.getPrice(STEEL_BAR)*400F +
-                    (2f/60f)*plugin.getPrice(DRAGON_DART_TIP)*100F +
-                    (2f/60f)*plugin.getPrice(MAGIC_LOGS)*140F +
-                    (1f/60f)*plugin.getPrice(PALM_TREE_SEED)*3F +
-                    (1f/60f)*plugin.getPrice(MAGIC_SEED)*2.5F +
-                    (1f/60f)*plugin.getPrice(CELASTRUS_SEED)*3F +
-                    (1f/60f)*plugin.getPrice(DRAGONFRUIT_TREE_SEED)*3F +
-                    (1f/60f)*plugin.getPrice(REDWOOD_TREE_SEED)*1F +
-                    (1f/60f)*plugin.getPrice(TORSTOL_SEED)*4F +
-                    (1f/60f)*plugin.getPrice(SNAPDRAGON_SEED)*4F +
-                    (1f/60f)*plugin.getPrice(RANARR_SEED)*4F +
-                    (1f/60f)*plugin.getPrice(PURE_ESSENCE)*4500F +
-                    (1f/200f)*plugin.getPrice(DRAGON_HASTA)*1F +
-                    (1f/1000f)*plugin.getPrice(MYSTIC_ROBE_TOP_DUSK)*1f +
-                    (1f/1000f)*plugin.getPrice(MYSTIC_ROBE_BOTTOM_DUSK)*1f +
-                    (1f/1000f)*plugin.getPrice(MYSTIC_GLOVES_DUSK)*1f +
-                    (1f/1000f)*plugin.getPrice(MYSTIC_BOOTS_DUSK)*1f +
-                    (1f/1000f)*plugin.getPrice(MYSTIC_HAT_DUSK)*1f;
+                    (5f/60f)*plugin.getPrice(ItemID.UNCUT_DIAMOND)*30F +
+                    (5f/60f)*plugin.getPrice(ItemID.UNCUT_RUBY)*30F +
+                    (5f/60f)*plugin.getPrice(ItemID.COAL)*400F +
+                    (4f/60f)*plugin.getPrice(ItemID.GOLD_ORE)*150F +
+                    (4f/60f)*plugin.getPrice(ItemID.DRAGON_ARROWHEADS)*125F +
+                    (3f/60f)*plugin.getPrice(ItemID.IRON_ORE)*425F +
+                    (3f/60f)*plugin.getPrice(ItemID.RUNE_FULL_HELM)*3F +
+                    (3f/60f)*plugin.getPrice(ItemID.RUNE_PLATELEGS)*1.5F +
+                    (3f/60f)*plugin.getPrice(ItemID.RUNE_PLATEBODY)*1.5F +
+                    (2f/60f)*plugin.getPrice(ItemID.RUNITE_ORE)*12.5F +
+                    (2f/60f)*plugin.getPrice(ItemID.STEEL_BAR)*400F +
+                    (2f/60f)*plugin.getPrice(ItemID.DRAGON_DART_TIP)*100F +
+                    (2f/60f)*plugin.getPrice(ItemID.MAGIC_LOGS)*140F +
+                    (1f/60f)*plugin.getPrice(ItemID.PALM_TREE_SEED)*3F +
+                    (1f/60f)*plugin.getPrice(ItemID.MAGIC_TREE_SEED)*2.5F +
+                    (1f/60f)*plugin.getPrice(ItemID.CELASTRUS_TREE_SEED)*3F +
+                    (1f/60f)*plugin.getPrice(ItemID.DRAGONFRUIT_TREE_SEED)*3F +
+                    (1f/60f)*plugin.getPrice(ItemID.REDWOOD_TREE_SEED)*1F +
+                    (1f/60f)*plugin.getPrice(ItemID.TORSTOL_SEED)*4F +
+                    (1f/60f)*plugin.getPrice(ItemID.SNAPDRAGON_SEED)*4F +
+                    (1f/60f)*plugin.getPrice(ItemID.RANARR_SEED)*4F +
+                    (1f/60f)*plugin.getPrice(ItemID.BLANKRUNE_HIGH)*4500F +
+                    (1f/200f)*plugin.getPrice(ItemID.BRUT_DRAGON_SPEAR)*1F +
+                    (1f/1000f)*plugin.getPrice(ItemID.MYSTIC_ROBE_TOP_DUSK)*1f +
+                    (1f/1000f)*plugin.getPrice(ItemID.MYSTIC_ROBE_BOTTOM_DUSK)*1f +
+                    (1f/1000f)*plugin.getPrice(ItemID.MYSTIC_GLOVES_DUSK)*1f +
+                    (1f/1000f)*plugin.getPrice(ItemID.MYSTIC_BOOTS_DUSK)*1f +
+                    (1f/1000f)*plugin.getPrice(ItemID.MYSTIC_HAT_DUSK)*1f;
             return value;
         }
-        else if (itemId == TOKKUL)
+        else if (itemId == ItemID.TZHAAR_TOKEN)
         {
             switch(config.tokkulValue())
             {
@@ -141,20 +141,20 @@ public class ValueRemapper {
                     return 0f;
                 //overstock price for runes since they hit overstock quickly. overstock price same with/without gloves.
                 case BUY_CHAOS_RUNE:
-                    return plugin.getPrice(CHAOS_RUNE) / 9f;
+                    return plugin.getPrice(ItemID.CHAOSRUNE) / 9f;
                 case BUY_DEATH_RUNE:
-                    return plugin.getPrice(DEATH_RUNE) / 18f;
+                    return plugin.getPrice(ItemID.DEATHRUNE) / 18f;
                 case SELL_OBBY_CAPE:
-                    return plugin.getPrice(OBSIDIAN_CAPE) / (config.tokkulKaramjaGloves() ? 78000f : 90000f);
+                    return plugin.getPrice(ItemID.TZHAAR_CAPE_OBSIDIAN) / (config.tokkulKaramjaGloves() ? 78000f : 90000f);
                 case SELL_TOKTZ_KET_XIL:
-                    return plugin.getPrice(TOKTZKETXIL) / (config.tokkulKaramjaGloves() ? 58500f : 67500f);
+                    return plugin.getPrice(ItemID.TZHAAR_SPIKESHIELD) / (config.tokkulKaramjaGloves() ? 58500f : 67500f);
                 case SELL_TOKTZ_MEJ_TAL:
-                    return plugin.getPrice(TOKTZMEJTAL) / (config.tokkulKaramjaGloves() ? 45500f : 52500f);
+                    return plugin.getPrice(ItemID.TZHAAR_STAFF) / (config.tokkulKaramjaGloves() ? 45500f : 52500f);
                 case SELL_UNCUT_ONYX:
-                    return plugin.getPrice(UNCUT_ONYX) / (config.tokkulKaramjaGloves() ? 260000f : 300000f);
+                    return plugin.getPrice(ItemID.UNCUT_ONYX) / (config.tokkulKaramjaGloves() ? 260000f : 300000f);
             }
         }
-        else if (itemId == CRYSTAL_SHARD)
+        else if (itemId == ItemID.PRIF_CRYSTAL_SHARD)
         {
             switch(config.crystalShardValue())
             {
@@ -162,26 +162,26 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case BUY_TELEPORT_SEED:
-                    return plugin.getPrice(ENHANCED_CRYSTAL_TELEPORT_SEED) / 150f;
+                    return plugin.getPrice(ItemID.PRIF_TELEPORT_SEED) / 150f;
                 case SELL_BASTION:
-                    return (plugin.getPrice(DIVINE_BASTION_POTION4) - plugin.getPrice(BASTION_POTION4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEBASTION) - plugin.getPrice(ItemID._4DOSEBASTION))/0.4f;
                 case SELL_BATTLEMAGE:
-                    return (plugin.getPrice(DIVINE_BATTLEMAGE_POTION4) - plugin.getPrice(BATTLEMAGE_POTION4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEBATTLEMAGE) - plugin.getPrice(ItemID._4DOSEBATTLEMAGE))/0.4f;
                 case SELL_MAGIC:
-                    return (plugin.getPrice(DIVINE_MAGIC_POTION4) - plugin.getPrice(MAGIC_POTION4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEMAGIC) - plugin.getPrice(ItemID._4DOSE1MAGIC))/0.4f;
                 case SELL_RANGING:
-                    return (plugin.getPrice(DIVINE_RANGING_POTION4) - plugin.getPrice(RANGING_POTION4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINERANGE) - plugin.getPrice(ItemID._4DOSERANGERSPOTION))/0.4f;
                 case SELL_SUPER_ATTACK:
-                    return (plugin.getPrice(DIVINE_SUPER_ATTACK_POTION4) - plugin.getPrice(SUPER_ATTACK4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEATTACK) - plugin.getPrice(ItemID._4DOSE2ATTACK))/0.4f;
                 case SELL_SUPER_COMBAT:
-                    return (plugin.getPrice(DIVINE_SUPER_COMBAT_POTION4) - plugin.getPrice(SUPER_COMBAT_POTION4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINECOMBAT) - plugin.getPrice(ItemID._4DOSE2COMBAT))/0.4f;
                 case SELL_SUPER_DEFENCE:
-                    return (plugin.getPrice(DIVINE_SUPER_DEFENCE_POTION4) - plugin.getPrice(SUPER_DEFENCE4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEDEFENCE) - plugin.getPrice(ItemID._4DOSE2DEFENSE))/0.4f;
                 case SELL_SUPER_STRENGTH:
-                    return (plugin.getPrice(DIVINE_SUPER_STRENGTH_POTION4) - plugin.getPrice(SUPER_STRENGTH4))/0.4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINESTRENGTH) - plugin.getPrice(ItemID._4DOSE2STRENGTH))/0.4f;
             }
         }
-        else if (itemId == CRYSTAL_DUST_23964)
+        else if (itemId == ItemID.PRIF_CRYSTAL_SHARD_CRUSHED)
         {
             switch(config.crystalDustValue())
             {
@@ -189,24 +189,24 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_BASTION:
-                    return (plugin.getPrice(DIVINE_BASTION_POTION4) - plugin.getPrice(BASTION_POTION4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEBASTION) - plugin.getPrice(ItemID._4DOSEBASTION))/4f;
                 case SELL_BATTLEMAGE:
-                    return (plugin.getPrice(DIVINE_BATTLEMAGE_POTION4) - plugin.getPrice(BATTLEMAGE_POTION4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEBATTLEMAGE) - plugin.getPrice(ItemID._4DOSEBATTLEMAGE))/4f;
                 case SELL_MAGIC:
-                    return (plugin.getPrice(DIVINE_MAGIC_POTION4) - plugin.getPrice(MAGIC_POTION4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEMAGIC) - plugin.getPrice(ItemID._4DOSE1MAGIC))/4f;
                 case SELL_RANGING:
-                    return (plugin.getPrice(DIVINE_RANGING_POTION4) - plugin.getPrice(RANGING_POTION4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINERANGE) - plugin.getPrice(ItemID._4DOSERANGERSPOTION))/4f;
                 case SELL_SUPER_ATTACK:
-                    return (plugin.getPrice(DIVINE_SUPER_ATTACK_POTION4) - plugin.getPrice(SUPER_ATTACK4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEATTACK) - plugin.getPrice(ItemID._4DOSE2ATTACK))/4f;
                 case SELL_SUPER_COMBAT:
-                    return (plugin.getPrice(DIVINE_SUPER_COMBAT_POTION4) - plugin.getPrice(SUPER_COMBAT_POTION4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINECOMBAT) - plugin.getPrice(ItemID._4DOSE2COMBAT))/4f;
                 case SELL_SUPER_DEFENCE:
-                    return (plugin.getPrice(DIVINE_SUPER_DEFENCE_POTION4) - plugin.getPrice(SUPER_DEFENCE4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINEDEFENCE) - plugin.getPrice(ItemID._4DOSE2DEFENSE))/4f;
                 case SELL_SUPER_STRENGTH:
-                    return (plugin.getPrice(DIVINE_SUPER_STRENGTH_POTION4) - plugin.getPrice(SUPER_STRENGTH4))/4f;
+                    return (plugin.getPrice(ItemID._4DOSEDIVINESTRENGTH) - plugin.getPrice(ItemID._4DOSE2STRENGTH))/4f;
             }
         }
-        else if (itemId == MERMAIDS_TEAR)
+        else if (itemId == ItemID.FOSSIL_MERMAID_TEAR)
         {
             switch(config.mermaidsTearValue())
             {
@@ -214,10 +214,10 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_MERFOLK_TRIDENT:
-                    return plugin.getPrice(MERFOLK_TRIDENT)/400f;
+                    return plugin.getPrice(ItemID.MERFOLK_TRIDENT)/400f;
             }
         }
-        else if (itemId == STARDUST)
+        else if (itemId == ItemID.STAR_DUST)
         {
             switch(config.stardustValue())
             {
@@ -225,12 +225,12 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_SOFT_CLAY_PACK:
-                    return plugin.getPrice(SOFT_CLAY_PACK)/150f;
+                    return plugin.getPrice(ItemID.PACK_SOFTCLAY)/150f;
                 case SELL_BAG_FULL_OF_GEMS:
-                    return plugin.getPrice(BAG_FULL_OF_GEMS)/300f;
+                    return plugin.getPrice(ItemID.REWARD_GEM_BAG)/300f;
             }
         }
-        else if (itemId == UNIDENTIFIED_MINERALS)
+        else if (itemId == ItemID.MGUILD_MINERALS)
         {
             switch(config.unidentifiedMineralsValue())
             {
@@ -238,12 +238,12 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_SOFT_CLAY_PACK:
-                    return plugin.getPrice(SOFT_CLAY_PACK)/10f;
+                    return plugin.getPrice(ItemID.PACK_SOFTCLAY)/10f;
                 case SELL_BAG_FULL_OF_GEMS:
-                    return plugin.getPrice(BAG_FULL_OF_GEMS)/20f;
+                    return plugin.getPrice(ItemID.REWARD_GEM_BAG)/20f;
             }
         }
-        else if (itemId == GOLDEN_NUGGET)
+        else if (itemId == ItemID.MOTHERLODE_NUGGET)
         {
             switch(config.goldenNuggetValue())
             {
@@ -251,25 +251,25 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_SOFT_CLAY_PACK:
-                    return plugin.getPrice(SOFT_CLAY_PACK)/10f;
+                    return plugin.getPrice(ItemID.PACK_SOFTCLAY)/10f;
                 case SELL_BAG_FULL_OF_GEMS:
-                    return plugin.getPrice(BAG_FULL_OF_GEMS)/40f;
+                    return plugin.getPrice(ItemID.REWARD_GEM_BAG)/40f;
             }
         }
-        else if (itemId == SOFT_CLAY_PACK || itemId == SOFT_CLAY_PACK_12010 || itemId == SOFT_CLAY_PACK_24851 || itemId == SOFT_CLAY_PACK_25533)
+        else if (itemId == ItemID.PACK_SOFTCLAY || itemId == ItemID.CERT_PACK_SOFTCLAY || itemId == ItemID.PACK_SOFTCLAY_GUILD || itemId == ItemID.STAR_PACK_SOFTCLAY)
         {
-            return plugin.getPrice(SOFT_CLAY) * 100f;
+            return plugin.getPrice(ItemID.SOFTCLAY) * 100f;
         }
-        else if (itemId == BAG_FULL_OF_GEMS || itemId == BAG_FULL_OF_GEMS_24853 || itemId == BAG_FULL_OF_GEMS_25537)
+        else if (itemId == ItemID.REWARD_GEM_BAG || itemId == ItemID.REWARD_GEM_BAG_GUILD || itemId == ItemID.STAR_REWARD_GEM_BAG)
         {
-            return  plugin.getPrice(UNCUT_SAPPHIRE)*(40f / 2.003f) + 
-                    plugin.getPrice(UNCUT_EMERALD)*(40f / 2.884f) + 
-                    plugin.getPrice(UNCUT_RUBY)*(40f / 8.475f) + 
-                    plugin.getPrice(UNCUT_DIAMOND)*(40f / 32.36f) + 
-                    plugin.getPrice(UNCUT_DRAGONSTONE)*(40f / 161.3f) + 
-                    plugin.getPrice(UNCUT_ONYX)*(40f / 100000000f);
+            return  plugin.getPrice(ItemID.UNCUT_SAPPHIRE)*(40f / 2.003f) +
+                    plugin.getPrice(ItemID.UNCUT_EMERALD)*(40f / 2.884f) +
+                    plugin.getPrice(ItemID.UNCUT_RUBY)*(40f / 8.475f) +
+                    plugin.getPrice(ItemID.UNCUT_DIAMOND)*(40f / 32.36f) +
+                    plugin.getPrice(ItemID.UNCUT_DRAGONSTONE)*(40f / 161.3f) +
+                    plugin.getPrice(ItemID.UNCUT_ONYX)*(40f / 100000000f);
         }
-        else if (itemId == ABYSSAL_PEARLS)
+        else if (itemId == ItemID.ABYSSAL_PEARL)
         {
             switch(config.abyssalPearlsValue())
             {
@@ -277,10 +277,10 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_RING_OF_THE_ELEMENTS:
-                    return plugin.getPrice(RING_OF_THE_ELEMENTS)/400f;
+                    return plugin.getPrice(ItemID.RING_OF_ELEMENTS)/400f;
             }
         }
-        else if (itemId == HALLOWED_MARK)
+        else if (itemId == ItemID.HALLOWED_MARK)
         {
             switch(config.hallowedMarkValue())
             {
@@ -288,49 +288,49 @@ public class ValueRemapper {
                 default:
                     return 0f;
                 case SELL_HALLOWED_SACK:
-                    return plugin.getPrice(HALLOWED_SACK)/100f;
+                    return plugin.getPrice(ItemID.HALLOWED_SACK)/100f;
             }
         }
-        else if (itemId == HALLOWED_SACK)
+        else if (itemId == ItemID.HALLOWED_SACK)
         {
-            return plugin.getPrice(MONKS_ROBE_TOP)*1f*.5f+
-            plugin.getPrice(MONKS_ROBE)*1f*.5f+
-            plugin.getPrice(HOLY_SYMBOL)*1f*.5f+
-            plugin.getPrice(AIR_RUNE)*625f*.5f+
-            plugin.getPrice(FIRE_RUNE)*625f*.5f+
-            plugin.getPrice(CHAOS_RUNE)*37.5f*.5f+
-            plugin.getPrice(MITHRIL_BOLTS)*100f*.5f+
-            plugin.getPrice(PRAYER_POTION2)*1f*.5f+
-            plugin.getPrice(WHITE_LILY)*1f*.5f+
+            return plugin.getPrice(ItemID.MONKROBETOP)*1f*.5f+
+            plugin.getPrice(ItemID.MONKROBEBOTTOM)*1f*.5f+
+            plugin.getPrice(ItemID.BLESSEDSTAR)*1f*.5f+
+            plugin.getPrice(ItemID.AIRRUNE)*625f*.5f+
+            plugin.getPrice(ItemID.FIRERUNE)*625f*.5f+
+            plugin.getPrice(ItemID.CHAOSRUNE)*37.5f*.5f+
+            plugin.getPrice(ItemID.XBOWS_CROSSBOW_BOLTS_MITHRIL)*100f*.5f+
+            plugin.getPrice(ItemID._2DOSEPRAYERRESTORE)*1f*.5f+
+            plugin.getPrice(ItemID.WHITELILLY)*1f*.5f+
             1f*2250f*.5f+//coins
-            plugin.getPrice(ADAMANT_2H_SWORD)*1f*.1f+
-            plugin.getPrice(ADAMANT_PLATEBODY)*1f*.1f+
-            plugin.getPrice(COSMIC_RUNE)*80f*.1f+
-            plugin.getPrice(DEATH_RUNE)*80f*.1f+
-            plugin.getPrice(NATURE_RUNE)*80f*.1f+
-            plugin.getPrice(ADAMANT_BOLTS)*125f*.1f+
-            plugin.getPrice(MONKFISH)*2f*.1f+
-            plugin.getPrice(PRAYER_POTION4)*1f*.1f+
-            plugin.getPrice(GRIMY_RANARR_WEED)*1.5f*.1f+
+            plugin.getPrice(ItemID.ADAMANT_2H_SWORD)*1f*.1f+
+            plugin.getPrice(ItemID.ADAMANT_PLATEBODY)*1f*.1f+
+            plugin.getPrice(ItemID.COSMICRUNE)*80f*.1f+
+            plugin.getPrice(ItemID.DEATHRUNE)*80f*.1f+
+            plugin.getPrice(ItemID.NATURERUNE)*80f*.1f+
+            plugin.getPrice(ItemID.XBOWS_CROSSBOW_BOLTS_ADAMANTITE)*125f*.1f+
+            plugin.getPrice(ItemID.MONKFISH)*2f*.1f+
+            plugin.getPrice(ItemID._4DOSEPRAYERRESTORE)*1f*.1f+
+            plugin.getPrice(ItemID.UNIDENTIFIED_RANARR)*1.5f*.1f+
             1f*10000f*.1f+//coins
-            plugin.getPrice(RUNE_2H_SWORD)*1f*.2f+
-            plugin.getPrice(RUNE_PLATEBODY)*1f*.2f+
-            plugin.getPrice(LAW_RUNE)*200f*.2f+
-            plugin.getPrice(BLOOD_RUNE)*200f*.2f+
-            plugin.getPrice(SOUL_RUNE)*200f*.2f+
-            plugin.getPrice(RUNITE_BOLTS)*200f*.2f+
-            plugin.getPrice(MONKFISH)*4f*.2f+
-            plugin.getPrice(SANFEW_SERUM4)*1.5f*.2f+
-            plugin.getPrice(RANARR_SEED)*1.5f*.2f+
+            plugin.getPrice(ItemID.RUNE_2H_SWORD)*1f*.2f+
+            plugin.getPrice(ItemID.RUNE_PLATEBODY)*1f*.2f+
+            plugin.getPrice(ItemID.LAWRUNE)*200f*.2f+
+            plugin.getPrice(ItemID.BLOODRUNE)*200f*.2f+
+            plugin.getPrice(ItemID.SOULRUNE)*200f*.2f+
+            plugin.getPrice(ItemID.XBOWS_CROSSBOW_BOLTS_RUNITE)*200f*.2f+
+            plugin.getPrice(ItemID.MONKFISH)*4f*.2f+
+            plugin.getPrice(ItemID.SANFEW_SALVE_4_DOSE)*1.5f*.2f+
+            plugin.getPrice(ItemID.RANARR_SEED)*1.5f*.2f+
             1f*20000f*.2f;//coins
         }
-        else if(itemId == GRANITE_CANNONBALL)
+        else if(itemId == ItemID.GRANITE_CANNONBALL)
         {
-            return plugin.getPrice(STEEL_CANNONBALL);
+            return plugin.getPrice(ItemID.MCANNONBALL);
         }
-        else if (itemId == MINNOW)
+        else if (itemId == ItemID.MINNOW)
         {
-            return plugin.getPrice(RAW_SHARK)/40f;
+            return plugin.getPrice(ItemID.RAW_SHARK)/40f;
         }
 
         return null;

@@ -38,8 +38,8 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -66,19 +66,19 @@ public class U_LogBasket extends ChargedItem
 		final Gson gson,
 		final ScheduledExecutorService executorService
 	) {
-		super(ChargesItem.LOG_BASKET, ItemID.LOG_BASKET, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+		super(ChargesItem.LOG_BASKET, ItemID.LOG_BASKET_CLOSED, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
 
 		this.config_key = GPPerHourConfig.log_basket;
 		this.zero_charges_is_positive = true;
         this.triggers_items = new TriggerItem[]{
-            new TriggerItem(ItemID.LOG_BASKET),
-            new TriggerItem(ItemID.OPEN_LOG_BASKET),
+            new TriggerItem(ItemID.LOG_BASKET_CLOSED),
+            new TriggerItem(ItemID.LOG_BASKET_OPEN),
         };
 		this.triggers_chat_messages = new TriggerChatMessage[]{
             new TriggerChatMessage("(Your|The) basket is empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
             new TriggerChatMessage("You empty your basket into the bank.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
 			new TriggerChatMessage("(You get some.* logs)").extraConsumer(message -> {
-				if ((item_id == ItemID.OPEN_LOG_BASKET || item_id == ItemID.OPEN_FORESTRY_BASKET) && getItemCount() < CAPACITY && super.hasChargeData()) {
+				if ((item_id == ItemID.LOG_BASKET_OPEN || item_id == ItemID.FORESTRY_BASKET_OPEN) && getItemCount() < CAPACITY && super.hasChargeData()) {
 					final Matcher matcher = logPattern.matcher(message);
 					if (matcher.matches())
 					{
@@ -125,8 +125,8 @@ public class U_LogBasket extends ChargedItem
 			}),
 		};
 		this.triggers_item_containers = new TriggerItemContainer[]{
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open log basket").menuOption("Fill").addDifference(),
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Log basket").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Open log basket").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Log basket").menuOption("Fill").addDifference(),
 		};
 		this.supportsWidgetOnWidget = true;
 	}

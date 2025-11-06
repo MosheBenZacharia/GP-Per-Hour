@@ -45,8 +45,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
-import net.runelite.api.SpriteID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.SpriteID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
@@ -65,7 +65,7 @@ class ActiveTripOverlay extends Overlay
 	private static final int TEXT_Y_OFFSET = 17;
 	private static final int HORIZONTAL_PADDING = 10;
 	private static final int imageSize = 15;
-	static final int COINS = ItemID.COINS_995;
+	static final int COINS = ItemID.COINS;
 
 	private final Client client;
 	private final GPPerHourPlugin plugin;
@@ -259,7 +259,7 @@ class ActiveTripOverlay extends Overlay
 
     private BufferedImage loadCoinsImage(int quantity)
     {
-		BufferedImage image = itemManager.getImage(ItemID.COINS_995, quantity, false);
+		BufferedImage image = itemManager.getImage(ItemID.COINS, quantity, false);
 		image = ImageUtil.resizeImage(image, imageSize, imageSize);
 		return image;
     }
@@ -292,7 +292,7 @@ class ActiveTripOverlay extends Overlay
 	{
 		if (redXImage == null)
 		{
-			redXImage = spriteManager.getSprite(SpriteID.UNKNOWN_DISABLED_ICON, 0);
+			redXImage = spriteManager.getSprite(SpriteID.WarningIcons.DISABLED, 0);
 			redXImage = ImageUtil.resizeImage(redXImage, imageSize, imageSize);
 		}
 		return redXImage;

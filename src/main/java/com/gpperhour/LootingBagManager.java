@@ -39,20 +39,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -120,7 +120,7 @@ public class LootingBagManager
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded)
 	{
-		if (widgetLoaded.getGroupId() != WidgetUtil.componentToInterface(ComponentID.LOOTING_BAG_LOOTING_BAG_INVENTORY))
+		if (widgetLoaded.getGroupId() != WidgetUtil.componentToInterface(InterfaceID.WildernessLootingbag.ITEMS))
 		{
 			return;
 		}
@@ -174,7 +174,7 @@ public class LootingBagManager
 		if (event.getItemContainer() == null)
 			return;
 
-		if (event.getContainerId() == InventoryID.INVENTORY.getId())
+		if (event.getContainerId() == InventoryID.INV)
 		{
 			if (inventory_items != null && bagItems != null &&
 				(lastLootingBagUseOn == client.getTickCount() || lastLootingBagUseOn + 1 == client.getTickCount()))
@@ -218,7 +218,7 @@ public class LootingBagManager
 		}
 
 		if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_WIDGET) {
-			ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+			ItemContainer itemContainer = client.getItemContainer(InventoryID.INV);
 			if (itemContainer == null)
 				return;
 			Widget widgetA = client.getSelectedWidget();
@@ -246,7 +246,7 @@ public class LootingBagManager
 
 	private boolean isLootingBag(int itemId)
 	{
-		return itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_22586;
+		return itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_OPEN;
 	}
 
 	@Subscribe
@@ -258,15 +258,15 @@ public class LootingBagManager
 		}
 
 		// not in wilderness or ferox -> can't pick up items directly into looting bag
-		if (client.getVarbitValue(Varbits.IN_WILDERNESS) == 0
+		if (client.getVarbitValue(VarbitID.INSIDE_WILDERNESS) == 0
 			&& !FEROX_REGION.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
 		{
 			return;
 		}
 
 		// doesn't have open looting bag
-		ItemContainer inv = client.getItemContainer(InventoryID.INVENTORY);
-		if (inv == null || !inv.contains(ItemID.LOOTING_BAG_22586))
+		ItemContainer inv = client.getItemContainer(InventoryID.INV);
+		if (inv == null || !inv.contains(ItemID.LOOTING_BAG_OPEN))
 		{
 			return;
 		}

@@ -33,10 +33,8 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import com.gpperhour.GPPerHourConfig;
-import com.gpperhour.GPPerHourPlugin;
 import lombok.Getter;
-import net.runelite.api.Item;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.util.Text;
 
@@ -163,8 +161,8 @@ public enum ChargedWeapon
 				Integer charges = params.currentCharges;
 				Map<Integer, Float> chargeComponents = params.chargeComponents;
 	
-				chargeComponents.put(ItemID.CHAOS_RUNE, (float) charges * 2);
-				chargeComponents.put(ItemID.EARTH_RUNE, (float) charges * 5);
+				chargeComponents.put(ItemID.CHAOSRUNE, (float) charges * 2);
+				chargeComponents.put(ItemID.EARTHRUNE, (float) charges * 5);
 			})
 	),
 
@@ -229,10 +227,10 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 
-			chargeComponents.put(ItemID.DEATH_RUNE, (float) charges);
-			chargeComponents.put(ItemID.CHAOS_RUNE, (float) charges);
-			chargeComponents.put(ItemID.FIRE_RUNE, (float) charges * 5);
-			chargeComponents.put(ItemID.COINS_995, (float) charges * 10);
+			chargeComponents.put(ItemID.DEATHRUNE, (float) charges);
+			chargeComponents.put(ItemID.CHAOSRUNE, (float) charges);
+			chargeComponents.put(ItemID.FIRERUNE, (float) charges * 5);
+			chargeComponents.put(ItemID.COINS, (float) charges * 10);
 		})
 	),
 	TRIDENT_OF_THE_SWAMP(new ChargedWeaponBuilder()
@@ -258,10 +256,10 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 
-			chargeComponents.put(ItemID.DEATH_RUNE, (float) charges);
-			chargeComponents.put(ItemID.CHAOS_RUNE, (float) charges);
-			chargeComponents.put(ItemID.FIRE_RUNE, (float) charges * 5);
-			chargeComponents.put(ItemID.ZULRAHS_SCALES, (float) charges);
+			chargeComponents.put(ItemID.DEATHRUNE, (float) charges);
+			chargeComponents.put(ItemID.CHAOSRUNE, (float) charges);
+			chargeComponents.put(ItemID.FIRERUNE, (float) charges * 5);
+			chargeComponents.put(ItemID.SNAKEBOSS_SCALE, (float) charges);
 		})
 	),
 	TRIDENT_OF_THE_SEAS_E(new ChargedWeaponBuilder()
@@ -281,10 +279,10 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 
-			chargeComponents.put(ItemID.DEATH_RUNE, (float) charges);
-			chargeComponents.put(ItemID.CHAOS_RUNE, (float) charges);
-			chargeComponents.put(ItemID.FIRE_RUNE, (float) charges * 5);
-			chargeComponents.put(ItemID.COINS_995, (float) charges * 10);
+			chargeComponents.put(ItemID.DEATHRUNE, (float) charges);
+			chargeComponents.put(ItemID.CHAOSRUNE, (float) charges);
+			chargeComponents.put(ItemID.FIRERUNE, (float) charges * 5);
+			chargeComponents.put(ItemID.COINS, (float) charges * 10);
 		})
 	),
 	TRIDENT_OF_THE_SWAMP_E(new ChargedWeaponBuilder()
@@ -310,10 +308,10 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 
-			chargeComponents.put(ItemID.DEATH_RUNE, (float) charges);
-			chargeComponents.put(ItemID.CHAOS_RUNE, (float) charges);
-			chargeComponents.put(ItemID.FIRE_RUNE, (float) charges * 5);
-			chargeComponents.put(ItemID.ZULRAHS_SCALES, (float) charges);
+			chargeComponents.put(ItemID.DEATHRUNE, (float) charges);
+			chargeComponents.put(ItemID.CHAOSRUNE, (float) charges);
+			chargeComponents.put(ItemID.FIRERUNE, (float) charges * 5);
+			chargeComponents.put(ItemID.SNAKEBOSS_SCALE, (float) charges);
 		})
 	),
 	//this can actually reach 20k charges if you combine two of them...
@@ -369,7 +367,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			//Assume cheapest cost per charge
-			chargeComponents.put(ItemID.COINS_995, charges * 60f);
+			chargeComponents.put(ItemID.COINS, charges * 60f);
 
 			//TODO: config for user to decide if they are using crystal shards vs paying ilfeen,
 			// and see if i can find varbit for how many times ilfeen has recharged (since that affects cost per charge)
@@ -425,7 +423,7 @@ public enum ChargedWeapon
 			if (tome_of_fire_page_type == null)
 				tome_of_fire_page_type = "burnt";
 			boolean searing = tome_of_fire_page_type.equals("searing");
-			chargeComponents.put(searing ? ItemID.SEARING_PAGE : ItemID.BURNT_PAGE, pages);
+			chargeComponents.put(searing ? ItemID.WINT_SEARING_PAGE : ItemID.WINT_BURNT_PAGE, pages);
 		})
 	),
 	/* Tome of water:
@@ -540,8 +538,8 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float vials = charges / 100f;
-			chargeComponents.put(ItemID.VIAL_OF_BLOOD, vials);
-			chargeComponents.put(ItemID.BLOOD_RUNE, charges * 3f);
+			chargeComponents.put(ItemID.MYQ4_BLOOD_VIAL, vials);
+			chargeComponents.put(ItemID.BLOODRUNE, charges * 3f);
 		})
 	),
 	/* blood fury
@@ -572,7 +570,7 @@ public enum ChargedWeapon
 		How to track? either xp drop + hitsplats if it's possible to always see all of your own hitsplats, or xp drop + animation.
 	 */
 	BLOOD_FURY(new ChargedWeaponBuilder()
-		.chargedItemIds(ItemID.AMULET_OF_BLOOD_FURY)
+		.chargedItemIds(ItemID.BLOOD_AMULET)
 		.name("Amulet of Blood Fury")
 		.configKeyName("amulet_of_blood_fury")
 		.updateMessageChargesRegexes(
@@ -680,7 +678,7 @@ public enum ChargedWeapon
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
-			params.chargeComponents.put(ItemID.BLOOD_RUNE, params.currentCharges * 3f);
+			params.chargeComponents.put(ItemID.BLOODRUNE, params.currentCharges * 3f);
 		})
 	),
 	/* arclight
@@ -721,7 +719,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float shards = charges / 333f;
-			chargeComponents.put(ItemID.ANCIENT_SHARD, shards);
+			chargeComponents.put(ItemID.CATA_SHARD, shards);
 		})
 	),
 	/* Ether Weapon common
@@ -770,7 +768,7 @@ public enum ChargedWeapon
 		.rechargeAmount(16_000)
 		.configKeyName("craws_bow")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	WEBWEAVER(new ChargedWeaponBuilder()
 		.chargedItemIds(27655 /*WEBWEAVER_BOW*/)
@@ -781,7 +779,7 @@ public enum ChargedWeapon
 		.configKeyName("webweaver_bow")
 		.settingsConfigKey("craws_bow")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	/* Vigorra's chainmace
 		message overlap:
@@ -795,7 +793,7 @@ public enum ChargedWeapon
 		.rechargeAmount(16_000)
 		.configKeyName("viggoras_chainmace")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	URSINE (new ChargedWeaponBuilder()
 		.chargedItemIds(27660 /*URSINE_CHAINMACE*/)
@@ -806,7 +804,7 @@ public enum ChargedWeapon
 		.configKeyName("ursine_chainmace")
 		.settingsConfigKey("viggoras_chainmace")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	/* Thammaron's sceptre
 		message overlap:
@@ -820,7 +818,7 @@ public enum ChargedWeapon
 		.rechargeAmount(16_000)
 		.configKeyName("thammarons_sceptre")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	ACCURSED(new ChargedWeaponBuilder()
 		.chargedItemIds(27665 /*ACCURSED_SCEPTRE*/, 27679 /*ACCURSED_SCEPTRE_A*/)
@@ -834,7 +832,7 @@ public enum ChargedWeapon
 		.configKeyName("accursed_sceptre")
 		.settingsConfigKey("thammarons_sceptre")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.REVENANT_ETHER, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.WILD_CAVE_SHARD, (float) params.currentCharges); })
 	),
 	/*
 	check:
@@ -855,7 +853,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			//Assume cheapest cost per charge
-			chargeComponents.put(ItemID.COINS_995, charges * 72f);
+			chargeComponents.put(ItemID.COINS, charges * 72f);
 
 			//TODO: config for user to decide if they are using crystal shards vs paying ilfeen,
 			// and see if i can find varbit for how many times ilfeen has recharged (since that affects cost per charge)
@@ -883,7 +881,7 @@ public enum ChargedWeapon
 		{
 			Integer charges = params.currentCharges;
 			float shards = charges / 100f;
-			params.chargeComponents.put(ItemID.CRYSTAL_SHARD, shards);
+			params.chargeComponents.put(ItemID.PRIF_CRYSTAL_SHARD, shards);
 		})
 	),
 	/* 
@@ -927,7 +925,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float shards = charges / 100f;
-			chargeComponents.put(ItemID.CRYSTAL_SHARD, shards);
+			chargeComponents.put(ItemID.PRIF_CRYSTAL_SHARD, shards);
 		})
 	),
 	CRYSTAL_BODY(new ChargedWeaponBuilder()
@@ -944,7 +942,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float shards = charges / 100f;
-			chargeComponents.put(ItemID.CRYSTAL_SHARD, shards);
+			chargeComponents.put(ItemID.PRIF_CRYSTAL_SHARD, shards);
 		})
 	),
 	CRYSTAL_LEGS(new ChargedWeaponBuilder()
@@ -961,7 +959,7 @@ public enum ChargedWeapon
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			float shards = charges / 100f;
-			chargeComponents.put(ItemID.CRYSTAL_SHARD, shards);
+			chargeComponents.put(ItemID.PRIF_CRYSTAL_SHARD, shards);
 		})
 	),
 	/* Serpentine Helmet:
@@ -1021,7 +1019,7 @@ public enum ChargedWeapon
 			)
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
-				{ params.chargeComponents.put(ItemID.ZULRAHS_SCALES, (float) params.currentCharges); })
+				{ params.chargeComponents.put(ItemID.SNAKEBOSS_SCALE, (float) params.currentCharges); })
 	),
 	/* Tumeken's shadow
 		https://github.com/geheur/weapon-charges/issues/14 log here.
@@ -1105,8 +1103,8 @@ public enum ChargedWeapon
 		{
 			Integer charges = params.currentCharges;
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
-			chargeComponents.put(ItemID.SOUL_RUNE, charges * 2f);
-			chargeComponents.put(ItemID.CHAOS_RUNE, charges * 5f);
+			chargeComponents.put(ItemID.SOULRUNE, charges * 2f);
+			chargeComponents.put(ItemID.CHAOSRUNE, charges * 5f);
 		})
 	),
 	/**
@@ -1114,7 +1112,7 @@ public enum ChargedWeapon
 	 * charges: darts and scales.
 	 */
 	TOXIC_BLOWPIPE(new ChargedWeaponBuilder()
-		.chargedItemIds(ItemID.TOXIC_BLOWPIPE, ItemID.BLAZING_BLOWPIPE)
+		.chargedItemIds(ItemID.TOXIC_BLOWPIPE_LOADED, ItemID.TOXIC_BLOWPIPE_LOADED_ORNAMENT)
 		.name("Toxic blowpipe")
 		.settingsConfigKey("blowpipe")
 	),

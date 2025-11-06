@@ -57,24 +57,19 @@ import net.runelite.api.Constants;
 import net.runelite.api.EnumComposition;
 import net.runelite.api.EnumID;
 import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.MenuAction;
-import net.runelite.api.ObjectID;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetUtil;
-import net.runelite.api.widgets.InterfaceID;
-import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -118,7 +113,7 @@ public class GPPerHourPlugin extends Plugin
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
 				"* Apply ignore list to runes in rune pouch.";
-	static final int COINS = ItemID.COINS_995;
+	static final int COINS = ItemID.COINS;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = 12791;
 	static final int DIVINE_RUNEPOUCH_ITEM_ID = 27281;
@@ -223,10 +218,10 @@ public class GPPerHourPlugin extends Plugin
 
 	// from ClueScrollPlugin
 	private static final int[] RUNEPOUCH_AMOUNT_VARBITS = {
-			Varbits.RUNE_POUCH_AMOUNT1, Varbits.RUNE_POUCH_AMOUNT2, Varbits.RUNE_POUCH_AMOUNT3, Varbits.RUNE_POUCH_AMOUNT4
+			VarbitID.RUNE_POUCH_QUANTITY_1, VarbitID.RUNE_POUCH_QUANTITY_2, VarbitID.RUNE_POUCH_QUANTITY_3, VarbitID.RUNE_POUCH_QUANTITY_4
 	};
 	private static final int[] RUNEPOUCH_RUNE_VARBITS = {
-			Varbits.RUNE_POUCH_RUNE1, Varbits.RUNE_POUCH_RUNE2, Varbits.RUNE_POUCH_RUNE3, Varbits.RUNE_POUCH_RUNE4
+			VarbitID.RUNE_POUCH_TYPE_1, VarbitID.RUNE_POUCH_TYPE_2, VarbitID.RUNE_POUCH_TYPE_3, VarbitID.RUNE_POUCH_TYPE_4
 	};
     @AllArgsConstructor
     public enum ValueMode {
@@ -542,31 +537,31 @@ public class GPPerHourPlugin extends Plugin
 			}
 			else if (event.getKey().startsWith("tokkul"))
 			{
-				refreshPrice(ItemID.TOKKUL);
+				refreshPrice(ItemID.TZHAAR_TOKEN);
 			}
 			else if (event.getKey().startsWith("crystalShard"))
 			{
-				refreshPrice(ItemID.CRYSTAL_SHARD);
+				refreshPrice(ItemID.PRIF_CRYSTAL_SHARD);
 			}
 			else if (event.getKey().startsWith("crystalDust"))
 			{
-				refreshPrice(ItemID.CRYSTAL_DUST_23964);
+				refreshPrice(ItemID.PRIF_CRYSTAL_SHARD_CRUSHED);
 			}
 			else if (event.getKey().startsWith("mermaidsTear"))
 			{
-				refreshPrice(ItemID.MERMAIDS_TEAR);
+				refreshPrice(ItemID.FOSSIL_MERMAID_TEAR);
 			}
 			else if (event.getKey().startsWith("stardust"))
 			{
-				refreshPrice(ItemID.STARDUST);
+				refreshPrice(ItemID.STAR_DUST);
 			}
 			else if (event.getKey().startsWith("unidentifiedMinerals"))
 			{
-				refreshPrice(ItemID.UNIDENTIFIED_MINERALS);
+				refreshPrice(ItemID.MGUILD_MINERALS);
 			}
 			else if (event.getKey().startsWith("goldenNugget"))
 			{
-				refreshPrice(ItemID.GOLDEN_NUGGET);
+				refreshPrice(ItemID.MOTHERLODE_NUGGET);
 			}
 			else if (event.getKey().startsWith("hallowedMark"))
 			{
@@ -574,11 +569,11 @@ public class GPPerHourPlugin extends Plugin
 			}
 			else if (event.getKey().startsWith("abyssalPearls"))
 			{
-				refreshPrice(ItemID.ABYSSAL_PEARLS);
+				refreshPrice(ItemID.ABYSSAL_PEARL);
 			}
 			else if (event.getKey().startsWith("brimstoneKey"))
 			{
-				refreshPrice(ItemID.BRIMSTONE_KEY);
+				refreshPrice(ItemID.KONAR_KEY);
 			}
 		}
 	}
@@ -613,9 +608,9 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
-		if (event.getGroupId() == InterfaceID.KINGDOM)
+		if (event.getGroupId() == InterfaceID.MISC_COLLECTION)
 		{
-			ItemContainer rewardsItemContainer = client.getItemContainer(InventoryID.KINGDOM_OF_MISCELLANIA);
+			ItemContainer rewardsItemContainer = client.getItemContainer(InventoryID.MISC_RESOURCES_COLLECTED);
 			if (rewardsItemContainer != null)
 			{
 				refreshQtyMap(rewardsQtyMap, rewardsItemContainer);
@@ -634,8 +629,8 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if ((event.getId() == ObjectID.BANK_DEPOSIT_BOX && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
 			|| (event.getId() == ObjectID.BANK_DEPOSIT_CHEST && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
-			|| event.getId() == ObjectID.DEPOSIT_POOL
-			|| (event.getId() == ObjectID.DEPOSIT_POT && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT))
+			|| event.getId() == ObjectID.GOTR_DEPOSITCHEST
+			|| (event.getId() == ObjectID.TOA_POTTERY_BANKDEPOSIT && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT))
 		{
 			//user clicked on one of these but they might get to it at some later tick.
 			expectingPutAnimation = true;
@@ -644,35 +639,35 @@ public class GPPerHourPlugin extends Plugin
 
 		if ("Bank-all".equals(event.getMenuOption()))
 		{
-			InventoryID inventory = null;
+			int inventory = -1;
 			switch (WidgetUtil.componentToInterface(event.getParam1()))
 			{
-				case InterfaceID.CHAMBERS_OF_XERIC_REWARD:
-					inventory = InventoryID.CHAMBERS_OF_XERIC_CHEST;
+				case InterfaceID.RAIDS_REWARDS:
+					inventory = InventoryID.RAIDS_REWARDS;
 					break;
-				case InterfaceID.DRIFT_NET_FISHING_REWARD:
-					inventory = InventoryID.DRIFT_NET_FISHING_REWARD;
+				case InterfaceID.FOSSIL_DRIFTNET:
+					inventory = InventoryID.MACRO_CERTER;
 					break;
-				case InterfaceID.FORTIS_COLOSSEUM_REWARD:
-					inventory = InventoryID.FORTIS_COLOSSEUM_REWARD_CHEST;
+				case InterfaceID.COLOSSEUM_REWARD_CHEST_2:
+					inventory = InventoryID.COLOSSEUM_REWARDS;
 					break;
-				case InterfaceID.LUNAR_CHEST:
-					inventory = InventoryID.LUNAR_CHEST;
+				case InterfaceID.PMOON_REWARD:
+					inventory = InventoryID.PMOON_REWARDINV;
 					break;
-				case InterfaceID.TOA_REWARD:
-					inventory = InventoryID.TOA_REWARD_CHEST;
+				case InterfaceID.TOA_CHESTS:
+					inventory = InventoryID.TOA_CHESTS;
 					break;
-				case InterfaceID.TOB_REWARD:
-					inventory = InventoryID.THEATRE_OF_BLOOD_CHEST;
+				case InterfaceID.TOB_CHESTS:
+					inventory = InventoryID.TOB_CHESTS;
 					break;
 				case InterfaceID.TRAWLER_REWARD:
-					inventory = InventoryID.FISHING_TRAWLER_REWARD;
+					inventory = InventoryID.TRAWLER_REWARDINV;
 					break;
-				case InterfaceID.WILDERNESS_LOOT_CHEST:
-					inventory = InventoryID.WILDERNESS_LOOT_CHEST;
+				case InterfaceID.WILDY_LOOT_CHEST:
+					inventory = InventoryID.LOOT_INV_ACCESS;
 					break;
 			}
-			if (inventory != null)
+			if (inventory != -1)
 			{
 				ItemContainer rewardsItemContainer = client.getItemContainer(inventory);
 				if (rewardsItemContainer != null)
@@ -714,7 +709,7 @@ public class GPPerHourPlugin extends Plugin
 		if (collectOnBank != null && !collectOnBank.isHidden())
 			return true;
 		//Grand exchange can be open while inventory widget is closed, same functionality as above
-		Widget grandExchange = client.getWidget(ComponentID.GRAND_EXCHANGE_WINDOW_CONTAINER);
+		Widget grandExchange = client.getWidget(InterfaceID.GeOffers.UNIVERSE);
 		if (grandExchange != null && !grandExchange.isHidden())
 			return true;
 		//tool leprechauns
@@ -730,21 +725,21 @@ public class GPPerHourPlugin extends Plugin
 				//Group Ironman Bank
 				client.getWidget(725, 0),
 				//Bank
-				client.getWidget(ComponentID.BANK_INVENTORY_ITEM_CONTAINER),
+				client.getWidget(InterfaceID.Bankside.ITEMS),
 				//GE
-				client.getWidget(ComponentID.GRAND_EXCHANGE_INVENTORY_INVENTORY_ITEM_CONTAINER),
+				client.getWidget(InterfaceID.GeOffersSide.ITEMS),
 				//Seed vault
-				client.getWidget(ComponentID.SEED_VAULT_INVENTORY_ITEM_CONTAINER),
+				client.getWidget(InterfaceID.SeedVaultDeposit.INV),
 				//Bank with equipment view open
-				client.getWidget(InterfaceID.BANK_INVENTORY, 4),
+				client.getWidget(InterfaceID.BANKSIDE, 4),
 				//Bank with looting bag open
-				client.getWidget(InterfaceID.BANK_INVENTORY, 5),
+				client.getWidget(InterfaceID.BANKSIDE, 5),
 				//Bank with rune pouch open
-				client.getWidget(InterfaceID.BANK_INVENTORY, 19),
+				client.getWidget(InterfaceID.BANKSIDE, 19),
 				//Deposit box open
 				client.getWidget(907, 0),
 				//COX storage open
-				client.getWidget(InterfaceID.CHAMBERS_OF_XERIC_INVENTORY, 1)
+				client.getWidget(InterfaceID.RAIDS_STORAGE_SIDE, 1)
 			};
 
 			for (Widget altInventoryWidget: altInventoryWidgets)
@@ -763,10 +758,10 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (runData == null)
 			return;
-		inventoryWidget = client.getWidget(ComponentID.INVENTORY_CONTAINER);
+		inventoryWidget = client.getWidget(InterfaceID.Inventory.ITEMS);
 
-		inventoryItemContainer = client.getItemContainer(InventoryID.INVENTORY);
-		equipmentItemContainer = client.getItemContainer(InventoryID.EQUIPMENT);
+		inventoryItemContainer = client.getItemContainer(InventoryID.INV);
+		equipmentItemContainer = client.getItemContainer(InventoryID.WORN);
 
 		if (config.inventoryOverlayDisplayMode() == ActiveTripOverlay.InventoryOverlayDisplayMode.INVENTORY_TOTAL)
 		{
@@ -1052,7 +1047,7 @@ public class GPPerHourPlugin extends Plugin
 			{
 				addRunepouchContents(qtyMap);
 			}
-			else if(itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_22586)
+			else if(itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_OPEN)
 			{
 				lootingBagManager.addLootingBagContents(qtyMap);
 			}
@@ -1079,7 +1074,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		for (Integer itemId : keySet)
 		{
-			if ((itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_22586) && lootingBagManager.needsCheck())
+			if ((itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_OPEN) && lootingBagManager.needsCheck())
 			{
 				chargeableItemsNeedingCheck.add("looting bag");
 			}
@@ -1224,7 +1219,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (itemId == COINS)
 			return 1f;
-		if (itemId == ItemID.PLATINUM_TOKEN)
+		if (itemId == ItemID.PLATINUM)
 			return 1000f;
 		if (itemPrices.containsKey(itemId))
 		{

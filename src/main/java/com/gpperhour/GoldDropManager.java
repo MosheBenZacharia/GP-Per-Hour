@@ -28,8 +28,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.Point;
 import net.runelite.api.events.ScriptPreFired;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.config.ConfigManager;
@@ -37,7 +38,6 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.components.TextComponent;
 import net.runelite.client.util.AsyncBufferedImage;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.client.util.QuantityFormatter;
@@ -51,7 +51,6 @@ import com.google.inject.Inject;
 
 import static net.runelite.api.ScriptID.XPDROPS_SETDROPSIZE;
 import static net.runelite.api.ScriptID.XPDROP_DISABLED;
-import static net.runelite.api.widgets.WidgetUtil.componentToId;
 
 @Slf4j
 /*
@@ -273,7 +272,7 @@ public class GoldDropManager extends Overlay {
         */
 
 		// get image object by coin item id
-		AsyncBufferedImage coin_image_raw = itemManager.getImage(ItemID.COINS_995, quantity, false);
+		AsyncBufferedImage coin_image_raw = itemManager.getImage(ItemID.COINS, quantity, false);
 
 		Runnable r = () -> {
 			final SpritePixels coin_sprite = ImageUtil.getImageSpritePixels(coin_image_raw, client);
@@ -320,7 +319,7 @@ public class GoldDropManager extends Overlay {
 	{
 		// taken from XpDropPlugin
 		EnumComposition colorEnum = client.getEnum(EnumID.XPDROP_COLORS);
-		int defaultColorId = client.getVarbitValue(Varbits.EXPERIENCE_DROP_COLOR);
+		int defaultColorId = client.getVarbitValue(VarbitID.XPDROPS_COLOUR);
 		int color = colorEnum.getIntValue(defaultColorId);
 		xpDropTextWidget.setTextColor(color);
 		xpDropTextWidget.setOpacity(0);
@@ -447,7 +446,7 @@ public class GoldDropManager extends Overlay {
 
     private BufferedImage loadCoinsImage(int quantity)
     {
-		BufferedImage image = itemManager.getImage(ItemID.COINS_995, quantity, false);
+		BufferedImage image = itemManager.getImage(ItemID.COINS, quantity, false);
 		image = ImageUtil.resizeImage(image, staticImageDimension, staticImageDimension);
 		return image;
     }

@@ -37,7 +37,7 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -60,10 +60,10 @@ public class S_KharedstMemoirs extends ChargedItem {
             final Gson gson,
             final ScheduledExecutorService executorService
     ) {
-        super(ChargesItem.KHAREDSTS_MEMOIRS, ItemID.KHAREDSTS_MEMOIRS, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+        super(ChargesItem.KHAREDSTS_MEMOIRS, ItemID.VEOS_KHAREDSTS_MEMOIRS, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
         this.config_key = GPPerHourConfig.kharedsts_memoirs;
         this.triggers_items = new TriggerItem[]{
-                new TriggerItem(ItemID.KHAREDSTS_MEMOIRS),
+                new TriggerItem(ItemID.VEOS_KHAREDSTS_MEMOIRS),
                 new TriggerItem(ItemID.BOOK_OF_THE_DEAD)
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
@@ -78,10 +78,10 @@ public class S_KharedstMemoirs extends ChargedItem {
     protected  void onChargesUpdated()
     {
         quantities.clear();
-        quantities.put(ItemID.LAW_RUNE, (float) charges);
-        quantities.put(ItemID.BODY_RUNE, (float) charges);
-        quantities.put(ItemID.MIND_RUNE, (float) charges);
-        quantities.put(ItemID.SOUL_RUNE, (float) charges);
+        quantities.put(ItemID.LAWRUNE, (float) charges);
+        quantities.put(ItemID.BODYRUNE, (float) charges);
+        quantities.put(ItemID.MINDRUNE, (float) charges);
+        quantities.put(ItemID.SOULRUNE, (float) charges);
     }
 
     @Override

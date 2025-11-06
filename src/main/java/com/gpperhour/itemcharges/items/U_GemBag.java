@@ -39,9 +39,9 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemID;
 import net.runelite.api.TileItem;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -74,8 +74,8 @@ public class U_GemBag extends ChargedItem
         this.config_key = GPPerHourConfig.gem_bag;
         this.zero_charges_is_positive = true;
         this.triggers_items = new TriggerItem[]{
-                new TriggerItem(ItemID.GEM_BAG_12020),
-                new TriggerItem(ItemID.OPEN_GEM_BAG, true),
+                new TriggerItem(ItemID.GEM_BAG),
+                new TriggerItem(ItemID.GEM_BAG_OPEN, true),
         };
         this.trigger_item_despawn = new TriggerItemDespawn((TileItem tileItem) ->
         {
@@ -94,7 +94,7 @@ public class U_GemBag extends ChargedItem
             new TriggerChatMessage(acquireRegex).extraConsumer((message) -> { 
                 if (!hasChargeData())
                     return;
-                if (this.item_id != ItemID.OPEN_GEM_BAG)
+                if (this.item_id != ItemID.GEM_BAG_OPEN)
                     return;
                 final Matcher matcher = acquirePattern.matcher(message);
                 while (matcher.find())
@@ -185,11 +185,11 @@ public class U_GemBag extends ChargedItem
             }),
         };
         this.triggers_item_containers = new TriggerItemContainer[]{
-            new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open gem bag").menuOption("Fill").addDifference(),
-            new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Gem bag").menuOption("Fill").addDifference(),
+            new TriggerItemContainer(InventoryID.INV).menuTarget("Open gem bag").menuOption("Fill").addDifference(),
+            new TriggerItemContainer(InventoryID.INV).menuTarget("Gem bag").menuOption("Fill").addDifference(),
             //Empty into bank doesn't make a chat message (unless it's already empty)
-            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
-            new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
+            new TriggerItemContainer(InventoryID.BANK).menuTarget("Open gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
+            new TriggerItemContainer(InventoryID.BANK).menuTarget("Gem bag").menuOption("Empty to bank").extraConsumer(() -> super.emptyOrClear()),
         };
         this.supportsWidgetOnWidget = true;
     }

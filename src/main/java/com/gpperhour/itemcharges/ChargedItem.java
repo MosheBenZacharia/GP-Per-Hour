@@ -57,7 +57,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
@@ -72,6 +71,7 @@ import net.runelite.api.events.ItemDespawned;
 import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
@@ -168,8 +168,8 @@ public class ChargedItem {
 		client_thread.invokeLater(() -> {
 			loadChargesFromConfig();
 			onChargesUpdated();
-			onItemContainerUpdated(client.getItemContainer(InventoryID.INVENTORY));
-			onItemContainerUpdated(client.getItemContainer(InventoryID.EQUIPMENT));
+			onItemContainerUpdated(client.getItemContainer(InventoryID.INV));
+			onItemContainerUpdated(client.getItemContainer(InventoryID.WORN));
 		});
 	}
 
@@ -275,12 +275,12 @@ public class ChargedItem {
 
 		// Find items difference before items are overridden.
 		int items_difference = 0;
-		if (containerId == InventoryID.INVENTORY.getId() && inventory_items != null) {
+		if (containerId == InventoryID.INV && inventory_items != null) {
 			items_difference = itemsDifference(inventory_items, itemContainer.getItems());
 		}
 
 		differenceMap.clear();
-		if (containerId == InventoryID.INVENTORY.getId() && inventory_items != null) {
+		if (containerId == InventoryID.INV && inventory_items != null) {
 			Item[] before = inventory_items;
 			Item[] after = itemContainer.getItems();
 			for (Item beforeItem : before)
@@ -292,7 +292,7 @@ public class ChargedItem {
 				differenceMap.merge(afterItem.getId(), -1, Integer::sum);
 			}
 		}
-		if (containerId == InventoryID.INVENTORY.getId())
+		if (containerId == InventoryID.INV)
 		{
 			if (itemQuantities != null && supportsWidgetOnWidget &&
 				(lastUseOnMeTick == client.getTickCount() || lastUseOnMeTick + 1 == client.getTickCount()))
@@ -309,7 +309,7 @@ public class ChargedItem {
 		}
 
 		// Update inventory reference.
-		if (containerId == InventoryID.INVENTORY.getId()) {
+		if (containerId == InventoryID.INV) {
 			inventory = itemContainer;
 			inventory_items = inventory.getItems();
 		}
@@ -366,9 +366,9 @@ public class ChargedItem {
 		}
 
 		// Save inventory and equipment item containers for other uses.
-		if (containerId == InventoryID.INVENTORY.getId()) {
+		if (containerId == InventoryID.INV) {
 			inventory = itemContainer;
-		} else if (containerId == InventoryID.EQUIPMENT.getId()) {
+		} else if (containerId == InventoryID.WORN) {
 			equipment = itemContainer;
 		}
 
@@ -719,7 +719,7 @@ public class ChargedItem {
 			lastPickUpAction = new PickupAction(event.getId(), point);
 		}
 		if (event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_WIDGET && this.supportsWidgetOnWidget) {
-			ItemContainer itemContainer = client.getItemContainer(InventoryID.INVENTORY);
+			ItemContainer itemContainer = client.getItemContainer(InventoryID.INV);
 			if (itemContainer == null)
 				return;
 			Widget widgetA = client.getSelectedWidget();

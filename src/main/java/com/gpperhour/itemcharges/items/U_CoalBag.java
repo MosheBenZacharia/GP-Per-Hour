@@ -24,7 +24,6 @@
  */
 package com.gpperhour.itemcharges.items;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.gpperhour.GPPerHourConfig;
 import com.gpperhour.itemcharges.ChargedItem;
@@ -32,15 +31,14 @@ import com.gpperhour.itemcharges.ChargesItem;
 import com.gpperhour.itemcharges.triggers.*;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
 import net.runelite.api.TileItem;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,13 +60,13 @@ public class U_CoalBag extends ChargedItem
 		final Gson gson,
 		final ScheduledExecutorService executorService
 	) {
-		super(ChargesItem.COAL_BAG, ItemID.COAL_BAG_12019, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+		super(ChargesItem.COAL_BAG, ItemID.COAL_BAG, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
 
 		this.config_key = GPPerHourConfig.coal_bag;
 		this.zero_charges_is_positive = true;
 		this.triggers_items = new TriggerItem[]{
-			new TriggerItem(ItemID.COAL_BAG_12019),
-			new TriggerItem(ItemID.OPEN_COAL_BAG,true),
+			new TriggerItem(ItemID.COAL_BAG),
+			new TriggerItem(ItemID.COAL_BAG_OPEN,true),
 		};
 		this.triggers_chat_messages = new TriggerChatMessage[]{
 			new TriggerChatMessage("(Your|The) coal bag is (now |)empty.").onItemClick().extraConsumer((message) ->
@@ -76,7 +74,7 @@ public class U_CoalBag extends ChargedItem
 				super.emptyOrClear();
 			}),
 			new TriggerChatMessage("You manage to mine some coal.").extraConsumer(message -> {
-				if ((item_id == ItemID.OPEN_COAL_BAG) && getItemCount() < COAL_BAG_SIZE && super.hasChargeData()) {
+				if ((item_id == ItemID.COAL_BAG_OPEN) && getItemCount() < COAL_BAG_SIZE && super.hasChargeData()) {
                     super.addItems(ItemID.COAL,1f);
 				}
 			}),

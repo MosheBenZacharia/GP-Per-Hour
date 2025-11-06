@@ -37,7 +37,7 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -72,7 +72,7 @@ public class U_SeedBox extends ChargedItem {
         this.zero_charges_is_positive = true;
         this.triggers_items = new TriggerItem[]{
                 new TriggerItem(ItemID.SEED_BOX),
-                new TriggerItem(ItemID.OPEN_SEED_BOX),
+                new TriggerItem(ItemID.SEED_BOX_OPEN),
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 //Check

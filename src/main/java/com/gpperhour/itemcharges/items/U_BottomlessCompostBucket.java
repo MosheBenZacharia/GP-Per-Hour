@@ -37,7 +37,7 @@ import com.gpperhour.itemcharges.triggers.TriggerItem;
 import com.google.gson.Gson;
 
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -59,16 +59,16 @@ public class U_BottomlessCompostBucket extends ChargedItem {
             final Gson gson,
             final ScheduledExecutorService executorService
     ) {
-        super(ChargesItem.BOTTOMLESS_COMPOST_BUCKET, ItemID.BOTTOMLESS_COMPOST_BUCKET_22997, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+        super(ChargesItem.BOTTOMLESS_COMPOST_BUCKET, ItemID.BOTTOMLESS_COMPOST_BUCKET_FILLED, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
         this.config_key = GPPerHourConfig.bottomless_compost_bucket;
         this.extra_config_keys = new String[]{"type"};
         this.triggers_items = new TriggerItem[]{
                 new TriggerItem(ItemID.BOTTOMLESS_COMPOST_BUCKET).fixedCharges(0),
-                new TriggerItem(ItemID.BOTTOMLESS_COMPOST_BUCKET_22997),
+                new TriggerItem(ItemID.BOTTOMLESS_COMPOST_BUCKET_FILLED),
         };
         this.triggers_animations = new TriggerAnimation[]{
                 new TriggerAnimation(8197).decreaseCharges(1),
-                new TriggerAnimation(832).increaseCharges(2).onMenuOption("Take").unallowedItems(new int[]{ItemID.BUCKET, ItemID.DWARVEN_STOUT})
+                new TriggerAnimation(832).increaseCharges(2).onMenuOption("Take").unallowedItems(new int[]{ItemID.BUCKET_EMPTY, ItemID.DWARVEN_STOUT})
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 new TriggerChatMessage("Your bottomless compost bucket has a single use of (?<type>.+) ?compost remaining.").fixedCharges(1),
@@ -97,15 +97,15 @@ public class U_BottomlessCompostBucket extends ChargedItem {
         }
         if (compostType.equals("ultra"))
         {
-            itemId = ItemID.ULTRACOMPOST;
+            itemId = ItemID.BUCKET_ULTRACOMPOST;
         }
         else if(compostType.equals("super"))
         {
-            itemId = ItemID.SUPERCOMPOST;
+            itemId = ItemID.BUCKET_SUPERCOMPOST;
         }
         else
         {
-            itemId = ItemID.COMPOST;
+            itemId = ItemID.BUCKET_COMPOST;
         }
         quantities.put(itemId, ((float) charges)/2f);
     }

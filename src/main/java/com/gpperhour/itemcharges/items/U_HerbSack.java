@@ -38,8 +38,8 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -63,13 +63,13 @@ public class U_HerbSack extends ChargedItem {
             final Gson gson,
             final ScheduledExecutorService executorService
     ) {
-        super(ChargesItem.HERB_SACK, ItemID.HERB_SACK, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+        super(ChargesItem.HERB_SACK, ItemID.SLAYER_HERB_SACK, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
 
         this.config_key = GPPerHourConfig.herb_sack;
         this.zero_charges_is_positive = true;
         this.triggers_items = new TriggerItem[]{
-                new TriggerItem(ItemID.HERB_SACK),
-                new TriggerItem(ItemID.OPEN_HERB_SACK),
+                new TriggerItem(ItemID.SLAYER_HERB_SACK),
+                new TriggerItem(ItemID.SLAYER_HERB_SACK_OPEN),
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 new TriggerChatMessage("The herb sack is empty.").onItemClick().extraConsumer((message) -> super.emptyOrClear()),
@@ -106,13 +106,13 @@ public class U_HerbSack extends ChargedItem {
                 }),
         };
         this.triggers_item_containers = new TriggerItemContainer[]{
-                new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open herb sack").menuOption("Fill").addDifference(),
-                new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Herb sack").menuOption("Fill").addDifference(),
-                new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open herb sack").menuOption("Empty").addDifference(),
-                new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Herb sack").menuOption("Empty").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Open herb sack").menuOption("Fill").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Herb sack").menuOption("Fill").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Open herb sack").menuOption("Empty").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Herb sack").menuOption("Empty").addDifference(),
                 //Empty into bank doesn't make a chat message (unless it's already empty)
-                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Open herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
-                new TriggerItemContainer(InventoryID.BANK.getId()).menuTarget("Herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
+                new TriggerItemContainer(InventoryID.BANK).menuTarget("Open herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
+                new TriggerItemContainer(InventoryID.BANK).menuTarget("Herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
         };
         //for herb sack this only works for single herbs, if dialog pops up we don't capture it. too complicated...
         this.supportsWidgetOnWidget = true;

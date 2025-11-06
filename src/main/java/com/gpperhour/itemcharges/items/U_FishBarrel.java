@@ -41,8 +41,8 @@ import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -62,8 +62,8 @@ public class U_FishBarrel extends ChargedItem
 	// maps the name of the fish as it appears in chat message to corresponding item ID
 	private static final Map<String, Integer> FISH_TYPES_BY_NAME = ImmutableMap.<String, Integer>builder()
 		// singular 'shrimp' may occur when fishing for Karambwanji
-		.put("shrimp", ItemID.RAW_SHRIMPS)
-		.put("shrimps", ItemID.RAW_SHRIMPS)
+		.put("shrimp", ItemID.RAW_SHRIMP)
+		.put("shrimps", ItemID.RAW_SHRIMP)
 		.put("sardine", ItemID.RAW_SARDINE)
 		.put("herring", ItemID.RAW_HERRING)
 		.put("anchovies", ItemID.RAW_ANCHOVIES)
@@ -71,25 +71,25 @@ public class U_FishBarrel extends ChargedItem
 		.put("trout", ItemID.RAW_TROUT)
 		.put("cod", ItemID.RAW_COD)
 		.put("pike", ItemID.RAW_PIKE)
-		.put("slimy swamp eel", ItemID.RAW_SLIMY_EEL)
+		.put("slimy swamp eel", ItemID.MORT_SLIMEY_EEL)
 		.put("salmon", ItemID.RAW_SALMON)
 		.put("tuna", ItemID.RAW_TUNA)
-		.put("rainbow fish", ItemID.RAW_RAINBOW_FISH)
+		.put("rainbow fish", ItemID.HUNTING_RAW_FISH_SPECIAL)
 		.put("cave eel", ItemID.RAW_CAVE_EEL)
 		.put("lobster", ItemID.RAW_LOBSTER)
 		.put("bass", ItemID.RAW_BASS)
-		.put("leaping trout", ItemID.LEAPING_TROUT)
+		.put("leaping trout", ItemID.BRUT_SPAWNING_TROUT)
 		.put("swordfish", ItemID.RAW_SWORDFISH)
 		.put("lava eel", ItemID.RAW_LAVA_EEL)
-		.put("leaping salmon", ItemID.LEAPING_SALMON)
+		.put("leaping salmon", ItemID.BRUT_SPAWNING_SALMON)
 		.put("monkfish", ItemID.RAW_MONKFISH)
-		.put("karambwan", ItemID.RAW_KARAMBWAN)
-		.put("leaping sturgeon", ItemID.LEAPING_STURGEON)
+		.put("karambwan", ItemID.TBWT_RAW_KARAMBWAN)
+		.put("leaping sturgeon", ItemID.BRUT_STURGEON)
 		.put("shark", ItemID.RAW_SHARK)
 		.put("infernal eel", ItemID.INFERNAL_EEL)
 		.put("anglerfish", ItemID.RAW_ANGLERFISH)
 		.put("dark crab", ItemID.RAW_DARK_CRAB)
-		.put("sacred eel", ItemID.SACRED_EEL)
+		.put("sacred eel", ItemID.SNAKEBOSS_EEL)
 		.build();
 
 	public U_FishBarrel(
@@ -102,15 +102,15 @@ public class U_FishBarrel extends ChargedItem
 		final Gson gson,
 		final ScheduledExecutorService executorService
 	) {
-		super(ChargesItem.FISH_BARREL, ItemID.FISH_BARREL, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+		super(ChargesItem.FISH_BARREL, ItemID.FISH_BARREL_CLOSED, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
 
 		this.config_key = GPPerHourConfig.fish_barrel;
 		this.zero_charges_is_positive = true;
 		this.triggers_items = new TriggerItem[]{
-			new TriggerItem(ItemID.FISH_BARREL),
-			new TriggerItem(ItemID.OPEN_FISH_BARREL),
-			new TriggerItem(ItemID.FISH_SACK_BARREL),
-			new TriggerItem(ItemID.OPEN_FISH_SACK_BARREL)
+			new TriggerItem(ItemID.FISH_BARREL_CLOSED),
+			new TriggerItem(ItemID.FISH_BARREL_OPEN),
+			new TriggerItem(ItemID.FISH_SACK_BARREL_CLOSED),
+			new TriggerItem(ItemID.FISH_SACK_BARREL_OPEN)
 		};
 		this.triggers_chat_messages = new TriggerChatMessage[]{
 			new TriggerChatMessage("(Your|The) barrel is empty.").onItemClick().extraConsumer((message) ->
@@ -118,7 +118,7 @@ public class U_FishBarrel extends ChargedItem
 				super.emptyOrClear();
 			}),
 			new TriggerChatMessage("(You catch .*)").extraConsumer(message -> {
-				if ((item_id == ItemID.OPEN_FISH_BARREL || item_id == ItemID.OPEN_FISH_SACK_BARREL) && getItemCount() < FISH_BARREL_SIZE && super.hasChargeData()) {
+				if ((item_id == ItemID.FISH_BARREL_OPEN || item_id == ItemID.FISH_SACK_BARREL_OPEN) && getItemCount() < FISH_BARREL_SIZE && super.hasChargeData()) {
 					final Matcher matcher = catchPattern.matcher(message);
 					if (matcher.matches())
 					{
@@ -138,7 +138,7 @@ public class U_FishBarrel extends ChargedItem
 			}),
 			//new TriggerChatMessage("The barrel is full. It may be emptied at a bank.").onItemClick().fixedCharges(FISH_BARREL_SIZE),
 			new TriggerChatMessage("(.* enabled you to catch an extra fish.)").extraConsumer(message -> {
-				if ((item_id == ItemID.OPEN_FISH_BARREL || item_id == ItemID.OPEN_FISH_SACK_BARREL) && getItemCount() < FISH_BARREL_SIZE && super.hasChargeData()) {
+				if ((item_id == ItemID.FISH_BARREL_OPEN || item_id == ItemID.FISH_SACK_BARREL_OPEN) && getItemCount() < FISH_BARREL_SIZE && super.hasChargeData()) {
 					
 					if (lastFishCaught != null)
 					{
@@ -178,10 +178,10 @@ public class U_FishBarrel extends ChargedItem
 			}),
 		};
 		this.triggers_item_containers = new TriggerItemContainer[]{
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open fish barrel").menuOption("Fill").addDifference(),
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Fish barrel").menuOption("Fill").addDifference(),
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Open fish sack barrel").menuOption("Fill").addDifference(),
-			new TriggerItemContainer(InventoryID.INVENTORY.getId()).menuTarget("Fish sack barrel").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Open fish barrel").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Fish barrel").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Open fish sack barrel").menuOption("Fill").addDifference(),
+			new TriggerItemContainer(InventoryID.INV).menuTarget("Fish sack barrel").menuOption("Fill").addDifference(),
 		};
 		this.triggers_menu_options = new TriggerMenuOption[]{
 			new TriggerMenuOption("Open fish barrel", "Empty to bank").extraConsumer((message) -> { super.emptyOrClear(); }),

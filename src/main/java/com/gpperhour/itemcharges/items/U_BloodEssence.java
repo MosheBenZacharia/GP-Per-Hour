@@ -36,7 +36,7 @@ import com.gpperhour.itemcharges.triggers.TriggerItem;
 import com.google.gson.Gson;
 
 import net.runelite.api.Client;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -75,7 +75,7 @@ public class U_BloodEssence extends ChargedItem {
     protected  void onChargesUpdated()
     {
         quantities.clear();
-        quantities.put(ItemID.BLOOD_ESSENCE, ((float) charges)/1000f);
+        quantities.put(ItemID.BLOOD_ESSENCE_INACTIVE, ((float) charges)/1000f);
     }
 
     @Override
