@@ -109,7 +109,7 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.13";
+	private static final String plugin_version = "1.14";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
 				"* Apply ignore list to runes in rune pouch.";
