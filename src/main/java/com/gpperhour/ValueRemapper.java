@@ -25,6 +25,7 @@
 package com.gpperhour;
 
 import static net.runelite.api.ItemID.*;
+//import static net.runelite.api.gameval.ItemID.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -325,7 +326,7 @@ public class ValueRemapper {
         }
         else if(itemId == GRANITE_CANNONBALL)
         {
-            return plugin.getPrice(CANNONBALL);
+            return plugin.getPrice(STEEL_CANNONBALL);
         }
         else if (itemId == MINNOW)
         {
