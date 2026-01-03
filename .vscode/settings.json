@@ -1,0 +1,20 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true,
+  "java.import.gradle.java.home": "/Users/mobenz/Library/Java/JavaVirtualMachines/temurin-11.0.18/Contents/Home",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-11",
+      "path": "/Users/mobenz/Library/Java/JavaVirtualMachines/temurin-11.0.18/Contents/Home",
+      "default": true
+    }
+  ],
+  "java.jdt.ls.java.home": "/Users/mobenz/Library/Java/JavaVirtualMachines/temurin-11.0.18/Contents/Home",
+  "files.exclude": {
+    "**/.gradle": false,
+    "**/build": false
+  },
+  "java.project.referencedLibraries": []
+}
