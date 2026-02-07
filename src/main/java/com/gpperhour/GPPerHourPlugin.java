@@ -632,7 +632,9 @@ public class GPPerHourPlugin extends Plugin
 		if ((event.getId() == ObjectID.BANK_DEPOSIT_BOX && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
 			|| (event.getId() == ObjectID.BANK_DEPOSIT_CHEST && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
 			|| event.getId() == ObjectID.GOTR_DEPOSITCHEST
-			|| (event.getId() == ObjectID.TOA_POTTERY_BANKDEPOSIT && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT))
+			|| (event.getId() == ObjectID.TOA_POTTERY_BANKDEPOSIT && event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT)
+			|| ((event.getId() == ObjectID.DOM_DESCEND_HOLE || event.getId() == ObjectID.DOM_DESCEND_HOLE_UNIQUE || event.getId() == ObjectID.DOM_CHEST_LOOT) && event.getMenuAction() == MenuAction.GAME_OBJECT_FIRST_OPTION)
+		)
 		{
 			//user clicked on one of these but they might get to it at some later tick.
 			expectingPutAnimation = true;
@@ -667,6 +669,12 @@ public class GPPerHourPlugin extends Plugin
 					break;
 				case InterfaceID.WILDY_LOOT_CHEST:
 					inventory = InventoryID.LOOT_INV_ACCESS;
+					break;
+				case InterfaceID.DOM_END_LEVEL_UI:
+					inventory = InventoryID.DOM_LOOTPILE;
+					break;
+				default:
+					// log.debug("Unknown inventory for bank all, Interface ID: {}, Component ID: {}", WidgetUtil.componentToInterface(event.getParam1()), WidgetUtil.componentToId(event.getParam1()));
 					break;
 			}
 			if (inventory != -1)
