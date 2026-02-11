@@ -140,11 +140,36 @@ Prices are cached in a static `itemPrices` map to prevent fluctuation during a t
 - **Config keys**: String constants defined in `GPPerHourConfig` (e.g., `showTripOverlayKeyName`, `goldDropDisplayModeKey`)
 - **Changelog**: Version bumps update `plugin_version` and `plugin_message` in `GPPerHourPlugin.java`. Shown once per version via chat message on login.
 
+## Git Commits
+
+- **NEVER** include "Co-Authored-By: Claude" or any Claude/AI attribution in commit messages, descriptions, or author fields.
+- Keep commit messages short and lowercase (e.g., `version bump 1.17 (container tracking)`)
+
+### Version Bump Commits
+
+A version bump touches 2 files with 3 changes:
+
+1. `build.gradle` — update `version = '1.XX'`
+2. `GPPerHourPlugin.java` — update `plugin_version = "1.XX"`
+3. `GPPerHourPlugin.java` — update `plugin_message` with a changelog bullet point:
+   ```java
+   private static final String plugin_message = "" +
+       "GP Per Hour 1.XX:<br>" +
+           "* Description of the change.";
+   ```
+
 ## Testing
 
 Single test file `GPPerHourPluginTest.java` bootstraps RuneLite with the plugin as an external plugin for manual testing:
 ```bash
 ./gradlew run
+```
+
+## Logs
+
+Logs are streamed to `logs/deploy.log`. To filter for game logs, grep for `[Client] DEBUG`:
+```bash
+grep "\[Client\] DEBUG" logs/deploy.log
 ```
 
 ## Resources

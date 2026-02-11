@@ -109,10 +109,10 @@ import net.runelite.client.util.ImageUtil;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.16";
+	private static final String plugin_version = "1.17";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-				"* Add support for tracking loot from Doom of Mokhaiotl.";
+				"* Add support for the new empty all containers button.";
 	static final int COINS = ItemID.COINS;
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = ItemID.BH_RUNE_POUCH;
