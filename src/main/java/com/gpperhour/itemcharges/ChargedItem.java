@@ -417,6 +417,17 @@ public class ChargedItem {
 	}
 
 	public void onChatMessage(final ChatMessage event) {
+		// Handle universal "empty all containers into bank" message for all container items.
+		if (event.getType() == ChatMessageType.GAMEMESSAGE &&
+			in_inventory &&
+			itemQuantities != null &&
+			config_key != null &&
+			event.getMessage().replaceAll("</?col.*?>", "").equals("You empty all of your containers into the bank."))
+		{
+			emptyOrClear();
+			return;
+		}
+
 		if (
 			// No chat messages triggers.
 			triggers_chat_messages == null ||
