@@ -70,9 +70,13 @@ public class U_HerbSack extends ChargedItem {
         this.triggers_items = new TriggerItem[]{
                 new TriggerItem(ItemID.SLAYER_HERB_SACK),
                 new TriggerItem(ItemID.SLAYER_HERB_SACK_OPEN),
+
                 new TriggerItem(ItemID.SLAYER_HERB_SACK_SILK),
                 new TriggerItem(ItemID.SLAYER_HERB_SACK_SILK_OPEN)
         };
+
+        //Silklined sack shares all chat messages and triggers with the regular sack;
+        //the in-game text says "herb sack" for both variants.
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 new TriggerChatMessage("The herb sack is empty.").onItemClick().extraConsumer((message) -> super.emptyOrClear()),
                 new TriggerChatMessage(pickupRegex).extraConsumer(message -> {
@@ -115,6 +119,13 @@ public class U_HerbSack extends ChargedItem {
                 //Empty into bank doesn't make a chat message (unless it's already empty)
                 new TriggerItemContainer(InventoryID.BANK).menuTarget("Open herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
                 new TriggerItemContainer(InventoryID.BANK).menuTarget("Herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
+
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Open silklined herb sack").menuOption("Fill").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Silklined herb sack").menuOption("Fill").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Open silklined herb sack").menuOption("Empty").addDifference(),
+                new TriggerItemContainer(InventoryID.INV).menuTarget("Silklined herb sack").menuOption("Empty").addDifference(),
+                new TriggerItemContainer(InventoryID.BANK).menuTarget("Open silklined herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
+                new TriggerItemContainer(InventoryID.BANK).menuTarget("Silklined herb sack").menuOption("Empty to bank").extraConsumer(super::emptyOrClear),
         };
         //for herb sack this only works for single herbs, if dialog pops up we don't capture it. too complicated...
         this.supportsWidgetOnWidget = true;
