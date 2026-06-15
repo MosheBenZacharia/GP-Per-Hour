@@ -6,7 +6,7 @@ A RuneLite plugin that tracks GP/hr (gold per hour) in Old School RuneScape. It 
 
 **Author:** Moshe Ben-Zacharia
 **License:** BSD 2-Clause
-**Current Version:** 1.16
+**Current Version:** 1.18
 **Java Target:** 11
 **Package:** `com.gpperhour`
 
@@ -157,6 +157,48 @@ A version bump touches 2 files with 3 changes:
        "GP Per Hour 1.XX:<br>" +
            "* Description of the change.";
    ```
+
+Commit message: `version bump 1.XX (short description)` — short, lowercase. Committed directly to `master` (the version bump is the only commit type that lands on `master` without a feature branch). Push with `git push`.
+
+## Releasing to the Plugin Hub
+
+The plugin is published to RuneLite's [Plugin Hub](https://github.com/runelite/plugin-hub) via a separate cloned repo at `../plugin-hub` (sibling of this directory). That repo is a **fork** of `runelite/plugin-hub` (`origin` = the fork, `upstream` = `runelite/plugin-hub`); the hub builds whatever commit its manifest pins.
+
+### Keep `master` in sync with upstream
+
+`master` should always fast-forward from upstream — never commit to it directly, so it never diverges. Before starting a release:
+
+```bash
+cd ../plugin-hub
+git checkout master
+git fetch upstream && git merge --ff-only upstream/master
+git push origin master
+```
+
+`--ff-only` is the safety net: it refuses if `master` ever has its own commits.
+
+### Publish a new version
+
+After the version-bump commit is pushed to GP-Per-Hour's `master` (see above), grab its **full 40-char hash** (`git rev-parse HEAD` in this repo), then in `../plugin-hub`:
+
+```bash
+cd ../plugin-hub
+git checkout -b gp-per-hour/1.XX master          # branch name matches the version
+# edit plugins/gp-per-hour: set commit=<full hash of the version-bump commit>
+git add plugins/gp-per-hour
+git commit -m "Update GP-Per-Hour to 1.XX"       # capitalized, matches hub convention
+git push -u origin gp-per-hour/1.XX
+```
+
+The `plugins/gp-per-hour` manifest has three lines; only `commit=` changes:
+
+```
+repository=https://github.com/MosheBenZacharia/GP-Per-Hour.git
+commit=<full 40-char hash>
+authors=MosheBenZacharia
+```
+
+Then open a PR from the fork branch (`MosheBenZacharia:gp-per-hour/1.XX`) **against `runelite/plugin-hub` `master`**. Past releases (1.13–1.17) follow this exact branch/commit/PR pattern.
 
 ## Testing
 
