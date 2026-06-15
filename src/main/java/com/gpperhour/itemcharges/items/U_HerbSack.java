@@ -70,6 +70,8 @@ public class U_HerbSack extends ChargedItem {
         this.triggers_items = new TriggerItem[]{
                 new TriggerItem(ItemID.SLAYER_HERB_SACK),
                 new TriggerItem(ItemID.SLAYER_HERB_SACK_OPEN),
+                new TriggerItem(ItemID.SLAYER_HERB_SACK_SILK),
+                new TriggerItem(ItemID.SLAYER_HERB_SACK_SILK_OPEN)
         };
         this.triggers_chat_messages = new TriggerChatMessage[]{
                 new TriggerChatMessage("The herb sack is empty.").onItemClick().extraConsumer((message) -> super.emptyOrClear()),
