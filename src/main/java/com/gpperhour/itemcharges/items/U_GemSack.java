@@ -1,0 +1,200 @@
+/*
+ * Copyright (c) 2023, Moshe Ben-Zacharia <https://github.com/MosheBenZacharia>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package com.gpperhour.itemcharges.items;
+
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.gpperhour.GPPerHourConfig;
+import com.gpperhour.itemcharges.ChargedItem;
+import com.gpperhour.itemcharges.ChargesItem;
+import com.gpperhour.itemcharges.triggers.TriggerChatMessage;
+import com.gpperhour.itemcharges.triggers.TriggerItem;
+import com.gpperhour.itemcharges.triggers.TriggerItemContainer;
+import com.gpperhour.itemcharges.triggers.TriggerItemDespawn;
+import com.google.gson.Gson;
+
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
+import net.runelite.api.TileItem;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.game.ItemManager;
+
+// Gem sack: top tier of the gem bag expansion. Holds 60 each of all eight uncut gems - the three
+// semi-precious (opal, jade, red topaz) plus the five the original gem bag holds (sapphire,
+// emerald, ruby, diamond, dragonstone). Effectively a superset of the gem pouch/satchel/tote and
+// the original gem bag.
+@Slf4j
+public class U_GemSack extends ChargedItem
+{
+    private final int CAPACITY = 60;
+    // Check (and partial empty-to-inventory "Left in bag: ...") report all eight gems across three
+    // lines joined by <br>. ChargedItem.onChatMessage replaces "<br>" with " " before matching, and
+    // matcher.find() matches the substring, so this single regex handles a check or a partial empty.
+    // Semi-precious are singular, precious are plural (matching the original gem bag's wording).
+    private static final String checkRegex =
+        "Opal: (\\d+) / Jade: (\\d+) / Red Topaz: (\\d+) Sapphires: (\\d+) / Emeralds: (\\d+) / Rubies: (\\d+) Diamonds: (\\d+) / Dragonstones: (\\d+)";
+    private static final Pattern checkPattern = Pattern.compile(checkRegex);
+    // Gem rocks print "You just mined ..."; the mining gem drop table prints "You just found ...".
+    // Both deposit into the open sack (the "found" variant silently, with no "put into sack" line),
+    // so we read the gem name from this message. Dragonstone is never mined or found (not on the gem
+    // drop table) so it is excluded here - it only enters via Fill, ground pickup, or check sync.
+    private static final String acquireRegex =
+        "You just (?:found|mined) (?:a|an) (?:piece of )?(Opal|Jade|Red Topaz|Sapphire|Emerald|Ruby|Diamond)!";
+    private static final Pattern acquirePattern = Pattern.compile(acquireRegex);
+
+    public U_GemSack(
+            final Client client,
+            final ClientThread client_thread,
+            final ConfigManager configs,
+            final ItemManager items,
+            final ChatMessageManager chat_messages,
+            final Notifier notifier,
+            final Gson gson,
+            final ScheduledExecutorService executorService
+    ) {
+        super(ChargesItem.GEM_SACK, ItemID.GEM_SACK, client, client_thread, configs, items, chat_messages, notifier, gson, executorService);
+
+        this.config_key = GPPerHourConfig.gem_sack;
+        this.zero_charges_is_positive = true;
+        this.triggers_items = new TriggerItem[]{
+                new TriggerItem(ItemID.GEM_SACK),
+                new TriggerItem(ItemID.GEM_SACK_OPEN, true),
+        };
+        this.trigger_item_despawn = new TriggerItemDespawn((TileItem tileItem) ->
+        {
+            if (tileItem.getId() == ItemID.UNCUT_OPAL ||
+                tileItem.getId() == ItemID.UNCUT_JADE ||
+                tileItem.getId() == ItemID.UNCUT_RED_TOPAZ ||
+                tileItem.getId() == ItemID.UNCUT_SAPPHIRE ||
+                tileItem.getId() == ItemID.UNCUT_EMERALD ||
+                tileItem.getId() == ItemID.UNCUT_RUBY ||
+                tileItem.getId() == ItemID.UNCUT_DIAMOND ||
+                tileItem.getId() == ItemID.UNCUT_DRAGONSTONE)
+            {
+                addDespawnedGemIfHasCapacity(tileItem);
+            }
+        });
+        this.triggers_chat_messages = new TriggerChatMessage[]{
+            new TriggerChatMessage(acquireRegex).extraConsumer((message) -> {
+                if (!hasChargeData())
+                    return;
+                if (this.item_id != ItemID.GEM_SACK_OPEN)
+                    return;
+                final Matcher matcher = acquirePattern.matcher(message);
+                while (matcher.find())
+                {
+                    try
+                    {
+                        String gemName = matcher.group(1);
+                        int gemID;
+                        if (gemName.equals("Opal"))
+                            gemID = ItemID.UNCUT_OPAL;
+                        else if (gemName.equals("Jade"))
+                            gemID = ItemID.UNCUT_JADE;
+                        else if (gemName.equals("Red Topaz"))
+                            gemID = ItemID.UNCUT_RED_TOPAZ;
+                        else if (gemName.equals("Sapphire"))
+                            gemID = ItemID.UNCUT_SAPPHIRE;
+                        else if (gemName.equals("Emerald"))
+                            gemID = ItemID.UNCUT_EMERALD;
+                        else if (gemName.equals("Ruby"))
+                            gemID = ItemID.UNCUT_RUBY;
+                        else if (gemName.equals("Diamond"))
+                            gemID = ItemID.UNCUT_DIAMOND;
+                        else
+                            throw new Exception("Gem name not matched.");
+
+                        if ((!super.itemQuantities.containsKey(gemID) || super.itemQuantities.get(gemID) < CAPACITY))
+                        {
+                            super.addItems(gemID, 1f);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("couldn't find group match in gem sack acquire: " + message, e);
+                    }
+                }
+            }),
+            // Both empties literally say "gem bag" regardless of tier. onItemClick() disambiguates
+            // by the clicked menu target so we don't clear the sack when a different gem container
+            // is the one being emptied.
+            new TriggerChatMessage("The gem bag is now empty.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
+            new TriggerChatMessage("You empty your gem bag into the bank.").onItemClick().extraConsumer((message) -> { super.emptyOrClear(); }),
+            new TriggerChatMessage(checkRegex).extraConsumer(message -> {
+
+                super.emptyOrClear();
+                final Matcher matcher = checkPattern.matcher(message);
+                while (matcher.find())
+                {
+                    try
+                    {
+                        int opals = Integer.parseInt(matcher.group(1));
+                        int jades = Integer.parseInt(matcher.group(2));
+                        int redTopazes = Integer.parseInt(matcher.group(3));
+                        int sapphires = Integer.parseInt(matcher.group(4));
+                        int emeralds = Integer.parseInt(matcher.group(5));
+                        int rubies = Integer.parseInt(matcher.group(6));
+                        int diamonds = Integer.parseInt(matcher.group(7));
+                        int dragonstones = Integer.parseInt(matcher.group(8));
+
+                        super.addItems(ItemID.UNCUT_OPAL, (float) opals);
+                        super.addItems(ItemID.UNCUT_JADE, (float) jades);
+                        super.addItems(ItemID.UNCUT_RED_TOPAZ, (float) redTopazes);
+                        super.addItems(ItemID.UNCUT_SAPPHIRE, (float) sapphires);
+                        super.addItems(ItemID.UNCUT_EMERALD, (float) emeralds);
+                        super.addItems(ItemID.UNCUT_RUBY, (float) rubies);
+                        super.addItems(ItemID.UNCUT_DIAMOND, (float) diamonds);
+                        super.addItems(ItemID.UNCUT_DRAGONSTONE, (float) dragonstones);
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        log.error("couldn't parse gem sack check: " + message, e);
+                    }
+                }
+            }),
+        };
+        this.triggers_item_containers = new TriggerItemContainer[]{
+            new TriggerItemContainer(InventoryID.INV).menuTarget("Open gem sack").menuOption("Fill").addDifference(),
+            new TriggerItemContainer(InventoryID.INV).menuTarget("Gem sack").menuOption("Fill").addDifference(),
+        };
+        this.supportsWidgetOnWidget = true;
+    }
+
+    private void addDespawnedGemIfHasCapacity(TileItem tileItem)
+    {
+        if (tileItem.getQuantity() == 1
+                && (!super.itemQuantities.containsKey(tileItem.getId()) || super.itemQuantities.get(tileItem.getId()) < CAPACITY))
+        {
+            super.addItems(tileItem.getId(), 1f);
+        }
+    }
+}

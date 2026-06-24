@@ -43,6 +43,10 @@ public interface GPPerHourConfig extends Config
 	String looting_bag = "looting_bag";
 	String blood_essence = "blood_essence";
 	String gem_bag = "gem_bag";
+	String gem_pouch = "gem_pouch";
+	String gem_satchel = "gem_satchel";
+	String gem_tote = "gem_tote";
+	String gem_sack = "gem_sack";
 	String herb_sack = "herb_sack";
     String seed_box = "seed_box";
     String coal_bag = "coal_bag";
