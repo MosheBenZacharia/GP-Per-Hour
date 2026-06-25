@@ -115,7 +115,8 @@ public abstract class U_GemContainer extends ChargedItem
     private final String name;
     private final Set<Integer> heldIds;
     private final Pattern acquirePattern;
-    private final Pattern pickpocketPattern;
+    private final Pattern pickpocketBatchPattern;
+    private final Pattern pickpocketSinglePattern;
 
     protected U_GemContainer(
             final ChargesItem chargesItem,
@@ -155,9 +156,14 @@ public abstract class U_GemContainer extends ChargedItem
         // gem-drop-table gems, but including it is harmless for the semi-precious-only tiers.
         this.acquirePattern = Pattern.compile(
                 "You just (?:found|mined) (?:a|an) (?:piece of )?(" + String.join("|", acquirableNames) + ")!");
-        // Vyre pickpocketing, e.g. "...added to your gem bag: Uncut ruby x 2." (gem names lowercase).
-        this.pickpocketPattern = supportsVyrePickpocket
+        // Vyre pickpocketing deposits precious gems. The original gem bag uses a batched message
+        // ("...gets added to your gem bag: Uncut ruby x 2."); the new containers use a per-gem one
+        // ("You put the stolen Uncut ruby into your gem sack."). Both gem names are lowercase.
+        this.pickpocketBatchPattern = supportsVyrePickpocket
                 ? Pattern.compile("The following stolen loot gets added to your " + name + ": Uncut (.*) x (\\d+)")
+                : null;
+        this.pickpocketSinglePattern = supportsVyrePickpocket
+                ? Pattern.compile("You put the stolen Uncut (.+?) into your " + name + "\\.")
                 : null;
 
         final String closedTarget = Character.toUpperCase(name.charAt(0)) + name.substring(1);
@@ -233,15 +239,16 @@ public abstract class U_GemContainer extends ChargedItem
                     addGemIfHasCapacity(gem.itemId, 1f);
             }
         }));
-        if (pickpocketPattern != null)
+        if (supportsVyrePickpocket)
         {
-            chatTriggers.add(new TriggerChatMessage(pickpocketPattern.pattern()).extraConsumer((message) -> {
+            // Batched form (original gem bag): quantity from the message.
+            chatTriggers.add(new TriggerChatMessage(pickpocketBatchPattern.pattern()).extraConsumer((message) -> {
                 if (!hasChargeData())
                     return;
-                final Matcher matcher = pickpocketPattern.matcher(message);
+                final Matcher matcher = pickpocketBatchPattern.matcher(message);
                 while (matcher.find())
                 {
-                    final Gem gem = findGem(matcher.group(1), true);
+                    final Gem gem = findGem(matcher.group(1).trim(), true);
                     if (gem == null)
                         continue;
                     try
@@ -252,6 +259,18 @@ public abstract class U_GemContainer extends ChargedItem
                     {
                         log.error("couldn't parse " + name + " pickpocket: " + message, e);
                     }
+                }
+            }));
+            // Per-gem form (new containers): one gem, no open-guard (only prints on deposit).
+            chatTriggers.add(new TriggerChatMessage(pickpocketSinglePattern.pattern()).extraConsumer((message) -> {
+                if (!hasChargeData())
+                    return;
+                final Matcher matcher = pickpocketSinglePattern.matcher(message);
+                while (matcher.find())
+                {
+                    final Gem gem = findGem(matcher.group(1).trim(), true);
+                    if (gem != null)
+                        addGemIfHasCapacity(gem.itemId, 1f);
                 }
             }));
         }
