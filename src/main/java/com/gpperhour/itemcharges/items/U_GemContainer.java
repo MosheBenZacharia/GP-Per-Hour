@@ -104,6 +104,11 @@ public abstract class U_GemContainer extends ChargedItem
     // All eight gems the gem sack holds.
     protected static final Gem[] ALL_GEMS = { OPAL, JADE, RED_TOPAZ, SAPPHIRE, EMERALD, RUBY, DIAMOND, DRAGONSTONE };
 
+    // Thieving chests/stalls (e.g. Dorgesh-Kaan rich chest) deposit one gem straight into the
+    // container: "You put a gem in your sack: Uncut diamond". Gem name is lowercase; the container
+    // word varies by tier (".+?" absorbs it); the same message format covers every tier.
+    private static final Pattern THIEVE_PATTERN = Pattern.compile("You put a gem in your .+?: Uncut ([\\w ]+)");
+
     private final int openId;
     private final int capacity;
     private final Gem[] gems;
@@ -212,6 +217,20 @@ public abstract class U_GemContainer extends ChargedItem
                         log.error("couldn't parse " + name + " check: " + message, e);
                     }
                 }
+            }
+        }));
+        // Thieving deposit (e.g. Dorgesh-Kaan rich chest, gem stalls). The message only prints when
+        // the gem actually went into the container, so no open-guard is needed; gem-set scoping
+        // attributes it to the right container when several are held.
+        chatTriggers.add(new TriggerChatMessage(THIEVE_PATTERN.pattern()).extraConsumer((message) -> {
+            if (!hasChargeData())
+                return;
+            final Matcher matcher = THIEVE_PATTERN.matcher(message);
+            while (matcher.find())
+            {
+                final Gem gem = findGem(matcher.group(1).trim(), true);
+                if (gem != null)
+                    addGemIfHasCapacity(gem.itemId, 1f);
             }
         }));
         if (pickpocketPattern != null)
