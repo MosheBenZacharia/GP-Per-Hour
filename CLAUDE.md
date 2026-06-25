@@ -209,10 +209,16 @@ Single test file `GPPerHourPluginTest.java` bootstraps RuneLite with the plugin 
 
 ## Logs
 
-Logs are streamed to `logs/deploy.log`. To filter for game logs, grep for `[Client] DEBUG`:
+When running the plugin in dev mode (`./gradlew run`), the live game logs are written to
+`~/.runelite/logs/client.log` (RuneLite rotates this by date, e.g. `client_2026-06-23.0.log`, so
+check the dated file too when a session spans midnight). To filter for game logs, grep for
+`[Client] DEBUG`:
 ```bash
-grep "\[Client\] DEBUG" logs/deploy.log
+grep "\[Client\] DEBUG" ~/.runelite/logs/client.log
 ```
+Chat messages and menu clicks the plugin observes are logged as `MESSAGE | type: ..., message: ...`
+and `OPTION | option: ..., target: ...` — grep these to recover exact in-game strings (chat wording,
+menu option/target text) when adding item-charge or container tracking.
 
 ## Resources
 
