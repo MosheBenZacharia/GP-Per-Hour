@@ -90,6 +90,7 @@ Supported items:
 - Log basket
 - Seed box
 - Coal bag
+- Dizana's quiver (extra ammo slot, plus sunfire splinter charges on the charged quiver)
 
 Unsupported containers:
 - Forestry kit (Widget check)

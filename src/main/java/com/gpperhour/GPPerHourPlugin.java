@@ -28,6 +28,7 @@ import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
 
 import java.awt.image.BufferedImage;
 import java.time.Instant;
+import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -119,6 +120,15 @@ public class GPPerHourPlugin extends Plugin
 	static final int DIVINE_RUNEPOUCH_ITEM_ID = ItemID.DIVINE_RUNE_POUCH;
 	static final int RUNEPOUCH_TROUVER_ITEM_ID = ItemID.BH_RUNE_POUCH_TROUVER;
 	static final int DIVINE_RUNEPOUCH_TROUVER_ITEM_ID = ItemID.DIVINE_RUNE_POUCH_TROUVER;
+	// any of these give access to the quiver's extra ammo slot
+	static final Set<Integer> DIZANAS_QUIVER_ITEM_IDS = ImmutableSet.of(
+		ItemID.DIZANAS_QUIVER_UNCHARGED, ItemID.DIZANAS_QUIVER_UNCHARGED_TROUVER,
+		ItemID.DIZANAS_QUIVER_CHARGED, ItemID.DIZANAS_QUIVER_CHARGED_TROUVER,
+		ItemID.DIZANAS_QUIVER_INFINITE, ItemID.DIZANAS_QUIVER_INFINITE_TROUVER,
+		ItemID.SKILLCAPE_MAX_DIZANAS, ItemID.SKILLCAPE_MAX_DIZANAS_TROUVER);
+	// only the charged quiver consumes sunfire splinters, the blessed quiver and max cape are permanently charged
+	static final Set<Integer> DIZANAS_QUIVER_CHARGED_ITEM_IDS = ImmutableSet.of(
+		ItemID.DIZANAS_QUIVER_CHARGED, ItemID.DIZANAS_QUIVER_CHARGED_TROUVER);
 	public static final float roundAmount = 0.01f;
 
     // static item prices so that when ItemManager updates, the Profit / Loss value doesn't all of a sudden change
@@ -1039,6 +1049,7 @@ public class GPPerHourPlugin extends Plugin
 			return;
 		}
 
+		boolean addedQuiverContents = false;
 		final Item[] containerItems = container.getItems();
 		for (int i = 0; i < containerItems.length; ++i)
 		{
@@ -1060,6 +1071,11 @@ public class GPPerHourPlugin extends Plugin
 			else if(itemId == ItemID.LOOTING_BAG || itemId == ItemID.LOOTING_BAG_OPEN)
 			{
 				lootingBagManager.addLootingBagContents(qtyMap);
+			}
+			else if (DIZANAS_QUIVER_ITEM_IDS.contains(itemId) && !addedQuiverContents)
+			{
+				addQuiverContents(qtyMap, itemId);
+				addedQuiverContents = true;
 			}
 		}
 		addChargedWeaponComponents(qtyMap);
@@ -1166,6 +1182,30 @@ public class GPPerHourPlugin extends Plugin
 		}
 
 		return ledgerItemsFiltered;
+	}
+
+	// extra ammo slot and sunfire splinter charges are both stored in vars rather than an item container
+	private void addQuiverContents(Map<Integer, Float> qtyMap, int quiverItemId)
+	{
+		int ammoId = client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO);
+		int ammoAmount = client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT);
+		if (ammoId > 0 && ammoAmount > 0)
+		{
+			String ammoName = itemManager.getItemComposition(ammoId).getName();
+			if (!ignoredItems.contains(ammoName.toLowerCase()))
+			{
+				qtyMap.merge(ammoId, (float) ammoAmount, Float::sum);
+			}
+		}
+
+		if (DIZANAS_QUIVER_CHARGED_ITEM_IDS.contains(quiverItemId))
+		{
+			int charges = client.getVarbitValue(VarbitID.CHARGES_DIZANAS_QUIVER_QUANTITY);
+			if (charges > 0)
+			{
+				qtyMap.merge(ItemID.SUNFIRESPLINTER, (float) charges, Float::sum);
+			}
+		}
 	}
 
 	// from ClueScrollPlugin
