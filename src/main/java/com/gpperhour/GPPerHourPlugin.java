@@ -126,9 +126,6 @@ public class GPPerHourPlugin extends Plugin
 		ItemID.DIZANAS_QUIVER_CHARGED, ItemID.DIZANAS_QUIVER_CHARGED_TROUVER,
 		ItemID.DIZANAS_QUIVER_INFINITE, ItemID.DIZANAS_QUIVER_INFINITE_TROUVER,
 		ItemID.SKILLCAPE_MAX_DIZANAS, ItemID.SKILLCAPE_MAX_DIZANAS_TROUVER);
-	// only the charged quiver consumes sunfire splinters, the blessed quiver and max cape are permanently charged
-	static final Set<Integer> DIZANAS_QUIVER_CHARGED_ITEM_IDS = ImmutableSet.of(
-		ItemID.DIZANAS_QUIVER_CHARGED, ItemID.DIZANAS_QUIVER_CHARGED_TROUVER);
 	public static final float roundAmount = 0.01f;
 
     // static item prices so that when ItemManager updates, the Profit / Loss value doesn't all of a sudden change
@@ -1049,7 +1046,7 @@ public class GPPerHourPlugin extends Plugin
 			return;
 		}
 
-		boolean addedQuiverContents = false;
+		boolean addedQuiverAmmo = false;
 		final Item[] containerItems = container.getItems();
 		for (int i = 0; i < containerItems.length; ++i)
 		{
@@ -1072,10 +1069,10 @@ public class GPPerHourPlugin extends Plugin
 			{
 				lootingBagManager.addLootingBagContents(qtyMap);
 			}
-			else if (DIZANAS_QUIVER_ITEM_IDS.contains(itemId) && !addedQuiverContents)
+			else if (DIZANAS_QUIVER_ITEM_IDS.contains(itemId) && !addedQuiverAmmo)
 			{
-				addQuiverContents(qtyMap, itemId);
-				addedQuiverContents = true;
+				addQuiverAmmo(qtyMap);
+				addedQuiverAmmo = true;
 			}
 		}
 		addChargedWeaponComponents(qtyMap);
@@ -1184,27 +1181,21 @@ public class GPPerHourPlugin extends Plugin
 		return ledgerItemsFiltered;
 	}
 
-	// extra ammo slot and sunfire splinter charges are both stored in vars rather than an item container
-	private void addQuiverContents(Map<Integer, Float> qtyMap, int quiverItemId)
+	// the extra ammo slot is stored in varps rather than an item container
+	// (sunfire splinter charges are tracked by the charged weapon system, see ChargedWeapon.DIZANAS_QUIVER)
+	private void addQuiverAmmo(Map<Integer, Float> qtyMap)
 	{
 		int ammoId = client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO);
 		int ammoAmount = client.getVarpValue(VarPlayerID.DIZANAS_QUIVER_TEMP_AMMO_AMOUNT);
-		if (ammoId > 0 && ammoAmount > 0)
+		if (ammoId <= 0 || ammoAmount <= 0)
 		{
-			String ammoName = itemManager.getItemComposition(ammoId).getName();
-			if (!ignoredItems.contains(ammoName.toLowerCase()))
-			{
-				qtyMap.merge(ammoId, (float) ammoAmount, Float::sum);
-			}
+			return;
 		}
 
-		if (DIZANAS_QUIVER_CHARGED_ITEM_IDS.contains(quiverItemId))
+		String ammoName = itemManager.getItemComposition(ammoId).getName();
+		if (!ignoredItems.contains(ammoName.toLowerCase()))
 		{
-			int charges = client.getVarbitValue(VarbitID.CHARGES_DIZANAS_QUIVER_QUANTITY);
-			if (charges > 0)
-			{
-				qtyMap.merge(ItemID.SUNFIRESPLINTER, (float) charges, Float::sum);
-			}
+			qtyMap.merge(ammoId, (float) ammoAmount, Float::sum);
 		}
 	}
 
