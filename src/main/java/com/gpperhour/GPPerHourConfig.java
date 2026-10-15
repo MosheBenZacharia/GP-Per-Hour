@@ -187,6 +187,18 @@ public interface GPPerHourConfig extends Config
 
 
 
+	@ConfigItem(
+			position = 25,
+			keyName = "trackDeathCosts",
+			name = "Track Death Costs",
+			description = "Count the fee paid to reclaim items from a gravestone or Death's Office as a loss for the current trip.",
+			section =  sharedSettingSection
+	)
+	default boolean trackDeathCosts()
+	{
+		return true;
+	}
+
 	public static final String ignoredItemsKey = "ignoredItems";
 	@ConfigItem(
 			position = 30,

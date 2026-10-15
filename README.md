@@ -116,6 +116,10 @@ Supported rewards:
 
 Thanks to https://github.com/BR- for adding this!
 
+### Death Cost Support
+
+When "Track Death Costs" is enabled (on by default), the fee for reclaiming items from a gravestone or Death's Office is counted as a coin loss for the current trip. The fee is paid from your bank or Death's coffer, so it would otherwise be missed.
+
 ### Untradeable Item Support
 
 Provides config options to assign value to various untradeable items using their commonly traded counterparts.

@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Inject;
@@ -63,6 +65,7 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.events.AnimationChanged;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.MenuOptionClicked;
@@ -88,6 +91,7 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
 import net.runelite.client.util.ImageUtil;
+import net.runelite.client.util.Text;
 
 @PluginDescriptor(
 	name = "GP Per Hour",
@@ -115,6 +119,8 @@ public class GPPerHourPlugin extends Plugin
 		"GP Per Hour " + plugin_version + ":<br>" +
 				"* Add support for the new gem pouch, satchel, tote, and sack.";
 	static final int COINS = ItemID.COINS;
+	// reclaim fees are paid from the bank or Death's coffer, so they never show up in the inventory
+	private static final Pattern DEATH_FEE_PATTERN = Pattern.compile("Payment has been taken from your [^:]+: ([\\d,]+) x Coins");
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = ItemID.BH_RUNE_POUCH;
 	static final int DIVINE_RUNEPOUCH_ITEM_ID = ItemID.DIVINE_RUNE_POUCH;
@@ -612,6 +618,26 @@ public class GPPerHourPlugin extends Plugin
 	private NavigationButton buildNavButton()
 	{
 		return NavigationButton.builder().tooltip("GP Per Hour").icon(icon).priority(config.sidePanelPosition()).panel(gpPerHourPanel).build();
+	}
+
+	@Subscribe
+	public void onChatMessage(ChatMessage event)
+	{
+		if (event.getType() != ChatMessageType.GAMEMESSAGE || runData == null || !config.trackDeathCosts())
+		{
+			return;
+		}
+
+		Matcher matcher = DEATH_FEE_PATTERN.matcher(Text.removeTags(event.getMessage()));
+		if (!matcher.find())
+		{
+			return;
+		}
+
+		// recorded like banked rewards but negative, so the fee is a coin loss for the trip it was paid in
+		float fee = Float.parseFloat(matcher.group(1).replace(",", ""));
+		runData.bankedItemQtys.merge(COINS, -fee, Float::sum);
+		updatePluginState(false);
 	}
 
 	@Subscribe
