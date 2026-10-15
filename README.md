@@ -90,6 +90,7 @@ Supported items:
 - Log basket
 - Seed box
 - Coal bag
+- Dizana's quiver (extra ammo slot, plus sunfire splinter charges on the charged quiver)
 
 Unsupported containers:
 - Forestry kit (Widget check)
@@ -114,6 +115,10 @@ Supported rewards:
 - Wilderness Loot Chest
 
 Thanks to https://github.com/BR- for adding this!
+
+### Death Cost Support
+
+When "Track Death Costs" is enabled (on by default), the fee for reclaiming items from a gravestone or Death's Office is counted as a coin loss for the current trip. The fee is paid from your bank or Death's coffer, so it would otherwise be missed.
 
 ### Untradeable Item Support
 

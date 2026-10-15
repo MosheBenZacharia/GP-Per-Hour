@@ -1108,6 +1108,25 @@ public enum ChargedWeapon
 		})
 	),
 	/**
+	 * The remaining charge count isn't exposed in a var, so it comes from the check message and is decremented
+	 * by WeaponChargesManager whenever the blessing progress varbit ticks up (one tick per charge consumed).
+	 * Blessed quivers and the max cape never consume charges so they aren't listed here.
+	 */
+	DIZANAS_QUIVER(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.DIZANAS_QUIVER_CHARGED, ItemID.DIZANAS_QUIVER_CHARGED_TROUVER)
+		.unchargedItemIds(ItemID.DIZANAS_QUIVER_UNCHARGED, ItemID.DIZANAS_QUIVER_UNCHARGED_TROUVER)
+		.name("Dizana's quiver")
+		.configKeyName("dizanas_quiver")
+		.checkChargesRegexes(
+			// removeTags leaves the @mes_hl_red@ colour marker in front of the number
+			ChargesMessage.matcherGroupChargeMessage("Dizana's quiver(?: \\(l\\))? has \\D*?([\\d,]+) charges remaining", 1)
+		)
+		.updateChargeComponents((UpdateChargeComponentsParams params) ->
+		{
+			params.chargeComponents.put(ItemID.SUNFIRESPLINTER, (float) params.currentCharges);
+		})
+	),
+	/**
 	 * Only used to access settings. Lots of things in the blowpipe are handled specially because it holds two kinds of
 	 * charges: darts and scales.
 	 */
