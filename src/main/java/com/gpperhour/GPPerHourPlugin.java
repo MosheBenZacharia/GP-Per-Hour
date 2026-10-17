@@ -662,7 +662,7 @@ public class GPPerHourPlugin extends Plugin
 	// charge components gained and the bank materials spent cancel out for the trip
 	private void onBankerCharge(String weaponName, String materials)
 	{
-		ChargedWeapon weapon = ChargedWeapon.getChargedWeaponFromName(weaponName);
+		ChargedWeapon weapon = ChargedWeapon.getChargedWeaponFromItemName(weaponName, id -> itemManager.getItemComposition(id).getName());
 		if (weapon == null)
 		{
 			log.warn("banker charged an unknown weapon: {}", weaponName);

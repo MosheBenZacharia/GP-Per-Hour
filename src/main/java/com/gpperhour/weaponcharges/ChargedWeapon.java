@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 
 import com.gpperhour.GPPerHourConfig;
@@ -1331,13 +1332,20 @@ public enum ChargedWeapon
 		return null;
 	}
 
-	public static ChargedWeapon getChargedWeaponFromName(String name)
+	// matches on item names rather than the weapon name so variants (e.g. holy sang, crystal armour pieces) resolve correctly
+	public static ChargedWeapon getChargedWeaponFromItemName(String name, IntFunction<String> getItemName)
 	{
 		for (ChargedWeapon weapon : values())
 		{
-			if (weapon.getName() != null && weapon.getName().equalsIgnoreCase(name))
+			for (List<Integer> ids : Arrays.asList(weapon.getItemIds(), weapon.getUnchargedIds()))
 			{
-				return weapon;
+				for (int itemId : ids)
+				{
+					if (getItemName.apply(itemId).equalsIgnoreCase(name))
+					{
+						return weapon;
+					}
+				}
 			}
 		}
 
