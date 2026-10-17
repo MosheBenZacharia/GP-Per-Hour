@@ -114,10 +114,10 @@ import net.runelite.client.util.Text;
 @Slf4j
 public class GPPerHourPlugin extends Plugin
 {
-	private static final String plugin_version = "1.19";
+	private static final String plugin_version = "1.20";
 	private static final String plugin_message = "" +
 		"GP Per Hour " + plugin_version + ":<br>" +
-				"* Add support for the new gem pouch, satchel, tote, and sack.";
+				"* Track Dizana's quiver ammo and sunfire splinter charges, and count death reclaim fees as a loss.";
 	static final int COINS = ItemID.COINS;
 	// reclaim fees are paid from the bank or Death's coffer, so they never show up in the inventory
 	private static final Pattern DEATH_FEE_PATTERN = Pattern.compile("Payment has been taken from your [^:]+: ([\\d,]+) x Coins");
