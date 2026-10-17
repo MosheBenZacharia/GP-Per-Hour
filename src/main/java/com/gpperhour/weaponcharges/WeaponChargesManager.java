@@ -63,6 +63,7 @@ import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.kit.KitType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetUtil;
@@ -858,12 +859,34 @@ public class WeaponChargesManager
 		}
 	}
 
+	// -1 until the first value arrives after login, so the initial sync isn't mistaken for charge usage
+	private int lastQuiverBlessingProgress = -1;
+
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event)
 	{
 		if (event.getVarpId() == VarPlayerID.COM_MODE) {
 			ticksInAnimation = event.getValue() == 1 ? TICKS_RAPID_PVM : TICKS_NORMAL_PVM;
 		}
+		if (event.getVarbitId() == VarbitID.CHARGES_DIZANAS_QUIVER_BLESSING) {
+			onQuiverBlessingProgressChanged(event.getValue());
+		}
+	}
+
+	// The quiver's blessing progress goes up by one for every charge consumed, which is the only per-shot signal
+	// the game gives us. Larger jumps (e.g. charging the quiver) are ignored and corrected by the next check.
+	private void onQuiverBlessingProgressChanged(int progress)
+	{
+		int delta = progress - lastQuiverBlessingProgress;
+		boolean wasKnown = lastQuiverBlessingProgress != -1;
+		lastQuiverBlessingProgress = progress;
+		if (!wasKnown || delta <= 0 || delta > 2) {
+			return;
+		}
+		if (getCharges(ChargedWeapon.DIZANAS_QUIVER) == null) {
+			return;
+		}
+		addCharges(ChargedWeapon.DIZANAS_QUIVER, -delta, false);
 	}
 
 	@Inject
