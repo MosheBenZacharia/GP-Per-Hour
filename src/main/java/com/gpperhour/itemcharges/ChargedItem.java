@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -788,9 +789,7 @@ public class ChargedItem {
 			) continue;
 
 			// Fixed charges.
-			new Thread(() -> {
-				try { Thread.sleep(600); } catch (final Exception ignored) {}
-
+			executorService.schedule(() -> {
 				if (trigger_menu_option.charges != null)
 				{
 					setCharges(trigger_menu_option.charges);
@@ -799,7 +798,7 @@ public class ChargedItem {
 				{
 					trigger_menu_option.consumer.accept(menu_target);
 				}
-			}).start();
+			}, 600, TimeUnit.MILLISECONDS);
 
 			// Menu option used.
 			return;
