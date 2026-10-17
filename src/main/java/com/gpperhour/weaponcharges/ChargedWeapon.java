@@ -1331,6 +1331,19 @@ public enum ChargedWeapon
 		return null;
 	}
 
+	public static ChargedWeapon getChargedWeaponFromName(String name)
+	{
+		for (ChargedWeapon weapon : values())
+		{
+			if (weapon.getName() != null && weapon.getName().equalsIgnoreCase(name))
+			{
+				return weapon;
+			}
+		}
+
+		return null;
+	}
+
 	private static ChargedWeapon get_scythe_circumvent_illegal_self_reference() {
 		return SCYTHE_OF_VITUR;
 	}
