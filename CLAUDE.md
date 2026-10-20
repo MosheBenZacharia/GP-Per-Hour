@@ -200,6 +200,23 @@ authors=MosheBenZacharia
 
 Then open a PR from the fork branch (`MosheBenZacharia:gp-per-hour/1.XX`) **against `runelite/plugin-hub` `master`**. Past releases (1.13–1.17) follow this exact branch/commit/PR pattern.
 
+**Before writing the PR description, always look up previous release PRs** and match their style:
+
+```bash
+gh pr list --repo runelite/plugin-hub --author MosheBenZacharia --state all --limit 5 --json number,title,body
+```
+
+The style is short, lowercase bullet points, and contributors get a credit line like `thanks [Name](https://github.com/<login>)!!`.
+
+### Tag the release
+
+Once the hub PR merges, tag the commit the hub manifest pins with an annotated tag named after the version. Use no `v` prefix and an empty message, matching tags 1.0–1.12. The pinned commit is usually the version-bump commit, but it may be a later fix commit if the PR was updated, so check `commit=` in the merged manifest first.
+
+```bash
+git tag -a 1.XX -m "" <pinned commit hash>
+git push origin 1.XX
+```
+
 ## Testing
 
 Single test file `GPPerHourPluginTest.java` bootstraps RuneLite with the plugin as an external plugin for manual testing:
