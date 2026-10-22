@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import org.junit.Test;
 
 /**
@@ -129,6 +130,22 @@ public class ChargedWeaponMessageTest
 		assertEquals(ChargedWeapon.ARCLIGHT, ChargedWeapon.getChargedWeaponFromId(ItemID.ARCLIGHT_INACTIVE));
 		assertEquals(ChargedWeapon.EYE_OF_AYAK, ChargedWeapon.getChargedWeaponFromId(ItemID.EYE_OF_AYAK));
 		assertEquals(ChargedWeapon.EYE_OF_AYAK, ChargedWeapon.getChargedWeaponFromId(ItemID.EYE_OF_AYAK_UNCHARGED));
+		assertEquals(ChargedWeapon.OBLIGATOR, ChargedWeapon.getChargedWeaponFromId(ItemID.OBLIGATOR));
+		assertEquals(ChargedWeapon.OBLIGATOR, ChargedWeapon.getChargedWeaponFromId(ItemID.OBLIGATOR_UNCHARGED));
+		assertEquals(ChargedWeapon.ZORYAS_TOME, ChargedWeapon.getChargedWeaponFromId(ItemID.ZORYAS_TOME));
+		assertEquals(ChargedWeapon.ZORYAS_TOME, ChargedWeapon.getChargedWeaponFromId(ItemID.ZORYAS_TOME_UNCHARGED));
+		assertEquals(ChargedWeapon.ARCHIVISTS_FOLIO, ChargedWeapon.getChargedWeaponFromId(ItemID.ARCHIVISTS_FOLIO));
+		assertEquals(ChargedWeapon.ARCHIVISTS_FOLIO, ChargedWeapon.getChargedWeaponFromId(ItemID.ARCHIVISTS_FOLIO_EMPTY));
+	}
+
+	@Test
+	public void chargesVarbits()
+	{
+		assertEquals(Integer.valueOf(VarbitID.CHARGES_OBLIGATOR_QUANTITY), ChargedWeapon.OBLIGATOR.chargesVarbit);
+		assertEquals(Integer.valueOf(VarbitID.CHARGES_ZORYAS_TOME_QUANTITY), ChargedWeapon.ZORYAS_TOME.chargesVarbit);
+		assertEquals(Integer.valueOf(VarbitID.CHARGES_ARCHIVISTS_FOLIO_QUANTITY), ChargedWeapon.ARCHIVISTS_FOLIO.chargesVarbit);
+		// existing weapons keep relying on messages and animations
+		assertEquals(null, ChargedWeapon.SANGUINESTI_STAFF.chargesVarbit);
 	}
 
 	@Test

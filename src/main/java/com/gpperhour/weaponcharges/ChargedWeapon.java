@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import com.gpperhour.GPPerHourConfig;
 import lombok.Getter;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.util.Text;
 
@@ -1170,6 +1171,49 @@ public enum ChargedWeapon
 			}
 		})
 	),
+	/*
+		The Fractured Archive rewards (released 2026-10-20). No chat messages were documented anywhere at release, so
+		these sync their charge count from the CHARGES_*_QUANTITY varbits instead (see WeaponChargesManager.onVarbitChanged),
+		with attack animations as a fallback in case the varbit only updates on Check.
+	 */
+	OBLIGATOR(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.OBLIGATOR)
+		.unchargedItemIds(ItemID.OBLIGATOR_UNCHARGED)
+		.animationIds(15122 /*attack*/, 15123 /*multihit*/, 15130 /*attack, female*/, 15131 /*multihit, female*/)
+		.chargesVarbit(VarbitID.CHARGES_OBLIGATOR_QUANTITY)
+		.name("Obligator")
+		.configKeyName("obligator")
+		.updateChargeComponents((UpdateChargeComponentsParams params) ->
+		{
+			// 1 ascension shard, 20 nature runes and 20 death runes per 10 charges
+			Integer charges = params.currentCharges;
+			Map<Integer, Float> chargeComponents = params.chargeComponents;
+			chargeComponents.put(ItemID.ASCENSION_SHARDS, charges / 10f);
+			chargeComponents.put(ItemID.NATURERUNE, charges * 2f);
+			chargeComponents.put(ItemID.DEATHRUNE, charges * 2f);
+		})
+	),
+	ZORYAS_TOME(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.ZORYAS_TOME)
+		.unchargedItemIds(ItemID.ZORYAS_TOME_UNCHARGED)
+		.animationIds(15139 /*attack*/, 15140 /*special attack*/, 15146 /*attack, female*/, 15147 /*special attack, female*/)
+		.chargesVarbit(VarbitID.CHARGES_ZORYAS_TOME_QUANTITY)
+		.name("Zorya's tome")
+		.configKeyName("zoryas_tome")
+		// TODO value the charges once the charging materials are documented; until then they're tracked but worth 0
+	),
+	ARCHIVISTS_FOLIO(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.ARCHIVISTS_FOLIO)
+		.unchargedItemIds(ItemID.ARCHIVISTS_FOLIO_EMPTY)
+		.chargesVarbit(VarbitID.CHARGES_ARCHIVISTS_FOLIO_QUANTITY)
+		.name("Archivist's folio")
+		.configKeyName("archivists_folio")
+		.updateChargeComponents((UpdateChargeComponentsParams params) ->
+		{
+			// each ascension shard adds 5 teleports
+			params.chargeComponents.put(ItemID.ASCENSION_SHARDS, params.currentCharges / 5f);
+		})
+	),
 	/**
 	 * The remaining charge count isn't exposed in a var, so it comes from the check message and is decremented
 	 * by WeaponChargesManager whenever the blessing progress varbit ticks up (one tick per charge consumed).
@@ -1290,6 +1334,14 @@ public enum ChargedWeapon
 			this.name = name;
 			return this;
 		}
+		Integer chargesVarbit;
+		/**
+		 * A varbit holding the item's exact charge count, used to correct the tracked count whenever it changes.
+		 */
+		public ChargedWeaponBuilder chargesVarbit(int chargesVarbit) {
+			this.chargesVarbit = chargesVarbit;
+			return this;
+		}
 		Integer rechargeAmount;
 		public ChargedWeaponBuilder rechargeAmount(Integer rechargeAmount) {
 			this.rechargeAmount = rechargeAmount;
@@ -1340,6 +1392,7 @@ public enum ChargedWeapon
 	public final List<Integer> unchargedIds;
 	public final List<Integer> animationIds;
 	public final String name;
+	public final Integer chargesVarbit;
 	public final Integer rechargeAmount;
 	public final int defaultLowChargeThreshold;
 	public final String configKeyName;
@@ -1361,6 +1414,7 @@ public enum ChargedWeapon
 		this.animationIds = builder.animationIds;
 		if (builder.name == null) throw new IllegalStateException("cannot have a null name for charged weapon.");
 		this.name = builder.name;
+		this.chargesVarbit = builder.chargesVarbit;
 		this.rechargeAmount = builder.rechargeAmount;
 		this.defaultLowChargeThreshold = builder.defaultLowChargeThreshold;
 		this.configKeyName = builder.configKeyName;
