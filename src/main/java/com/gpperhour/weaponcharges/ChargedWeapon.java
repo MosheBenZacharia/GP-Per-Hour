@@ -679,7 +679,7 @@ public enum ChargedWeapon
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
-			params.chargeComponents.put(ItemID.BLOODRUNE, params.currentCharges * 3f);
+			params.chargeComponents.put(ItemID.BLOODRUNE, params.currentCharges * 2f);
 		})
 	),
 	/* arclight
