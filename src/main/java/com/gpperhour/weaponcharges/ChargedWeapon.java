@@ -99,7 +99,7 @@ public enum ChargedWeapon
 			(u) and non-(u) probably both use the same messages. TODO
 	 */
 	IBANS_STAFF(new ChargedWeaponBuilder()
-		.chargedItemIds(1409 /*IBANS_STAFF*/, 12658 /*IBANS_STAFF_U*/)
+		.chargedItemIds(1409 /*IBANS_STAFF*/, 12658 /*IBANS_STAFF_U*/, 33330 /*IBAN_STAFF_ORN*/, 33332 /*IBAN_STAFF_UPGRADED_ORN*/)
 		.animationIds(708)
 		.name("Iban's staff")
 		.rechargeAmount(2500) /*120 for regular, 2500 for (u)*/ // TODO fix this for regular staff?
@@ -212,8 +212,9 @@ public enum ChargedWeapon
 		message overlap: all 4 tridents use the same messages except for the check messages.
 	 */
 	TRIDENT_OF_THE_SEAS(new ChargedWeaponBuilder()
-		.chargedItemIds(11907 /*TRIDENT_OF_THE_SEAS*/, 33322 /*TOTS_CHARGED_ORN*/)
-		.unchargedItemIds(11908 /*UNCHARGED_TRIDENT*/, 33323 /*TOTS_ORN*/)
+		// 11905 and 33323 are the fully charged (2,500) versions
+		.chargedItemIds(11905 /*TOTS*/, 11907 /*TRIDENT_OF_THE_SEAS*/, 33322 /*TOTS_CHARGED_ORN*/, 33323 /*TOTS_ORN*/)
+		.unchargedItemIds(11908 /*UNCHARGED_TRIDENT*/, 33434 /*TOTS_UNCHARGED_ORN*/)
 		.animationIds(1167, 11430 /*powered staff attack, current*/)
 		.name("Trident of the seas")
 		.rechargeAmount(2500)
@@ -591,8 +592,8 @@ public enum ChargedWeapon
 	),
 	//Venator Bow
 	VENATOR_BOW(new ChargedWeaponBuilder()
-		.chargedItemIds(ItemID.VENATOR_BOW)
-		.unchargedItemIds(ItemID.VENATOR_BOW_UNCHARGED)
+		.chargedItemIds(ItemID.VENATOR_BOW, ItemID.VENATOR_BOW_ORNAMENT)
+		.unchargedItemIds(ItemID.VENATOR_BOW_UNCHARGED, ItemID.VENATOR_BOW_ORNAMENT_UNCHARGED)
 		.animationIds(9858)
 		.name("Venator bow")
 		.configKeyName("venator_bow")
@@ -708,12 +709,17 @@ public enum ChargedWeapon
 	 */
 	ARCLIGHT(new ChargedWeaponBuilder()
 		.chargedItemIds(19675 /*ARCLIGHT*/)
+		.unchargedItemIds(ItemID.ARCLIGHT_INACTIVE)
 		.animationIds(386, 390)
 		.name("Arclight")
 		.rechargeAmount(10_000)
 		.configKeyName("arclight")
 		.checkChargesRegexes(
-			ChargesMessage.matcherGroupChargeMessage("Your arclight has ([\\d,]+) charges left.", 1)
+			ChargesMessage.matcherGroupChargeMessage("Your arclight has ([\\d,]+) charges left.", 1),
+			ChargesMessage.matcherGroupChargeMessage("Your arclight can perform ([\\d,]+) more attacks.", 1)
+		)
+		.updateMessageChargesRegexes(
+			ChargesMessage.staticChargeMessage("Your arclight has degraded.", 0)
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
@@ -775,7 +781,7 @@ public enum ChargedWeapon
 		.chargedItemIds(27655 /*WEBWEAVER_BOW*/)
 		.unchargedItemIds(27652 /*WEBWEAVER_BOW_U*/)
 		.name("Webweaver bow")
-		.animationIds(426)
+		.animationIds(426, 9964 /*special attack*/)
 		.rechargeAmount(16_000)
 		.configKeyName("webweaver_bow")
 		.settingsConfigKey("craws_bow")
@@ -789,7 +795,7 @@ public enum ChargedWeapon
 	VIGGORAS(new ChargedWeaponBuilder()
 		.chargedItemIds(22545 /*VIGGORAS_CHAINMACE*/)
 		.unchargedItemIds(22542 /*VIGGORAS_CHAINMACE_U*/)
-		.animationIds(245)
+		.animationIds(245, 9963 /*special attack*/)
 		.name("Viggora's chainmace")
 		.rechargeAmount(16_000)
 		.configKeyName("viggoras_chainmace")
@@ -800,7 +806,7 @@ public enum ChargedWeapon
 		.chargedItemIds(27660 /*URSINE_CHAINMACE*/)
 		.unchargedItemIds(27657 /*URSINE_CHAINMACE_U*/)
 		.name("Ursine chainmace")
-		.animationIds(245)
+		.animationIds(245, 9963 /*special attack*/)
 		.rechargeAmount(16_000)
 		.configKeyName("ursine_chainmace")
 		.settingsConfigKey("viggoras_chainmace")
@@ -815,7 +821,7 @@ public enum ChargedWeapon
 		.chargedItemIds(22555 /*THAMMARONS_SCEPTRE*/, 27788 /*THAMMARONS_SCEPTRE_A*/)
 		.unchargedItemIds(22552 /*THAMMARONS_SCEPTRE_U*/, 27785 /*THAMMARONS_SCEPTRE_AU*/)
 		.name("Thammaron's sceptre")
-		.animationIds(1167,1978,1979,1162,1167,7855,811)
+		.animationIds(1167,1978,1979,1162,11430,7855,811, 9961 /*special attack*/)
 		.rechargeAmount(16_000)
 		.configKeyName("thammarons_sceptre")
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
@@ -828,7 +834,7 @@ public enum ChargedWeapon
 		//1178 1179 Ancient
 		//1162,1167,7855,811 Standard
 		// Support for charge count for autocasting spell, manual casting non-combat spell will still not be tracked
-		.animationIds(1167,1978,1979,1162,1167,7855,811)
+		.animationIds(1167,1978,1979,1162,11430,7855,811, 9961 /*special attack*/)
 		.rechargeAmount(16_000)
 		.configKeyName("accursed_sceptre")
 		.settingsConfigKey("thammarons_sceptre")
@@ -1106,6 +1112,62 @@ public enum ChargedWeapon
 			Map<Integer, Float> chargeComponents = params.chargeComponents;
 			chargeComponents.put(ItemID.SOULRUNE, charges * 2f);
 			chargeComponents.put(ItemID.CHAOSRUNE, charges * 5f);
+		})
+	),
+	/* eye of ayak (messages from the Weapon Charges and Charges Improved plugins, not yet seen in game here)
+		check: "The Eye of Ayak has 1,000 charges remaining."
+		charge: "The Eye of Ayak has been charged with runes. It currently has 1,000 charges."
+			"The Eye of Ayak has been charged with demon tears. It currently has 1,000 charges."
+		full: "The Eye of Ayak cannot hold any more charges."
+		periodic: "The Eye of Ayak only has 100 charges left!"
+		empty: "The Eye of Ayak has run out of charges!"
+		uncharge: "You uncharge the Eye of Ayak."
+
+		It holds either runes (2 death + 1 chaos per charge) or demon tears (1 per charge), never both, so the charge
+		type is remembered from the last charge message. Defeating the Doom of Mokhaiotl silently adds 10-20 charges to
+		an uncharged or tear-charged eye; that is only picked up by the next check.
+	 */
+	EYE_OF_AYAK(new ChargedWeaponBuilder()
+		.chargedItemIds(ItemID.EYE_OF_AYAK)
+		.unchargedItemIds(ItemID.EYE_OF_AYAK_UNCHARGED)
+		.animationIds(12397 /*attack*/, 12394 /*special attack*/)
+		.name("Eye of Ayak")
+		.rechargeAmount(50_000)
+		.configKeyName("eye_of_ayak")
+		.checkChargesRegexes(
+			ChargesMessage.matcherGroupChargeMessage("The Eye of Ayak has been charged with (runes|demon tears). It currently has ([\\d,]+) charges?.", 2, (matcher, chargeCount, configManager) -> {
+				configManager.setRSProfileConfiguration(GPPerHourConfig.GROUP, "eye_of_ayak_charge_type", matcher.group(1).equalsIgnoreCase("runes") ? "runes" : "tears");
+				return chargeCount;
+			}),
+			ChargesMessage.staticChargeMessage("The Eye of Ayak cannot hold any more charges.", 50_000),
+			ChargesMessage.staticChargeMessage("You uncharge the Eye of Ayak.", 0)
+		)
+		.updateMessageChargesRegexes(
+			ChargesMessage.matcherGroupChargeMessage("The Eye of Ayak only has ([\\d,]+) charges left!", 1),
+			ChargesMessage.matcherGroupChargeMessage("The Eye of Ayak has ([\\d,]+) charges remaining.", 1),
+			ChargesMessage.staticChargeMessage("The Eye of Ayak has run out of charges!", 0)
+		)
+		.dialogHandlers(
+			new ChargesDialogHandler(
+				DialogStateMatcher.inputOptionSelected(Pattern.compile("How many charges do you wish to add\\? \\(0-([\\d,]+)\\)"), null),
+				ChargesDialogHandler.genericInputChargeMessage()
+			)
+		)
+		.updateChargeComponents((UpdateChargeComponentsParams params) ->
+		{
+			Integer charges = params.currentCharges;
+			Map<Integer, Float> chargeComponents = params.chargeComponents;
+			// Default to runes until a charge message says otherwise
+			String chargeType = params.configManager.getRSProfileConfiguration(GPPerHourConfig.GROUP, "eye_of_ayak_charge_type");
+			if ("tears".equals(chargeType))
+			{
+				chargeComponents.put(ItemID.DEMON_TEAR, (float) charges);
+			}
+			else
+			{
+				chargeComponents.put(ItemID.DEATHRUNE, charges * 2f);
+				chargeComponents.put(ItemID.CHAOSRUNE, (float) charges);
+			}
 		})
 	),
 	/**
