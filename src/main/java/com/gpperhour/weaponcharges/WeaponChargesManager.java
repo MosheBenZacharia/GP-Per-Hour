@@ -871,6 +871,37 @@ public class WeaponChargesManager
 		if (event.getVarbitId() == VarbitID.CHARGES_DIZANAS_QUIVER_BLESSING) {
 			onQuiverBlessingProgressChanged(event.getValue());
 		}
+		for (ChargedWeapon weapon : ChargedWeapon.values()) {
+			if (weapon.chargesVarbit != null && weapon.chargesVarbit == event.getVarbitId()) {
+				onChargesVarbitChanged(weapon, event.getValue());
+			}
+		}
+	}
+
+	// Only trusted while the charged item is held, since the varbit isn't guaranteed to describe an item that's in the
+	// bank. 0 is ignored for the same reason: an empty item turns into its uncharged id, which is handled elsewhere.
+	// Delayed like the update messages so it lands after this tick's animation-based decrement instead of being
+	// decremented again by it.
+	private void onChargesVarbitChanged(ChargedWeapon weapon, int charges)
+	{
+		if (charges <= 0 || !isHeld(weapon)) {
+			return;
+		}
+		delayChargeUpdateUntilAfterAnimations.add(() -> setCharges(weapon, charges));
+	}
+
+	private boolean isHeld(ChargedWeapon weapon)
+	{
+		for (int containerId : new int[]{InventoryID.INV, InventoryID.WORN}) {
+			ItemContainer itemContainer = client.getItemContainer(containerId);
+			if (itemContainer == null) continue;
+			for (Item item : itemContainer.getItems()) {
+				if (weapon.getItemIds().contains(item.getId())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// The quiver's blessing progress goes up by one for every charge consumed, which is the only per-shot signal

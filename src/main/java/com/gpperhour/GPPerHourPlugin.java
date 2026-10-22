@@ -46,6 +46,7 @@ import javax.swing.SwingUtilities;
 
 import com.gpperhour.GoldDropManager.GoldDropDisplayMode;
 import com.gpperhour.itemcharges.ChargedItemManager;
+import com.gpperhour.weaponcharges.ChargedWeapon;
 import com.gpperhour.weaponcharges.WeaponChargesManager;
 import com.google.gson.Gson;
 import com.google.inject.Provides;
@@ -121,6 +122,9 @@ public class GPPerHourPlugin extends Plugin
 	static final int COINS = ItemID.COINS;
 	// reclaim fees are paid from the bank or Death's coffer, so they never show up in the inventory
 	private static final Pattern DEATH_FEE_PATTERN = Pattern.compile("Payment has been taken from your [^:]+: ([\\d,]+) x Coins");
+	// bankers charge weapons with materials taken straight from the bank
+	private static final Pattern BANKER_CHARGE_PATTERN = Pattern.compile("The banker charges your (.+?) using (.+)\\.");
+	private static final Pattern BANKER_CHARGE_MATERIAL_PATTERN = Pattern.compile("([\\d,]+)x (.+)");
 	static final int NO_PROFIT_LOSS_TIME = -1;
 	static final int RUNEPOUCH_ITEM_ID = ItemID.BH_RUNE_POUCH;
 	static final int DIVINE_RUNEPOUCH_ITEM_ID = ItemID.DIVINE_RUNE_POUCH;
@@ -623,12 +627,26 @@ public class GPPerHourPlugin extends Plugin
 	@Subscribe
 	public void onChatMessage(ChatMessage event)
 	{
-		if (event.getType() != ChatMessageType.GAMEMESSAGE || runData == null || !config.trackDeathCosts())
+		if (event.getType() != ChatMessageType.GAMEMESSAGE)
 		{
 			return;
 		}
 
-		Matcher matcher = DEATH_FEE_PATTERN.matcher(Text.removeTags(event.getMessage()));
+		String message = Text.removeTags(event.getMessage());
+
+		Matcher bankerMatcher = BANKER_CHARGE_PATTERN.matcher(message);
+		if (bankerMatcher.find())
+		{
+			onBankerCharge(bankerMatcher.group(1), bankerMatcher.group(2));
+			return;
+		}
+
+		if (runData == null || !config.trackDeathCosts())
+		{
+			return;
+		}
+
+		Matcher matcher = DEATH_FEE_PATTERN.matcher(message);
 		if (!matcher.find())
 		{
 			return;
@@ -638,6 +656,64 @@ public class GPPerHourPlugin extends Plugin
 		float fee = Float.parseFloat(matcher.group(1).replace(",", ""));
 		runData.bankedItemQtys.merge(COINS, -fee, Float::sum);
 		updatePluginState(false);
+	}
+
+	// adds the charges, and records the materials as a negative banked amount so the
+	// charge components gained and the bank materials spent cancel out for the trip
+	private void onBankerCharge(String weaponName, String materials)
+	{
+		ChargedWeapon weapon = ChargedWeapon.getChargedWeaponFromItemName(weaponName, id -> itemManager.getItemComposition(id).getName());
+		if (weapon == null)
+		{
+			log.warn("banker charged an unknown weapon: {}", weaponName);
+			return;
+		}
+		// adding to an unknown charge count would invent a total, so leave it for the next check to set
+		if (weaponChargesManager.getCharges(weapon) == null)
+		{
+			return;
+		}
+
+		Map<Integer, Float> perChargeComponents = new HashMap<>(weapon.getChargeComponents(1, configManager));
+		Map<Integer, Float> materialsUsed = new HashMap<>();
+		int chargesAdded = 0;
+		for (String material : materials.split(",? and |, "))
+		{
+			Matcher matcher = BANKER_CHARGE_MATERIAL_PATTERN.matcher(material.trim());
+			if (!matcher.matches())
+			{
+				continue;
+			}
+			float qty = Float.parseFloat(matcher.group(1).replace(",", ""));
+			Integer itemId = perChargeComponents.keySet().stream()
+				.filter(id -> itemManager.getItemComposition(id).getName().equalsIgnoreCase(matcher.group(2)))
+				.findFirst().orElse(null);
+			if (itemId == null)
+			{
+				log.debug("banker charge material is not a charge component: {}", material);
+				continue;
+			}
+			materialsUsed.put(itemId, qty);
+			if (chargesAdded == 0)
+			{
+				chargesAdded = Math.round(qty / perChargeComponents.get(itemId));
+			}
+		}
+
+		if (chargesAdded == 0)
+		{
+			return;
+		}
+		weaponChargesManager.addCharges(weapon, chargesAdded, true);
+
+		if (runData != null)
+		{
+			for (Map.Entry<Integer, Float> entry : materialsUsed.entrySet())
+			{
+				runData.bankedItemQtys.merge(entry.getKey(), -entry.getValue(), Float::sum);
+			}
+			updatePluginState(false);
+		}
 	}
 
 	@Subscribe
