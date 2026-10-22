@@ -212,16 +212,16 @@ public enum ChargedWeapon
 		message overlap: all 4 tridents use the same messages except for the check messages.
 	 */
 	TRIDENT_OF_THE_SEAS(new ChargedWeaponBuilder()
-		.chargedItemIds(11907 /*TRIDENT_OF_THE_SEAS*/)
-		.unchargedItemIds(11908 /*UNCHARGED_TRIDENT*/)
+		.chargedItemIds(11907 /*TRIDENT_OF_THE_SEAS*/, 33322 /*TOTS_CHARGED_ORN*/)
+		.unchargedItemIds(11908 /*UNCHARGED_TRIDENT*/, 33323 /*TOTS_ORN*/)
 		.animationIds(1167, 11430 /*powered staff attack, current*/)
 		.name("Trident of the seas")
 		.rechargeAmount(2500)
 		.configKeyName("trident_of_the_seas")
 		.checkChargesRegexes(
-			ChargesMessage.matcherGroupChargeMessage("Your Trident of the seas has ([\\d,]+) charges.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the seas has one charge.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the seas has no charges.", 0)
+			ChargesMessage.matcherGroupChargeMessage("Your Trident of the seas(?: \\(o\\))? has ([\\d,]+) charges.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the seas(?: \\(o\\))? has one charge.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the seas(?: \\(o\\))? has no charges.", 0)
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
@@ -235,16 +235,16 @@ public enum ChargedWeapon
 		})
 	),
 	TRIDENT_OF_THE_SWAMP(new ChargedWeaponBuilder()
-		.chargedItemIds(12899 /*TRIDENT_OF_THE_SWAMP*/)
-		.unchargedItemIds(12900 /*UNCHARGED_TOXIC_TRIDENT*/)
+		.chargedItemIds(12899 /*TRIDENT_OF_THE_SWAMP*/, 33314 /*TOXIC_TOTS_CHARGED_ORN*/)
+		.unchargedItemIds(12900 /*UNCHARGED_TOXIC_TRIDENT*/, 33316 /*TOXIC_TOTS_UNCHARGED_ORN*/)
 		.animationIds(1167, 11430 /*powered staff attack, current*/)
 		.name("Trident of the swamp")
 		.rechargeAmount(2500)
 		.configKeyName("trident_of_the_swamp")
 		.checkChargesRegexes(
-			ChargesMessage.matcherGroupChargeMessage("Your Trident of the swamp has ([\\d,]+) charges.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the swamp has one charge.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the swamp has no charges.", 0)
+			ChargesMessage.matcherGroupChargeMessage("Your Trident of the swamp(?: \\(o\\))? has ([\\d,]+) charges.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the swamp(?: \\(o\\))? has one charge.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the swamp(?: \\(o\\))? has no charges.", 0)
 		)
 		.dialogHandlers(
 			new ChargesDialogHandler(
@@ -264,16 +264,16 @@ public enum ChargedWeapon
 		})
 	),
 	TRIDENT_OF_THE_SEAS_E(new ChargedWeaponBuilder()
-		.chargedItemIds(22288 /*TRIDENT_OF_THE_SEAS_E*/)
-		.unchargedItemIds(22290 /*UNCHARGED_TRIDENT_E*/)
+		.chargedItemIds(22288 /*TRIDENT_OF_THE_SEAS_E*/, 33326 /*TOTS_I_CHARGED_ORN*/)
+		.unchargedItemIds(22290 /*UNCHARGED_TRIDENT_E*/, 33328 /*TOTS_I_UNCHARGED_ORN*/)
 		.animationIds(1167, 11430 /*powered staff attack, current*/)
 		.name("Trident of the seas (e)")
 		.rechargeAmount(10_000)
 		.configKeyName("trident_of_the_seas_e")
 		.checkChargesRegexes(
-			ChargesMessage.matcherGroupChargeMessage("Your Trident of the seas \\(e\\) has ([\\d,]+) charges.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the seas \\(e\\) has one charge.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the seas \\(e\\) has no charges.", 0)
+			ChargesMessage.matcherGroupChargeMessage("Your Trident of the seas \\(e\\)(?: \\(o\\))? has ([\\d,]+) charges.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the seas \\(e\\)(?: \\(o\\))? has one charge.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the seas \\(e\\)(?: \\(o\\))? has no charges.", 0)
 		)
 		.updateChargeComponents((UpdateChargeComponentsParams params) ->
 		{
@@ -287,16 +287,16 @@ public enum ChargedWeapon
 		})
 	),
 	TRIDENT_OF_THE_SWAMP_E(new ChargedWeaponBuilder()
-		.chargedItemIds(22292 /*TRIDENT_OF_THE_SWAMP_E*/)
-		.unchargedItemIds(22294 /*UNCHARGED_TOXIC_TRIDENT_E*/)
+		.chargedItemIds(22292 /*TRIDENT_OF_THE_SWAMP_E*/, 33318 /*TOXIC_TOTS_I_CHARGED_ORN*/)
+		.unchargedItemIds(22294 /*UNCHARGED_TOXIC_TRIDENT_E*/, 33320 /*TOXIC_TOTS_I_UNCHARGED_ORN*/)
 		.animationIds(1167, 11430 /*powered staff attack, current*/)
 		.name("Trident of the swamp (e)")
 		.rechargeAmount(10_000)
 		.configKeyName("trident_of_the_swamp_e")
 		.checkChargesRegexes(
-			ChargesMessage.matcherGroupChargeMessage("Your Trident of the swamp \\(e\\) has ([\\d,]+) charges.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the swamp \\(e\\) has one charge.", 1),
-			ChargesMessage.staticChargeMessage("Your Trident of the swamp \\(e\\) has no charges.", 0)
+			ChargesMessage.matcherGroupChargeMessage("Your Trident of the swamp \\(e\\)(?: \\(o\\))? has ([\\d,]+) charges.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the swamp \\(e\\)(?: \\(o\\))? has one charge.", 1),
+			ChargesMessage.staticChargeMessage("Your Trident of the swamp \\(e\\)(?: \\(o\\))? has no charges.", 0)
 		)
 		.dialogHandlers(
 			new ChargesDialogHandler(
