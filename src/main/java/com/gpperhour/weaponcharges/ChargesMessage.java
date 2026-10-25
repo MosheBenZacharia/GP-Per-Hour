@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import net.runelite.client.config.ConfigManager;
 
 @RequiredArgsConstructor
+// case-insensitive because the banker capitalizes item names (e.g. "Trident of the Swamp (e)")
 public class ChargesMessage
 {
 	@Getter
@@ -52,12 +53,12 @@ public class ChargesMessage
 
 	public static ChargesMessage staticChargeMessage(String s, int charges)
 	{
-		return new ChargesMessage(Pattern.compile(s), matcher -> charges);
+		return new ChargesMessage(Pattern.compile(s, Pattern.CASE_INSENSITIVE), matcher -> charges);
 	}
 
 	public static ChargesMessage matcherGroupChargeMessage(String s, int group)
 	{
-		return new ChargesMessage(Pattern.compile(s), matcher -> {
+		return new ChargesMessage(Pattern.compile(s, Pattern.CASE_INSENSITIVE), matcher -> {
 			String chargeCountString = matcher.group(group);
 			return parseCharges(chargeCountString);
 		}
@@ -78,7 +79,7 @@ public class ChargesMessage
 
 	public static ChargesMessage matcherGroupChargeMessage(String s, int group, CustomChargeMatcher customMatcher)
 	{
-		return new ChargesMessage(Pattern.compile(s), (matcher, configManager) -> {
+		return new ChargesMessage(Pattern.compile(s, Pattern.CASE_INSENSITIVE), (matcher, configManager) -> {
 			String chargeCountString = matcher.group(group).replaceAll(",", "");
 			int chargeCount = parseCharges(chargeCountString);
 			return customMatcher.customHandler(matcher, chargeCount, configManager);
