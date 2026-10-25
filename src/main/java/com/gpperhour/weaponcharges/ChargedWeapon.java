@@ -1435,6 +1435,24 @@ public enum ChargedWeapon
 		return this.updateParams.chargeComponents;
 	}
 
+	// built once so the per-event varbit lookup doesn't scan every weapon
+	private static final Map<Integer, ChargedWeapon> chargesVarbitWeapons = new HashMap<>();
+	static
+	{
+		for (ChargedWeapon weapon : values())
+		{
+			if (weapon.chargesVarbit != null)
+			{
+				chargesVarbitWeapons.put(weapon.chargesVarbit, weapon);
+			}
+		}
+	}
+
+	public static ChargedWeapon getChargedWeaponFromChargesVarbit(int varbitId)
+	{
+		return chargesVarbitWeapons.get(varbitId);
+	}
+
 	public static ChargedWeapon getChargedWeaponFromId(int itemId)
 	{
 		for (ChargedWeapon weapon : values())

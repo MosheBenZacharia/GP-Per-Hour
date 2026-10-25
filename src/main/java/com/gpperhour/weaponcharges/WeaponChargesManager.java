@@ -871,10 +871,9 @@ public class WeaponChargesManager
 		if (event.getVarbitId() == VarbitID.CHARGES_DIZANAS_QUIVER_BLESSING) {
 			onQuiverBlessingProgressChanged(event.getValue());
 		}
-		for (ChargedWeapon weapon : ChargedWeapon.values()) {
-			if (weapon.chargesVarbit != null && weapon.chargesVarbit == event.getVarbitId()) {
-				onChargesVarbitChanged(weapon, event.getValue());
-			}
+		ChargedWeapon varbitWeapon = ChargedWeapon.getChargedWeaponFromChargesVarbit(event.getVarbitId());
+		if (varbitWeapon != null) {
+			onChargesVarbitChanged(varbitWeapon, event.getValue());
 		}
 	}
 

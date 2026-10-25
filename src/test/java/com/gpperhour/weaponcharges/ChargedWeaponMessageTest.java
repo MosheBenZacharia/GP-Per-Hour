@@ -146,6 +146,12 @@ public class ChargedWeaponMessageTest
 		assertEquals(Integer.valueOf(VarbitID.CHARGES_ARCHIVISTS_FOLIO_QUANTITY), ChargedWeapon.ARCHIVISTS_FOLIO.chargesVarbit);
 		// existing weapons keep relying on messages and animations
 		assertEquals(null, ChargedWeapon.SANGUINESTI_STAFF.chargesVarbit);
+
+		assertEquals(ChargedWeapon.OBLIGATOR, ChargedWeapon.getChargedWeaponFromChargesVarbit(VarbitID.CHARGES_OBLIGATOR_QUANTITY));
+		assertEquals(ChargedWeapon.ZORYAS_TOME, ChargedWeapon.getChargedWeaponFromChargesVarbit(VarbitID.CHARGES_ZORYAS_TOME_QUANTITY));
+		assertEquals(ChargedWeapon.ARCHIVISTS_FOLIO, ChargedWeapon.getChargedWeaponFromChargesVarbit(VarbitID.CHARGES_ARCHIVISTS_FOLIO_QUANTITY));
+		// varp-only changes arrive with a varbit id of -1
+		assertEquals(null, ChargedWeapon.getChargedWeaponFromChargesVarbit(-1));
 	}
 
 	@Test
