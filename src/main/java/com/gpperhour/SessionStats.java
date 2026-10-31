@@ -25,6 +25,7 @@
 package com.gpperhour;
 
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,17 @@ class SessionStats
 	private final long avgTripDuration;
 	private final Map<Integer, Float> initialQtys;
 	private final Map<Integer, Float> qtys;
+
+	// sessions saved by early versions stored deltaQtys instead, so these can be missing
+	public Map<Integer, Float> getInitialQtys()
+	{
+		return initialQtys == null ? Collections.emptyMap() : initialQtys;
+	}
+
+	public Map<Integer, Float> getQtys()
+	{
+		return qtys == null ? Collections.emptyMap() : qtys;
+	}
 
 	//ui state (this could probably be done without having view and model code merged but it would be a lot of work)
 	transient boolean showDetails;
