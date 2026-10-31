@@ -130,6 +130,30 @@ public class FractionalRemapper
         /////////////////////// Everything Else ///////////////////////
 
 
+        //////// Armadyl brew(4) /////////
+        remapData.put(31653, new RemapData(31650, 0.75f));
+        remapData.put(31656, new RemapData(31650, 0.5f));
+        remapData.put(31659, new RemapData(31650, 0.25f));
+        //////// Extended stamina potion(4) /////////
+        remapData.put(31641, new RemapData(31638, 0.75f));
+        remapData.put(31644, new RemapData(31638, 0.5f));
+        remapData.put(31647, new RemapData(31638, 0.25f));
+        //////// Super hunter potion(4) /////////
+        remapData.put(31629, new RemapData(31626, 0.75f));
+        remapData.put(31632, new RemapData(31626, 0.5f));
+        remapData.put(31635, new RemapData(31626, 0.25f));
+        //////// Extreme energy potion(4) /////////
+        remapData.put(31617, new RemapData(31614, 0.75f));
+        remapData.put(31620, new RemapData(31614, 0.5f));
+        remapData.put(31623, new RemapData(31614, 0.25f));
+        //////// Super fishing potion(4) /////////
+        remapData.put(31605, new RemapData(31602, 0.75f));
+        remapData.put(31608, new RemapData(31602, 0.5f));
+        remapData.put(31611, new RemapData(31602, 0.25f));
+        //////// Haemostatic dressing(4) /////////
+        remapData.put(31593, new RemapData(31590, 0.75f));
+        remapData.put(31596, new RemapData(31590, 0.5f));
+        remapData.put(31599, new RemapData(31590, 0.25f));
         //////// Menaphite Remedy(4) /////////
         remapData.put(27205, new RemapData(27202, 0.75f));
         remapData.put(27208, new RemapData(27202, 0.5f));
@@ -617,5 +641,83 @@ public class FractionalRemapper
         remapData.put(11099, new RemapData(11095, 0.6f));
         remapData.put(11101, new RemapData(11095, 0.4f));
         remapData.put(11103, new RemapData(11095, 0.2f));
+        //////// Agility mix(2) /////////
+        remapData.put(11463, new RemapData(11461, 0.5f));
+        //////// Ancient mix(2) /////////
+        remapData.put(26353, new RemapData(26350, 0.5f));
+        //////// Anti-poison supermix(2) /////////
+        remapData.put(11475, new RemapData(11473, 0.5f));
+        //////// Antidote+ mix(2) /////////
+        remapData.put(11503, new RemapData(11501, 0.5f));
+        //////// Antifire mix(2) /////////
+        remapData.put(11507, new RemapData(11505, 0.5f));
+        //////// Antipoison mix(2) /////////
+        remapData.put(11435, new RemapData(11433, 0.5f));
+        //////// Attack mix(2) /////////
+        remapData.put(11431, new RemapData(11429, 0.5f));
+        //////// Black warlock mix (2) /////////
+        remapData.put(29207, new RemapData(29189, 0.5f));
+        //////// Combat mix(2) /////////
+        remapData.put(11447, new RemapData(11445, 0.5f));
+        //////// Defence mix(2) /////////
+        remapData.put(11459, new RemapData(11457, 0.5f));
+        //////// Energy mix(2) /////////
+        remapData.put(11455, new RemapData(11453, 0.5f));
+        //////// Extended antifire mix(2) /////////
+        remapData.put(11962, new RemapData(11960, 0.5f));
+        //////// Extended super antifire mix(2) /////////
+        remapData.put(22224, new RemapData(22221, 0.5f));
+        //////// Fishing mix(2) /////////
+        remapData.put(11479, new RemapData(11477, 0.5f));
+        //////// Hunting mix(2) /////////
+        remapData.put(11519, new RemapData(11517, 0.5f));
+        //////// Magic essence mix(2) /////////
+        remapData.put(11491, new RemapData(11489, 0.5f));
+        //////// Magic mix(2) /////////
+        remapData.put(11515, new RemapData(11513, 0.5f));
+        //////// Moonlight moth mix (2) /////////
+        remapData.put(29213, new RemapData(29195, 0.5f));
+        //////// Olive oil(4) /////////
+        remapData.put(3424, new RemapData(3422, 0.75f));
+        remapData.put(3426, new RemapData(3422, 0.5f));
+        remapData.put(3428, new RemapData(3422, 0.25f));
+        //////// Prayer mix(2) /////////
+        remapData.put(11467, new RemapData(11465, 0.5f));
+        //////// Ranging mix(2) /////////
+        remapData.put(11511, new RemapData(11509, 0.5f));
+        //////// Relicym's mix(2) /////////
+        remapData.put(11439, new RemapData(11437, 0.5f));
+        //////// Restore mix(2) /////////
+        remapData.put(11451, new RemapData(11449, 0.5f));
+        //////// Ruby harvest mix (2) /////////
+        remapData.put(29204, new RemapData(29186, 0.5f));
+        //////// Sacred oil(4) /////////
+        remapData.put(3432, new RemapData(3430, 0.75f));
+        remapData.put(3434, new RemapData(3430, 0.5f));
+        remapData.put(3436, new RemapData(3430, 0.25f));
+        //////// Sapphire glacialis mix (2) /////////
+        remapData.put(29198, new RemapData(29180, 0.5f));
+        //////// Snowy knight mix (2) /////////
+        remapData.put(29201, new RemapData(29183, 0.5f));
+        //////// Stamina mix(2) /////////
+        remapData.put(12635, new RemapData(12633, 0.5f));
+        //////// Strength mix(2) /////////
+        remapData.put(11441, new RemapData(11443, 0.5f));
+        //////// Sunlight moth mix (2) /////////
+        remapData.put(29210, new RemapData(29192, 0.5f));
+        //////// Super antifire mix(2) /////////
+        remapData.put(21997, new RemapData(21994, 0.5f));
+        //////// Super def. mix(2) /////////
+        remapData.put(11499, new RemapData(11497, 0.5f));
+        //////// Super energy mix(2) /////////
+        remapData.put(11483, new RemapData(11481, 0.5f));
+        //////// Super restore mix(2) /////////
+        remapData.put(11495, new RemapData(11493, 0.5f));
+        //////// Super str. mix(2) /////////
+        remapData.put(11487, new RemapData(11485, 0.5f));
+        //////// Superattack mix(2) /////////
+        remapData.put(11471, new RemapData(11469, 0.5f));
+        //////// Zamorak mix(2) /////////
+        remapData.put(11523, new RemapData(11521, 0.5f));
     }
 }

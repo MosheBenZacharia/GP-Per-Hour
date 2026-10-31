@@ -64,6 +64,9 @@ public class ValueRemapper {
         directValueRemaps.put(ItemID.PLANTPOT_MAHOGANY_SEED, ItemID.PLANTPOT_MAHOGANY_SAPLING);
         directValueRemaps.put(ItemID.PLANTPOT_CALQUAT_SEED, ItemID.PLANTPOT_CALQUAT_SAPLING);
         directValueRemaps.put(ItemID.PLANTPOT_CELASTRUS_TREE_SEED, ItemID.PLANTPOT_CELASTRUS_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CAMPHOR_SEED, ItemID.PLANTPOT_CAMPHOR_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_IRONWOOD_SEED, ItemID.PLANTPOT_IRONWOOD_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ROSEWOOD_SEED, ItemID.PLANTPOT_ROSEWOOD_SAPLING);
         //Watered seedling to sapling
         directValueRemaps.put(ItemID.PLANTPOT_ACORN_WATERED, ItemID.PLANTPOT_OAK_SAPLING);
         directValueRemaps.put(ItemID.PLANTPOT_WILLOW_SEED_WATERED, ItemID.PLANTPOT_WILLOW_SAPLING);
@@ -85,6 +88,9 @@ public class ValueRemapper {
         directValueRemaps.put(ItemID.PLANTPOT_MAHOGANY_SEED_WATERED, ItemID.PLANTPOT_MAHOGANY_SAPLING);
         directValueRemaps.put(ItemID.PLANTPOT_CALQUAT_SEED_WATERED, ItemID.PLANTPOT_CALQUAT_SAPLING);
         directValueRemaps.put(ItemID.PLANTPOT_CELASTRUS_TREE_SEED_WATERED, ItemID.PLANTPOT_CELASTRUS_TREE_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_CAMPHOR_SEED_WATERED, ItemID.PLANTPOT_CAMPHOR_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_IRONWOOD_SEED_WATERED, ItemID.PLANTPOT_IRONWOOD_SAPLING);
+        directValueRemaps.put(ItemID.PLANTPOT_ROSEWOOD_SEED_WATERED, ItemID.PLANTPOT_ROSEWOOD_SAPLING);
     }
 
     public static Float remapPrice(int itemId, GPPerHourPlugin plugin, GPPerHourConfig config)
