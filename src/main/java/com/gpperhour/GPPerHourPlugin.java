@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.SwingUtilities;
 
 import com.gpperhour.GoldDropManager.GoldDropDisplayMode;
@@ -148,6 +149,11 @@ public class GPPerHourPlugin extends Plugin
 
 	@Inject
 	private ScheduledExecutorService executor;
+
+	@Inject
+	@Named("developerMode")
+	@Getter
+	private boolean developerMode;
 
 	@Inject
 	private ActiveTripOverlay tripOverlay;
@@ -414,6 +420,22 @@ public class GPPerHourPlugin extends Plugin
 		{
 			ensureNameAndPriceLoaded(itemId);
 		}
+	}
+
+	// developer mode only: fills the session with made up trips to check performance with a long session
+	void addFakeTrips()
+	{
+		List<Integer> itemIds = Arrays.asList(ItemID.LOBSTER, ItemID.SHARK, ItemID.MANTARAY, ItemID.IRON_ORE,
+			ItemID.RUNITE_ORE, ItemID.COAL, ItemID.BONES, ItemID.BIG_BONES, ItemID.DRAGON_BONES, ItemID.DEATHRUNE,
+			ItemID.NATURERUNE, ItemID.CHAOSRUNE, ItemID.LAWRUNE, ItemID.BLOODRUNE, ItemID.RUNE_PLATEBODY,
+			ItemID.MAGIC_LOGS, ItemID.YEW_LOGS, ItemID.UNCUT_DIAMOND, ItemID.DRAGONHIDE_BLACK,
+			ItemID._4DOSEPRAYERRESTORE, ItemID._4DOSE2RESTORE, ItemID.ABYSSAL_WHIP, ItemID.RANARR_SEED,
+			ItemID.DRAGON_ARROWHEADS, ItemID.MCANNONBALL);
+		for (Integer itemId : itemIds)
+		{
+			ensureNameAndPriceLoaded(itemId);
+		}
+		sessionManager.addFakeTrips(itemIds, 200);
 	}
 
 	void ensureNameAndPriceLoaded(Integer itemId)

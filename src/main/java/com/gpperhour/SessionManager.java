@@ -26,11 +26,13 @@ package com.gpperhour;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -346,6 +348,43 @@ public class SessionManager
 		{
 			activeSessionEndId = null;
 		}
+	}
+
+	// developer mode only, see GPPerHourPlugin.addFakeTrips
+	void addFakeTrips(List<Integer> itemIds, int count)
+	{
+		Random random = new Random();
+		long earliestStart = activeTrips.values().stream().mapToLong(trip -> trip.runStartTime).min()
+			.orElse(Instant.now().toEpochMilli());
+		TripData previous = null;
+		for (int i = count; i > 0; i--)
+		{
+			TripData trip = new TripData();
+			trip.identifier = UUID.randomUUID().toString();
+			trip.runStartTime = earliestStart - i * 10 * 60_000L;
+			trip.runtime = (2 + random.nextInt(8)) * 60_000L;
+			trip.runEndTime = trip.runStartTime + trip.runtime + 60_000L;
+			// some identical trips in a row so the panel groups them
+			if (previous != null && random.nextInt(4) == 0)
+			{
+				trip.initialItemQtys.putAll(previous.initialItemQtys);
+				trip.itemQtys.putAll(previous.itemQtys);
+			}
+			else
+			{
+				for (int itemId : itemIds)
+				{
+					if (random.nextBoolean())
+					{
+						trip.initialItemQtys.put(itemId, (float) random.nextInt(50));
+						trip.itemQtys.put(itemId, (float) random.nextInt(50));
+					}
+				}
+			}
+			activeTrips.put(trip.identifier, trip);
+			previous = trip;
+		}
+		activeSessionStartId = getSortedTrips().get(0).identifier;
 	}
 
 	void onTripStarted(TripData runData)

@@ -246,6 +246,11 @@ class ActiveSessionPanel extends PluginPanel
 		iconButtons.add(refreshPricesButton);
 		iconButtons.add(deleteTripsButton);
 		iconButtons.add(settingsButton);
+		if (plugin.isDeveloperMode())
+		{
+			iconButtons.add(UI.createIconButton(UI.SESSIONINFO_WRENCH_ICON, UI.SESSIONINFO_WRENCH_HOVER_ICON,
+				"Add 200 fake trips (developer mode)", () -> updateOnClientThread(plugin::addFakeTrips)));
+		}
 		// iconButtons.add(debugButton);
 
 		sessionLootPanelData.lootPanel.setLayout(new BorderLayout());
