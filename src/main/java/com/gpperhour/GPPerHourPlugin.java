@@ -479,14 +479,23 @@ public class GPPerHourPlugin extends Plugin
 			return;
 		updatePluginState(false);
 		updateChargeableItemsNeedingCheck();
-		updatePanels();
-		
+
 		if (this.state == RunState.RUN && !runData.isPaused)
 		{
 			runData.runtime +=  Constants.GAME_TICK_LENGTH;
 		}
 
 		checkTickProfit();
+
+		// last and guarded, so a bug in the session ui can't stop trip tracking or gold drops
+		try
+		{
+			updatePanels();
+		}
+		catch (Exception e)
+		{
+			log.error("failed to update session panels", e);
+		}
     }
 
 	// If profit total changed generate gold drop (nice animation for showing gold earn or loss)
