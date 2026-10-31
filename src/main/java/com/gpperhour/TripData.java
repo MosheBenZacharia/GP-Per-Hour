@@ -27,6 +27,7 @@ package com.gpperhour;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 //Data for a single 'trip'
@@ -42,6 +43,10 @@ public class TripData
     Map<Integer, Float> initialItemQtys = new HashMap<>();
     Map<Integer, Float> bankedItemQtys = new HashMap<>();
     transient Map<Integer, Float> itemQtys = new HashMap<>();
+
+    // completed trips don't change, so SessionManager.getTripLedger caches their ledger until a price or name changes
+    transient List<LedgerItem> ledger;
+    transient int ledgerVersion;
 
     boolean isInProgress()
     {

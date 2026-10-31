@@ -41,11 +41,11 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 //Shows all the trips from your active session and some stats.
@@ -193,19 +193,14 @@ class ActiveSessionPanel extends PluginPanel
 
 		//icon buttons
 		JLabel newTripButton = UI.createIconButton(UI.SESSIONINFO_PLUS_ICON, UI.SESSIONINFO_PLUS_HOVER_ICON, "Create new trip", ()-> { clientThread.invokeLater(() -> {plugin.updatePluginState(true);});});
-		startTrackingButton = UI.createIconButton(UI.SESSIONINFO_PLAY_ICON, UI.SESSIONINFO_PLAY_HOVER_ICON, "Start tracking new trips", ()-> { 
-			config.setEnableSessionTracking(true);
-			updateStopStartVisibility();
-			this.updateTrips();
-
+		startTrackingButton = UI.createIconButton(UI.SESSIONINFO_PLAY_ICON, UI.SESSIONINFO_PLAY_HOVER_ICON, "Start tracking new trips", ()-> {
+			updateOnClientThread(() -> config.setEnableSessionTracking(true));
 		});
-		stopTrackingButton = UI.createIconButton(UI.SESSIONINFO_STOP_ICON, UI.SESSIONINFO_STOP_HOVER_ICON, "Stop tracking new trips", ()-> { 
-			config.setEnableSessionTracking(false);
-			updateStopStartVisibility();
-			this.updateTrips();
+		stopTrackingButton = UI.createIconButton(UI.SESSIONINFO_STOP_ICON, UI.SESSIONINFO_STOP_HOVER_ICON, "Stop tracking new trips", ()-> {
+			updateOnClientThread(() -> config.setEnableSessionTracking(false));
 		});
 		updateStopStartVisibility();
-		JLabel toggleSessionLootGridButton = UI.createIconButton(UI.SESSIONINFO_GRID_ICON, UI.SESSIONINFO_GRID_HOVER_ICON, "Toggle session loot grid", ()-> { showSessionLootGrid = !showSessionLootGrid; this.updateTrips();});
+		JLabel toggleSessionLootGridButton = UI.createIconButton(UI.SESSIONINFO_GRID_ICON, UI.SESSIONINFO_GRID_HOVER_ICON, "Toggle session loot grid", ()-> { showSessionLootGrid = !showSessionLootGrid; updateOnClientThread(() -> {});});
 		JLabel refreshPricesButton = UI.createIconButton(UI.SESSIONINFO_REFRESH_ICON, UI.SESSIONINFO_REFRESH_HOVER_ICON, "Refresh prices", ()-> { clientThread.invokeLater(() -> {plugin.refreshPrices();});});
 		JLabel deleteTripsButton = UI.createIconButton(UI.SESSIONINFO_TRASH_ICON, UI.SESSIONINFO_TRASH_HOVER_ICON, "Delete all completed trips", ()-> { 
 
@@ -213,8 +208,7 @@ class ActiveSessionPanel extends PluginPanel
 						JOptionPane.OK_CANCEL_OPTION);
 			if (confirm == 0)
 			{
-				sessionManager.deleteAllTrips();
-				this.updateTrips();
+				updateOnClientThread(sessionManager::deleteAllTrips);
 			}
 		});
 		JLabel settingsButton = UI.createIconButton(UI.SESSIONINFO_GEAR_ICON, UI.SESSIONINFO_GEAR_HOVER_ICON, "Open configuration", ()-> { clientThread.invokeLater(() -> {plugin.openConfiguration();});});
@@ -230,11 +224,8 @@ class ActiveSessionPanel extends PluginPanel
 			{
 				return;
 			}
-			if (name.isEmpty())
-			{
-				name = "Unnamed Session";
-			}
-			sessionManager.saveNewSession(name);
+			String sessionName = name.isEmpty() ? "Unnamed Session" : name;
+			clientThread.invokeLater(() -> sessionManager.saveNewSession(sessionName));
 		});
 		// JLabel debugButton = UI.createIconButton(UI.SESSIONINFO_WRENCH_ICON, UI.SESSIONINFO_WRENCH_HOVER_ICON, "Rebuild all trip panels", ()->
 		// {
@@ -275,17 +266,74 @@ class ActiveSessionPanel extends PluginPanel
 	// avoid GC
 	private final List<LedgerItem> emptyLedger = new LinkedList<>();
 
-	void updateTrips()
+	// everything updateTrips shows, gathered on the client thread so the swing thread never reads trips while they change
+	@RequiredArgsConstructor
+	static class TripsSnapshot
 	{
-		Graphics graphics = getGraphics();
-		if (graphics == null)
+		// sorted by start time
+		private final List<TripSnapshot> trips;
+		private final SessionStats stats;
+		private final List<LedgerItem> sessionLedger;
+		private final String sessionStartId;
+		private final String sessionEndId;
+		private final Set<String> itemsNeedingCheck;
+	}
+
+	@RequiredArgsConstructor
+	static class TripSnapshot
+	{
+		private final TripData runData;
+		private final List<LedgerItem> ledger;
+		private final boolean inProgress;
+		private final long runtime;
+		private final boolean inActiveSession;
+	}
+
+	// must be called on the client thread
+	TripsSnapshot buildSnapshot()
+	{
+		List<TripSnapshot> trips = new ArrayList<>();
+		for (TripData runData : sessionManager.getActiveTrips().values())
+		{
+			trips.add(new TripSnapshot(runData, sessionManager.getTripLedger(runData), runData.isInProgress(),
+				runData.getRuntime(), sessionManager.isTimeInActiveSession(runData.runStartTime)));
+		}
+		trips.sort(Comparator.comparingLong(o -> o.runData.runStartTime));
+
+		SessionStats stats = sessionManager.getCachedActiveSessionStats();
+		List<LedgerItem> sessionLedger = stats == null ? emptyLedger
+			: UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys()));
+		return new TripsSnapshot(trips, stats, sessionLedger, sessionManager.getActiveSessionStartId(),
+			sessionManager.getActiveSessionEndId(), new HashSet<>(plugin.getChargeableItemsNeedingCheck()));
+	}
+
+	// session data is only changed on the client thread, which then sends the panel a fresh snapshot
+	private void updateOnClientThread(Runnable change)
+	{
+		clientThread.invokeLater(() ->
+		{
+			change.run();
+			plugin.updatePanels();
+		});
+	}
+
+	private TripsSnapshot snapshot;
+	private FontMetrics smallFontMetrics;
+
+	void updateTrips(TripsSnapshot snapshot)
+	{
+		if (!isDisplayable())
 		{
 			return;
 		}
-		Map<String, TripData> trips = sessionManager.getActiveTrips();
-
-		List<TripData> runDataSorted = trips.values().stream()
-				.sorted(Comparator.comparingLong(o -> o.runStartTime)).collect(Collectors.toList());
+		if (smallFontMetrics == null)
+		{
+			Graphics graphics = getGraphics();
+			smallFontMetrics = graphics.getFontMetrics(FontManager.getRunescapeSmallFont());
+			graphics.dispose();
+		}
+		this.snapshot = snapshot;
+		updateStopStartVisibility();
 
 		int tripIndex = 0;
 		previousLedger = null;
@@ -293,9 +341,9 @@ class ActiveSessionPanel extends PluginPanel
 		repeatCount = 0;
 		consecutiveRepeatCount = 0;
 		combinedRuntime = 0;
-		for (TripData runData : runDataSorted)
+		for (TripSnapshot trip : snapshot.trips)
 		{
-			boolean validTrip = renderTrip(runData, tripIndex);
+			boolean validTrip = renderTrip(trip, tripIndex);
 			if (!validTrip)
 			{
 				continue;
@@ -308,7 +356,7 @@ class ActiveSessionPanel extends PluginPanel
 			getPanelData(i).masterPanel.setVisible(false);
 		}
 
-		SessionStats stats = sessionManager.getActiveSessionStats();
+		SessionStats stats = snapshot.stats;
 		if (stats == null)
 		{
 			sessionNameLabel.setText(sessionNameLabelPlaceholder);
@@ -344,8 +392,7 @@ class ActiveSessionPanel extends PluginPanel
 						.setText(htmlLabel(avgTripDurationLabelPrefix, UI.formatTime(stats.getAvgTripDuration())));
 			}
 			if (showSessionLootGrid)
-				UI.updateLootGrid(UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys())),
-					sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
+				UI.updateLootGrid(snapshot.sessionLedger, sessionLootPanelData, itemManager, config, config.sessionLootGridMaxHeight());
 			updateErrorPanel(true);
 		}
 		sessionLootPanelData.lootPanel.setVisible(showSessionLootGrid);
@@ -353,14 +400,14 @@ class ActiveSessionPanel extends PluginPanel
 
 	private void updateErrorPanel(boolean visible)
 	{
-		if (!visible || !needsCheck())
+		Set<String> items = snapshot.itemsNeedingCheck;
+		if (!visible || items.isEmpty())
 		{
 			errorLabel.setVisible(false);
 			errorSpacing.setVisible(false);
 			return;
 		}
-		
-		HashSet<String> items = plugin.getChargeableItemsNeedingCheck();
+
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><body>");
 		for (String item : items)
@@ -373,11 +420,6 @@ class ActiveSessionPanel extends PluginPanel
 		errorSpacing.setVisible(true);
 	}
 
-	private boolean needsCheck()
-	{
-		return plugin.getChargeableItemsNeedingCheck().size() != 0;
-	}
-
 	//not always previous but rather the first of the identical ones
 	TripData previousRunData = null;
 	List<LedgerItem> previousLedger = null;
@@ -386,14 +428,12 @@ class ActiveSessionPanel extends PluginPanel
 	long previousGpPerHour = 0;
 	long combinedRuntime;
 
-	boolean renderTrip(TripData runData, int tripIndex)
+	boolean renderTrip(TripSnapshot trip, int tripIndex)
 	{
-		List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(runData.initialItemQtys,
-				runData.itemQtys);
+		TripData runData = trip.runData;
+		List<LedgerItem> ledger = trip.ledger;
 
-		ledger = UI.sortLedger(ledger);
-
-		if (!runData.isInProgress() && UI.ledgersMatch(ledger, previousLedger))
+		if (!trip.inProgress && UI.ledgersMatch(ledger, previousLedger))
 		{
 			consecutiveRepeatCount++;
 			repeatCount++;
@@ -401,7 +441,7 @@ class ActiveSessionPanel extends PluginPanel
 			TripStats tripStats = getTripStats(ledger);
 			int startIndex = tripIndex - consecutiveRepeatCount;
 			int endIndex = tripIndex;
-			long runtime =  runData.getRuntime();
+			long runtime = trip.runtime;
 			combinedRuntime += runtime;
 			tpData.titleLabel.setText("Trips " + (startIndex + 1) + "-" + (endIndex + 1) + " (Identical)");
 			tpData.durationLabel.setText(UI.formatTime(combinedRuntime));
@@ -410,23 +450,21 @@ class ActiveSessionPanel extends PluginPanel
 			gpPerHour = (long) (((previousGpPerHour * consecutiveRepeatCount) + gpPerHour) / ((float) consecutiveRepeatCount + 1));
 			tpData.topLeftLabel
 					.setText(htmlLabel("GP/hr: ", UI.formatGp(gpPerHour, false) + "/hr"));
-			updateButtonMiddle(tpData, runData);
-			tpData.deleteWrapper.addActionListener((event) -> sessionManager.deleteTrip(runData.identifier));
-			updateButtonPause(tpData, runData);
+			updateButtonMiddle(tpData, trip);
+			tpData.tripIds.add(runData.identifier);
+			updateButtonPause(tpData, trip);
 			previousGpPerHour = gpPerHour;
 			return true;
 		}
 
 		TripPanelData tpData = getPanelData(tripIndex - repeatCount);
 		TripStats tripStats = getTripStats(ledger);
-		tpData.setContentPanelBorder(
-				sessionManager.isTimeInActiveSession(runData.runStartTime) ? tripActiveBorderColor : null);
+		tpData.setContentPanelBorder(trip.inActiveSession ? tripActiveBorderColor : null);
 
 		tpData.masterPanel.setVisible(true);
-		long runtime = runData.getRuntime();
+		long runtime = trip.runtime;
 		combinedRuntime = runtime;
 
-		FontMetrics fontMetrics = getGraphics().getFontMetrics(FontManager.getRunescapeSmallFont());
 		tpData.bottomRightLabel
 				.setText(htmlLabel("Losses: ", QuantityFormatter.quantityToStackSize(tripStats.totalLosses)));
 		long gpPerHour = UI.getGpPerHour(runtime, tripStats.getNetTotal());
@@ -435,29 +473,27 @@ class ActiveSessionPanel extends PluginPanel
 		tpData.bottomLeftLabel
 				.setText(htmlLabel("Net Total: ", QuantityFormatter.quantityToStackSize(tripStats.netTotal)));
 		tpData.topRightLabel.setText(htmlLabel("Gains: ", QuantityFormatter.quantityToStackSize(tripStats.totalGains)));
-		tpData.topRightLabel
-				.setBorder(new EmptyBorder(0, 535 - fontMetrics.stringWidth(tpData.topLeftLabel.getText()), 0, 0));
+		tpData.setTopRightInset(535 - smallFontMetrics.stringWidth(tpData.topLeftLabel.getText()));
 		String title = "Trip " + (tripIndex + 1);
-		if (runData.isInProgress())
+		if (trip.inProgress)
 		{
 			title += " (Active)";
 		}
 		tpData.titleLabel.setText(title);
 		tpData.subtitleLabel.setText("Started " + UI.getTimeAgo(runData.runStartTime));
 		tpData.durationLabel.setText(UI.formatTime(runtime));
+		tpData.tripIds.clear();
+		tpData.tripIds.add(runData.identifier);
 		// buttons
 		UI.clearListeners(tpData.buttonLeft);
-		tpData.buttonLeft.setEnabled(!sessionManager.getActiveSessionStartId().equals(runData.identifier));
+		tpData.buttonLeft.setEnabled(!runData.identifier.equals(snapshot.sessionStartId));
 		tpData.buttonLeft.setText("Set Start");
 		tpData.buttonLeft.setToolTipText("Set this trip as the start of the active session.");
 		tpData.buttonLeft.addActionListener((event) ->
-		{
-			sessionManager.setSessionStart(runData.identifier);
-			this.updateTrips();
-		});
-		updateButtonMiddle(tpData, runData);
-		updateButtonRight(tpData, runData);
-		updateButtonPause(tpData, runData);
+				updateOnClientThread(() -> sessionManager.setSessionStart(runData.identifier)));
+		updateButtonMiddle(tpData, trip);
+		updateButtonRight(tpData, trip);
+		updateButtonPause(tpData, trip);
 		updatePopupMenu(tpData, runData);
 
 		UI.updateLootGrid(ledger, tpData.lootPanelData, itemManager, config, 0);
@@ -470,38 +506,32 @@ class ActiveSessionPanel extends PluginPanel
 		return true;
 	}
 
-	void updateButtonMiddle(TripPanelData tpData, TripData runData)
+	void updateButtonMiddle(TripPanelData tpData, TripSnapshot trip)
 	{
+		TripData runData = trip.runData;
 		UI.clearListeners(tpData.buttonMiddle);
-		tpData.buttonMiddle.setEnabled((sessionManager.getActiveSessionEndId() == null) ? !runData.isInProgress()
-				: !sessionManager.getActiveSessionEndId().equals(runData.identifier));
-		if (runData.isInProgress())
+		tpData.buttonMiddle.setEnabled((snapshot.sessionEndId == null) ? !trip.inProgress
+				: !snapshot.sessionEndId.equals(runData.identifier));
+		if (trip.inProgress)
 		{
 			tpData.buttonMiddle.setText("Continue");
 			tpData.buttonMiddle.setToolTipText("Include new trips in the active session.");
 			tpData.buttonMiddle.addActionListener((event) ->
-			{
-				sessionManager.setSessionEnd(null);
-				this.updateTrips();
-			});
+					updateOnClientThread(() -> sessionManager.setSessionEnd(null)));
 		}
 		else
 		{
 			tpData.buttonMiddle.setText("Set End");
 			tpData.buttonMiddle.setToolTipText("Set this trip as the end of the active session.");
 			tpData.buttonMiddle.addActionListener((event) ->
-			{
-				sessionManager.setSessionEnd(runData.identifier);
-				this.updateTrips();
-			});
+					updateOnClientThread(() -> sessionManager.setSessionEnd(runData.identifier)));
 		}
 	}
 
-	void updateButtonRight(TripPanelData tpData, TripData runData)
+	void updateButtonRight(TripPanelData tpData, TripSnapshot trip)
 	{
 		UI.clearListeners(tpData.buttonRight);
-		UI.clearListeners(tpData.deleteWrapper);
-		tpData.buttonRight.setEnabled(!runData.isInProgress());
+		tpData.buttonRight.setEnabled(!trip.inProgress);
 		tpData.buttonRight.setText("Delete");
 		tpData.buttonRight.setToolTipText("Delete this trip.");
 		tpData.buttonRight.addActionListener((event) ->
@@ -511,20 +541,18 @@ class ActiveSessionPanel extends PluginPanel
 
 			if (confirm == 0)
 			{
-				sessionManager.deleteTrip(runData.identifier);
-				for (java.awt.event.ActionListener listener : tpData.deleteWrapper.getActionListeners())
-				{
-					listener.actionPerformed(event);
-				}
-				this.updateTrips();
+				// identical trips share a panel, so delete all of them
+				List<String> tripIds = new ArrayList<>(tpData.tripIds);
+				updateOnClientThread(() -> tripIds.forEach(sessionManager::deleteTrip));
 			}
 		});
 	}
 
-	void updateButtonPause(TripPanelData tpData, TripData runData)
+	void updateButtonPause(TripPanelData tpData, TripSnapshot trip)
 	{
+		TripData runData = trip.runData;
 		UI.clearListeners(tpData.pauseButton);
-		boolean visible = runData.isInProgress();
+		boolean visible = trip.inProgress;
 		CardLayout cardLayout = (CardLayout) tpData.pauseButtonCardContainer.getLayout();
 		cardLayout.show(tpData.pauseButtonCardContainer, visible ? "visible" : "hidden");
 		if (visible)
@@ -542,10 +570,7 @@ class ActiveSessionPanel extends PluginPanel
 	{
 		UI.clearListeners(tpData.deleteTripsBeforeMenuItem);
 		tpData.deleteTripsBeforeMenuItem.addActionListener((event) ->
-		{
-			sessionManager.deleteAllTripsBefore(runData.runStartTime);
-			this.updateTrips();
-		});
+				updateOnClientThread(() -> sessionManager.deleteAllTripsBefore(runData.runStartTime)));
 	}
 
 	TripPanelData getPanelData(int index)
@@ -607,8 +632,11 @@ class ActiveSessionPanel extends PluginPanel
 		JButton buttonRight = new JButton("Right");
 		JPanel contentPanel = new JPanel();
 		UI.LootPanelData lootPanelData = new UI.LootPanelData();
-		//use this as our 'delete all' observer since it's a pain to do it in java
-		JButton deleteWrapper = new JButton();
+		// the trip shown plus any identical trips grouped under it
+		List<String> tripIds = new ArrayList<>();
+		// a new border repaints the panel, so only set them when they change
+		Color contentPanelBorderColor;
+		int topRightInset = -1;
 
 		void setContentPanelBorder(Color color)
 		{
@@ -616,7 +644,22 @@ class ActiveSessionPanel extends PluginPanel
 			{
 				color = borderColor;
 			}
+			if (color.equals(contentPanelBorderColor))
+			{
+				return;
+			}
+			contentPanelBorderColor = color;
 			contentPanel.setBorder(new MatteBorder(1, 1, 1, 1, color));
+		}
+
+		void setTopRightInset(int inset)
+		{
+			if (inset == topRightInset)
+			{
+				return;
+			}
+			topRightInset = inset;
+			topRightLabel.setBorder(new EmptyBorder(0, inset, 0, 0));
 		}
 	}
 

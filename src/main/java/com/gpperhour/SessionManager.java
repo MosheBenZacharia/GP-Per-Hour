@@ -55,6 +55,9 @@ public class SessionManager
 	private String activeSessionStartId;
 	@Getter
 	private String activeSessionEndId;
+	// refreshed once per tick on the client thread, so the overlay doesn't redo every trip each frame
+	@Getter
+	private volatile SessionStats cachedActiveSessionStats;
 
 	public SessionManager(GPPerHourPlugin plugin, GPPerHourConfig config, ScheduledExecutorService executor, Gson gson)
 	{
@@ -117,6 +120,28 @@ public class SessionManager
 			.collect(Collectors.toList());
 	}
 
+	void refreshActiveSessionStats()
+	{
+		cachedActiveSessionStats = getActiveSessionStats();
+	}
+
+	// sorted by value, see UI.sortLedger
+	List<LedgerItem> getTripLedger(TripData trip)
+	{
+		if (trip.isInProgress())
+		{
+			return UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(trip.initialItemQtys, trip.itemQtys));
+		}
+		// completed trips don't change, so only rebuild when a price or name does
+		int version = GPPerHourPlugin.getLedgerDataVersion();
+		if (trip.ledger == null || trip.ledgerVersion != version)
+		{
+			trip.ledger = UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(trip.initialItemQtys, trip.itemQtys));
+			trip.ledgerVersion = version;
+		}
+		return trip.ledger;
+	}
+
 	SessionStats getActiveSessionStats()
 	{
 		if (activeSessionStartId == null)
@@ -149,7 +174,7 @@ public class SessionManager
 				qtys.merge(itemId, runData.itemQtys.get(itemId), Float::sum);
 			}
 
-			List<LedgerItem> ledger = GPPerHourPlugin.getProfitLossLedger(runData.initialItemQtys, runData.itemQtys);
+			List<LedgerItem> ledger = getTripLedger(runData);
 			for (LedgerItem item : ledger)
 			{
 				long value = item.getCombinedValue();
@@ -368,13 +393,13 @@ public class SessionManager
 			log.error("can't save session, hasn't loaded sessions yet.");
 			return;
 		}
+		SessionStats statsToSave = getActiveSessionStats();
+		if (statsToSave == null)
+		{
+			return;
+		}
 		executor.execute(()->
 		{
-			SessionStats statsToSave = getActiveSessionStats();
-			if (statsToSave == null)
-			{
-				return;
-			}
 			statsToSave.sessionName = name;
 			statsToSave.sessionID = UUID.randomUUID().toString();
 			sessionHistory.add(statsToSave);

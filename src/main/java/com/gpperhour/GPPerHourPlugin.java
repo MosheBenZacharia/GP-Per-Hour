@@ -143,6 +143,8 @@ public class GPPerHourPlugin extends Plugin
     private static final Map<Integer, Float> itemPrices = new HashMap<>();
 	//so we can do name lookups on the swing thread
 	private static final Map<Integer, String> itemNames = new HashMap<>();
+	// bumped whenever a price or name changes so cached ledgers of completed trips know to rebuild
+	private static volatile int ledgerDataVersion;
 
 	@Inject
 	private ScheduledExecutorService executor;
@@ -370,17 +372,25 @@ public class GPPerHourPlugin extends Plugin
 		previousTotalGp = null;
 	}
 
+	// must be called on the client thread, it refreshes the cached session stats the overlay reads every frame
 	void updatePanels()
 	{
+		sessionManager.refreshActiveSessionStats();
 		if (gpPerHourPanel.isActive() && gpPerHourPanel.isShowingActiveSession())
 		{
-			SessionStats sessionStats = sessionManager.getActiveSessionStats();
+			SessionStats sessionStats = sessionManager.getCachedActiveSessionStats();
 			//ensure we load these after a restart
 			if (sessionStats != null)
 			{
+				int version = getLedgerDataVersion();
 				ensureSessionNameAndPriceLoaded(sessionStats);
+				if (version != getLedgerDataVersion())
+				{
+					sessionManager.refreshActiveSessionStats();
+				}
 			}
-			SwingUtilities.invokeLater(() -> activeSessionPanel.updateTrips());
+			ActiveSessionPanel.TripsSnapshot snapshot = activeSessionPanel.buildSnapshot();
+			SwingUtilities.invokeLater(() -> activeSessionPanel.updateTrips(snapshot));
 		}
 		if (gpPerHourPanel.isActive() && gpPerHourPanel.isShowingSessionHistory() && sessionManager.sessionHistoryDirty)
 		{
@@ -446,8 +456,8 @@ public class GPPerHourPlugin extends Plugin
 		if (runData == null)
 			return;
 		updatePluginState(false);
-		updatePanels();
 		updateChargeableItemsNeedingCheck();
+		updatePanels();
 		
 		if (this.state == RunState.RUN && !runData.isPaused)
 		{
@@ -1217,19 +1227,36 @@ public class GPPerHourPlugin extends Plugin
 		}
 	}
 
+	static int getLedgerDataVersion()
+	{
+		return ledgerDataVersion;
+	}
+
 	static void putItemPrice(int itemId, float price)
 	{
-		itemPrices.put(itemId, price);
+		Float previous = itemPrices.put(itemId, price);
+		if (previous == null || previous != price)
+		{
+			ledgerDataVersion++;
+		}
 	}
 
 	static Float removeItemPrice(int itemId)
 	{
-		return itemPrices.remove(itemId);
+		Float previous = itemPrices.remove(itemId);
+		if (previous != null)
+		{
+			ledgerDataVersion++;
+		}
+		return previous;
 	}
 
 	static void putItemName(int itemId, String name)
 	{
-		itemNames.put(itemId, name);
+		if (!name.equals(itemNames.put(itemId, name)))
+		{
+			ledgerDataVersion++;
+		}
 	}
 
 	static List<LedgerItem> getProfitLossLedger(Map<Integer, Float> initialQtys, Map<Integer, Float> qtys)

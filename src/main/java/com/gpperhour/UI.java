@@ -129,6 +129,10 @@ public class UI {
         if (ledgerOne == null || ledgerTwo == null) {
             return false;
         }
+        // completed trips hand back the same cached list
+        if (ledgerOne == ledgerTwo) {
+            return true;
+        }
         if (ledgerOne.size() != ledgerTwo.size()) {
             return false;
         }

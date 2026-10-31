@@ -7,7 +7,9 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -263,6 +265,50 @@ public class SessionManagerTest
 		sessionManager.deleteAllTripsBefore(20 * MINUTE);
 		assertEquals(1, sessionManager.getActiveTrips().size());
 		assertEquals(1000, sessionManager.getActiveSessionStats().getNetTotal());
+	}
+
+	@Test
+	public void completedTripLedgersAreCachedUntilPricesChange()
+	{
+		TripData done = trip(0, false, SHARK, 10, 8, BONES, 0, 5);
+		List<LedgerItem> ledger = sessionManager.getTripLedger(done);
+		assertSame(ledger, sessionManager.getTripLedger(done));
+		assertTrue(UI.ledgersMatch(ledger, UI.sortLedger(GPPerHourPlugin.getProfitLossLedger(done.initialItemQtys, done.itemQtys))));
+
+		// re-adding the same price or name isn't a change
+		GPPerHourPlugin.putItemPrice(SHARK, 1000f);
+		GPPerHourPlugin.putItemName(SHARK, "Shark");
+		assertSame(ledger, sessionManager.getTripLedger(done));
+
+		GPPerHourPlugin.putItemPrice(SHARK, 1500f);
+		List<LedgerItem> repriced = sessionManager.getTripLedger(done);
+		assertNotSame(ledger, repriced);
+		assertEquals(1500f, repriced.stream().filter(item -> item.getItemId() == SHARK).findFirst().get().getPrice(), 0);
+	}
+
+	@Test
+	public void inProgressTripLedgersAreNotCached()
+	{
+		TripData active = trip(0, true, RUNE, 50, 50);
+		assertTrue(sessionManager.getTripLedger(active).isEmpty());
+		active.itemQtys.put(RUNE, 45f);
+		assertEquals(1, sessionManager.getTripLedger(active).size());
+	}
+
+	@Test
+	public void cachedStatsOnlyChangeOnRefresh()
+	{
+		assertNull(sessionManager.getCachedActiveSessionStats());
+		threeCompletedTrips();
+		assertNull(sessionManager.getCachedActiveSessionStats());
+		sessionManager.refreshActiveSessionStats();
+		SessionStats cached = sessionManager.getCachedActiveSessionStats();
+		assertEquals(500, cached.getNetTotal());
+
+		sessionManager.deleteTrip(id(2));
+		assertSame(cached, sessionManager.getCachedActiveSessionStats());
+		sessionManager.refreshActiveSessionStats();
+		assertEquals(-500, sessionManager.getCachedActiveSessionStats().getNetTotal());
 	}
 
 	@Test

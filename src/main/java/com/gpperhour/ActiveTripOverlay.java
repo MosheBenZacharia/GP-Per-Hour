@@ -172,7 +172,7 @@ class ActiveTripOverlay extends Overlay
 
 	private void renderActiveSessionTotal(Graphics2D graphics)
 	{
-		SessionStats sessionStats = plugin.getSessionManager().getActiveSessionStats();
+		SessionStats sessionStats = plugin.getSessionManager().getCachedActiveSessionStats();
 		if (sessionStats == null)
 		{
 			String totalText = "0";
@@ -456,7 +456,7 @@ class ActiveTripOverlay extends Overlay
 		int mouseY = mouse.getY();
 
 		boolean isTripRunning = !config.inventoryOverlayDisplayMode().sessionData && plugin.getState() != RunState.BANK && !plugin.getRunData().isBankDelay;
-		boolean isSessionRunning = config.inventoryOverlayDisplayMode().sessionData && plugin.getSessionManager().getActiveSessionStats() != null;
+		boolean isSessionRunning = config.inventoryOverlayDisplayMode().sessionData && plugin.getSessionManager().getCachedActiveSessionStats() != null;
 
 		RoundRectangle2D roundRectangle2D = new RoundRectangle2D.Double(x, y, width + 1, height + 1, cornerRadius, cornerRadius);
 		if (roundRectangle2D.contains(mouseX, mouseY) && (isTripRunning || isSessionRunning) && config.showLedgerOnHover())
@@ -586,7 +586,7 @@ class ActiveTripOverlay extends Overlay
 		List<LedgerItem> ledger = null;
 		if (config.inventoryOverlayDisplayMode().sessionData)
 		{
-			SessionStats stats = plugin.getSessionManager().getActiveSessionStats();
+			SessionStats stats = plugin.getSessionManager().getCachedActiveSessionStats();
 			ledger = GPPerHourPlugin.getProfitLossLedger(stats.getInitialQtys(), stats.getQtys());
 		}
 		else
