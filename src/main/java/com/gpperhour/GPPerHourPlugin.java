@@ -411,11 +411,11 @@ public class GPPerHourPlugin extends Plugin
 		if (!GPPerHourPlugin.itemNames.containsKey(itemId))
 		{
 			ItemComposition composition = itemManager.getItemComposition(itemId);
-			itemNames.put(itemId, composition.getName());
+			putItemName(itemId, composition.getName());
 		}
 		if (!GPPerHourPlugin.itemPrices.containsKey(itemId))
 		{
-			itemPrices.put(itemId, getPrice(itemId));
+			putItemPrice(itemId, getPrice(itemId));
 		}
 	}
 
@@ -612,7 +612,7 @@ public class GPPerHourPlugin extends Plugin
 	{
 		clientThread.invoke(()->{
 
-			if (itemPrices.remove(itemID) != null)
+			if (removeItemPrice(itemID) != null)
 			{
 				getPrice(itemID);
 			}
@@ -1033,10 +1033,13 @@ public class GPPerHourPlugin extends Plugin
 	public void refreshPrices()
 	{
 		List<Integer> itemIds = new LinkedList<>(itemPrices.keySet());
-		itemPrices.clear();
 		for(Integer itemId : itemIds)
 		{
-			itemPrices.put(itemId, getPrice(itemId));
+			removeItemPrice(itemId);
+		}
+		for(Integer itemId : itemIds)
+		{
+			putItemPrice(itemId, getPrice(itemId));
 		}
 	}
 
@@ -1214,6 +1217,21 @@ public class GPPerHourPlugin extends Plugin
 		}
 	}
 
+	static void putItemPrice(int itemId, float price)
+	{
+		itemPrices.put(itemId, price);
+	}
+
+	static Float removeItemPrice(int itemId)
+	{
+		return itemPrices.remove(itemId);
+	}
+
+	static void putItemName(int itemId, String name)
+	{
+		itemNames.put(itemId, name);
+	}
+
 	static List<LedgerItem> getProfitLossLedger(Map<Integer, Float> initialQtys, Map<Integer, Float> qtys)
 	{
 		Map<Integer, Float> qtyDifferences = new HashMap<>(initialQtys.size());
@@ -1331,10 +1349,10 @@ public class GPPerHourPlugin extends Plugin
 	{
 		if (itemId != COINS && !itemPrices.containsKey(itemId))
 		{
-			itemPrices.put(itemId, gePrice);
+			putItemPrice(itemId, gePrice);
 		}
 
-		itemNames.put(itemId, itemManager.getItemComposition(itemId).getName());
+		putItemName(itemId, itemManager.getItemComposition(itemId).getName());
 
 		if (isNewRun)
 		{
